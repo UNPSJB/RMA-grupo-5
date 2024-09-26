@@ -6,14 +6,16 @@ from datetime import datetime
 class NodoBase(BaseModel):
     type: int 
     data: str
-    time: int 
+    time: float 
 
     class Config:
         from_attributes = True
 
 # Clases de creación y actualización de Nodo
 class NodoCreate(NodoBase):
-    pass
+    type: int
+    data: str 
+    time: float 
 
 class NodoUpdate(NodoBase):
     pass

@@ -17,7 +17,7 @@ class BaseModel(Base):
     """Modelo base para los módulos de nuestra app."""
 
     __abstract__ = True
-
+    
     def save(self, db: Session, commit: bool = True):
         db.add(self)
         if commit:
@@ -42,6 +42,7 @@ class BaseModel(Base):
 
         db.execute(stmt)
         return self.save(db)
+
 
     @classmethod
     def create(cls, db: Session, commit: bool = True, **kwargs):

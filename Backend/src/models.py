@@ -45,17 +45,14 @@ class TipoDato(IntEnum):
     WEIGHT_T = 34     # Peso
     WEIGHT2_T = 35    # Peso #2
 
+
 # Modelo base para nodos
 class Nodo(BaseModel):
-    __tablename__ = "nodos"
+    __tablename__ = 'nodos'
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
-    type: Mapped[TipoDato] = mapped_column(Enum(TipoDato), nullable=False, index=True)
-    data: Mapped[String] = mapped_column(Float, nullable=False)
-    time: Mapped[float] = mapped_column(Float, default=lambda: time.time())
-    fecha_creacion: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
-    fecha_modificacion: Mapped[datetime] = mapped_column(
-        DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC)
-    )
-    def __repr__(self):
-        return f"<Nodo(id={self.id}, type={self.type.name}, data={self.data}, time={self.time})>"
+    id = Column(Integer, primary_key=True, index=True)
+    type = Column(Integer, nullable=False)
+    data = Column(String, nullable=False)  # Asegúrate de que este campo sea de tipo String
+    time = Column(Float, nullable=False)  # Este campo debe ser de tipo Float
+    fecha_creacion = Column(DateTime, default=datetime.utcnow)
+    fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
