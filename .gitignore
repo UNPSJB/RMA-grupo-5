@@ -322,4 +322,9 @@ psd
 thumb
 sketch
 
+# Ignorar archivos de base de datos
+*.db
+*.sqlite
+*.sqlite3
+
 # End of https://www.toptal.com/developers/gitignore/api/python,react,node
