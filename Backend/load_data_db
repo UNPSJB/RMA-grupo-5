@@ -1,0 +1,38 @@
+import random
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.db_models import BaseModel
+from src.models import Nodo, TipoDato  # Asegúrate de reemplazar 'your_module' con el nombre del módulo donde están las clases Nodo y TipoDato.
+
+# 1. Configurar la conexión a la base de datos
+DATABASE_URL = "sqlite:///./src/mi-db-sqlite.db"  # Cambia esto a la URL de tu base de datos
+engine = create_engine(DATABASE_URL)
+BaseModel.metadata.create_all(bind=engine)  # Crear las tablas en la base de datos si no existen
+
+# 2. Crear una sesión de SQLAlchemy
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+session = SessionLocal()
+
+# 3. Definir la constante para la cantidad de registros a insertar
+NUM_REGISTROS = 100  # Cambia este valor según sea necesario
+
+# 4. Función para generar datos aleatorios
+def generar_datos_aleatorios():
+    tipo_dato = random.choice(list(TipoDato))
+    data = random.uniform(0, 100)  # Genera un número aleatorio entre 0 y 100
+    time = random.uniform(0, 10)  # Genera un número aleatorio entre 0 y 10
+    return Nodo(type=tipo_dato.value, data=str(round(data, 2)), time=round(time, 2))
+
+# 5. Instanciar objetos de la clase Nodo
+nodos = [generar_datos_aleatorios() for _ in range(NUM_REGISTROS)]
+
+# 6. Agregar los objetos a la sesión y confirmarlos
+try:
+    session.add_all(nodos)  # Agregar todos los nodos a la sesión
+    session.commit()  # Confirmar los cambios
+    print(f"{NUM_REGISTROS} datos cargados correctamente.")
+except Exception as e:
+    session.rollback()  # Deshacer cambios en caso de error
+    print(f"Error al cargar los datos: {e}")
+finally:
+    session.close()  # Cerrar la sesión
