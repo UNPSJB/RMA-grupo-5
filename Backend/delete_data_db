@@ -1,0 +1,29 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from src.db_models import BaseModel
+from src.models import Nodo
+
+# 1. Configurar la conexión a la base de datos
+DATABASE_URL = "sqlite:///./src/mi-db-sqlite.db"
+engine = create_engine(DATABASE_URL)
+BaseModel.metadata.create_all(bind=engine)
+
+# 2. Crear una sesión de SQLAlchemy
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# 3. Función para limpiar la base de datos
+def limpiar_datos():
+    session = SessionLocal()  # Crear una nueva sesión
+    try:
+        session.query(Nodo).delete()  # Eliminar todos los registros de la tabla Nodo
+        session.commit()  # Confirmar los cambios
+        print("Datos limpiados correctamente.")
+    except Exception as e:
+        session.rollback()  # Deshacer cambios en caso de error
+        print(f"Error al limpiar los datos: {e}")
+    finally:
+        session.close()  # Cerrar la sesión
+
+# 4. Ejecutar la función de limpieza
+if __name__ == "__main__":
+    limpiar_datos()
