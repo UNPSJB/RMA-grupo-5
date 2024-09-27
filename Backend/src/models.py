@@ -51,8 +51,8 @@ class Nodo(BaseModel):
     __tablename__ = 'nodos'
 
     id = Column(Integer, primary_key=True, index=True)
-    type = Column(Integer, nullable=False)
-    data = Column(String, nullable=False)  # Asegúrate de que este campo sea de tipo String
-    time = Column(Float, nullable=False)  # Este campo debe ser de tipo Float
+    type = Column(Enum(TipoDato), nullable=False)
+    data = Column(String, nullable=False)
+    time = Column(Float, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

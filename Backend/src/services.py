@@ -1,11 +1,11 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.models import Nodo
+from src.models import Nodo, TipoDato
 from src import schemas, exceptions
 
 def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db_nodo = Nodo(
-        type=nodo.type,
+        type=nodo.TipoDato,
         data=nodo.data,
         time=nodo.time
     )
@@ -27,8 +27,8 @@ def modificar_nodo(
     db: Session, nodo_id: int, nodo: schemas.NodoUpdate
 ) -> Nodo:
     db_nodo = leer_nodo(db, nodo_id)
-    if nodo.type is not None:
-        db_nodo.type = nodo.type
+    if nodo.TipoDato is not None:
+        db_nodo.TipoDato = nodo.TipoDato
     if nodo.data is not None:
         db_nodo.data = nodo.data
     if nodo.time is not None:
