@@ -5,6 +5,7 @@ const CrearNodo = () => {
   return (
     <div>
       <h2>Crear Nodo</h2>
+      <h3>Aguante Desarrollo</h3>
       <NodoForm />
     </div>
   );
