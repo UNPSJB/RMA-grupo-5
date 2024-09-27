@@ -5,7 +5,7 @@ from src import schemas, exceptions
 
 def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db_nodo = Nodo(
-        type=nodo.TipoDato,
+        type=nodo.type,
         data=nodo.data,
         time=nodo.time
     )
@@ -27,8 +27,8 @@ def modificar_nodo(
     db: Session, nodo_id: int, nodo: schemas.NodoUpdate
 ) -> Nodo:
     db_nodo = leer_nodo(db, nodo_id)
-    if nodo.TipoDato is not None:
-        db_nodo.TipoDato = nodo.TipoDato
+    if nodo.type is not None:
+        db_nodo.type = nodo.type
     if nodo.data is not None:
         db_nodo.data = nodo.data
     if nodo.time is not None:
@@ -36,6 +36,7 @@ def modificar_nodo(
     db.commit()
     db.refresh(db_nodo)
     return db_nodo
+
 
 def eliminar_nodo(db: Session, nodo_id: int) -> Nodo:
     db_nodo = leer_nodo(db, nodo_id)
