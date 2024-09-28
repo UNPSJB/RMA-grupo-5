@@ -317,10 +317,11 @@ let chartExample1 = {
             zeroLineColor: colors.gray[900],
           },
           ticks: {
+            max: 2, // Máxima altura de las mareas en metros
+            min: 0, // Altura mínima
+            stepSize: 0.5, // Tamaño de paso en metros
             callback: function (value) {
-              if (!(value % 10)) {
-                return "$" + value + "k";
-              }
+              return value + "m"; 
             },
           },
         },
@@ -337,7 +338,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "$" + yLabel + "k";
+          content += "" + yLabel + " metros"; 
           return content;
         },
       },
@@ -345,22 +346,22 @@ let chartExample1 = {
   },
   data1: (canvas) => {
     return {
-      labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      labels: ["12 am", "2 am", "4 am", "6 am", "8 am", "10 am", "12 am", "2 pm", "4 pm","6 pm", "8 pm", "10 pm", "12 pm"],
       datasets: [
         {
           label: "Performance",
-          data: [0, 20, 10, 30, 15, 40, 20, 60, 60],
+          data: [0.1, 0.7, 1.5, 1.8, 1.5,1.2 , 0.8, 0.1, 0.2,1.8, 1.5,1.2 , 0.8,],
         },
       ],
     };
   },
   data2: (canvas) => {
     return {
-      labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
       datasets: [
         {
           label: "Performance",
-          data: [0, 20, 5, 25, 10, 30, 15, 40, 40],
+          data: [1.8, 1.7,1.6, 1.4, 0.9, 1.9, 0.1, 0.2, 0.2],
         },
       ],
     };

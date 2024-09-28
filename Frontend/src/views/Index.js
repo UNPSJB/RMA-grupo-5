@@ -73,9 +73,9 @@ const Index = (props) => {
                 <Row className="align-items-center">
                   <div className="col">
                     <h6 className="text-uppercase text-light ls-1 mb-1">
-                      Overview
+                      Cuenca Sagmata
                     </h6>
-                    <h2 className="text-white mb-0">Sales value</h2>
+                    <h2 className="text-white mb-0">Altura de la marea</h2>
                   </div>
                   <div className="col">
                     <Nav className="justify-content-end" pills>
@@ -87,8 +87,8 @@ const Index = (props) => {
                           href="#pablo"
                           onClick={(e) => toggleNavs(e, 1)}
                         >
-                          <span className="d-none d-md-block">Month</span>
-                          <span className="d-md-none">M</span>
+                          <span className="d-none d-md-block">Diario</span>
+                          <span className="d-md-none">D</span>
                         </NavLink>
                       </NavItem>
                       <NavItem>
@@ -100,8 +100,8 @@ const Index = (props) => {
                           href="#pablo"
                           onClick={(e) => toggleNavs(e, 2)}
                         >
-                          <span className="d-none d-md-block">Week</span>
-                          <span className="d-md-none">W</span>
+                          <span className="d-none d-md-block">Semanal</span>
+                          <span className="d-md-none">S</span>
                         </NavLink>
                       </NavItem>
                     </Nav>
