@@ -26,17 +26,6 @@ async def db_creation_lifespan(app: FastAPI):
 
 app = FastAPI(root_path=ROOT_PATH, lifespan=db_creation_lifespan)
 
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    try:
-        while True:
-            data = await websocket.receive_text()
-            print(f"Mensaje recibido: {data}")  # Agrega un print aquí para depuración
-            await websocket.send_text(f"Mensaje recibido: {data}")
-    except Exception as e:
-        print(f"Error: {e}")
-
 origins = [
     "http://localhost:8000",
     "http://localhost:5173",
