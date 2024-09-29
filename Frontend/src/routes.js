@@ -40,7 +40,7 @@ var routes = [
   },
   {
     path: "/maps",
-    name: "Maps",
+    name: "Mapa",
     icon: "ni ni-pin-3 text-orange",
     component: <Maps />,
     layout: "/admin",
