@@ -2,8 +2,12 @@ import os
 import sys
 import paho.mqtt.client as paho
 from paho.mqtt.enums import MQTTProtocolVersion
+from fastapi import APIRouter, Depends, HTTPException
 from dotenv import load_dotenv
 from datetime import datetime
+from src.config_db import get_db
+from sqlalchemy.orm import Session
+from src.nodo.services import crear_nodo
 
 load_dotenv()
 
