@@ -368,7 +368,7 @@ let chartExample1 = {
   },
 };
 
-// Example 2 of Chart inside src/views/Index.js (Total orders - Card)
+// Example 2 of Chart inside src/views/Index.js (Temperatura - Card)
 let chartExample2 = {
   options: {
     scales: {
@@ -401,11 +401,11 @@ let chartExample2 = {
     },
   },
   data: {
-    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
     datasets: [
       {
         label: "Sales",
-        data: [25, 20, 30, 22, 17, 29],
+        data: [25, 20, 30, 22, 17, 29, 35],
         maxBarThickness: 10,
       },
     ],
