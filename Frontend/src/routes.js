@@ -26,7 +26,7 @@ import Icons from "views/examples/Icons.js";
 var routes = [
   {
     path: "/index",
-    name: "Dashboard",
+    name: "Tablas de Datos",
     icon: "ni ni-tv-2 text-primary",
     component: <Index />,
     layout: "/admin",
@@ -47,7 +47,7 @@ var routes = [
   },
   {
     path: "/user-profile",
-    name: "User Profile",
+    name: "Perfil de Usuario",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
     layout: "/admin",

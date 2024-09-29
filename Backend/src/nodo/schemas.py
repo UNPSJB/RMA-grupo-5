@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-from src.models import TipoDato
+from src.nodo.models import TipoDato
 
 # Clase base Nodo
 class NodoBase(BaseModel):

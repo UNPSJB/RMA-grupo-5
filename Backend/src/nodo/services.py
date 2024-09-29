@@ -1,7 +1,8 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.models import Nodo, TipoDato
-from src import schemas, exceptions
+from src.nodo.models import Nodo, TipoDato
+from src.nodo import schemas
+from src import exceptions
 
 def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db_nodo = Nodo(

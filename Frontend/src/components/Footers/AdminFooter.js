@@ -33,7 +33,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               target="_blank"
             >
-              Creative Tim
+              Grupo 5
             </a>
           </div>
         </Col>

@@ -81,45 +81,45 @@ const Profile = () => {
                   <div className="col">
                     <div className="card-profile-stats d-flex justify-content-center mt-md-5">
                       <div>
-                        <span className="heading">22</span>
-                        <span className="description">Friends</span>
+                        <span className="heading">1</span>
+                        <span className="description">Amigos</span>
                       </div>
                       <div>
-                        <span className="heading">10</span>
-                        <span className="description">Photos</span>
+                        <span className="heading">9</span>
+                        <span className="description">Fotos</span>
                       </div>
                       <div>
-                        <span className="heading">89</span>
-                        <span className="description">Comments</span>
+                        <span className="heading">2</span>
+                        <span className="description">Comentarios</span>
                       </div>
                     </div>
                   </div>
                 </Row>
                 <div className="text-center">
                   <h3>
-                    Jessica Jones
-                    <span className="font-weight-light">, 27</span>
+                    Tomas "Duende" Fernandez
+                    <span className="font-weight-light">, 152</span>
                   </h3>
                   <div className="h5 font-weight-300">
                     <i className="ni location_pin mr-2" />
-                    Bucharest, Romania
+                    Gringotts, Diagon Alley
                   </div>
                   <div className="h5 mt-4">
                     <i className="ni business_briefcase-24 mr-2" />
-                    Solution Manager - Creative Tim Officer
+                    Técnico en Enlaces Arcanos
                   </div>
                   <div>
                     <i className="ni education_hat mr-2" />
-                    University of Computer Science
+                    Universidad de Magia Práctica y Artes Arcanas de Eldrithor
                   </div>
                   <hr className="my-4" />
                   <p>
-                    Ryan — the name taken by Melbourne-raised, Brooklyn-based
-                    Nick Murphy — writes, performs and records all of his own
-                    music.
+                    Tomas -origen arameo que significa "gemelo"-, un duende
+                    que todavia debe recorrer el largo camino hacia commo
+                    crear un arreglo en JAVA.
                   </p>
                   <a href="#pablo" onClick={(e) => e.preventDefault()}>
-                    Show more
+                    Ver mas
                   </a>
                 </div>
               </CardBody>
@@ -147,7 +147,7 @@ const Profile = () => {
               <CardBody>
                 <Form>
                   <h6 className="heading-small text-muted mb-4">
-                    User information
+                    Informacion de usuario
                   </h6>
                   <div className="pl-lg-4">
                     <Row>
@@ -157,7 +157,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-username"
                           >
-                            Username
+                            Nombre de usuario
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -174,7 +174,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-email"
                           >
-                            Email address
+                            Direccion de email
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -192,7 +192,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-first-name"
                           >
-                            First name
+                            Nombre
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -209,7 +209,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-last-name"
                           >
-                            Last name
+                            Apellido
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -225,7 +225,7 @@ const Profile = () => {
                   <hr className="my-4" />
                   {/* Address */}
                   <h6 className="heading-small text-muted mb-4">
-                    Contact information
+                    Informacion de contacto
                   </h6>
                   <div className="pl-lg-4">
                     <Row>
@@ -235,7 +235,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-address"
                           >
-                            Address
+                            Direccion
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -254,7 +254,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-city"
                           >
-                            City
+                            Ciudad
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -271,7 +271,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Country
+                            Pais
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -288,7 +288,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-country"
                           >
-                            Postal code
+                            Codigo postal
                           </label>
                           <Input
                             className="form-control-alternative"
