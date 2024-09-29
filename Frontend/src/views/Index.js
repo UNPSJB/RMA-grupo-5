@@ -73,7 +73,7 @@ const Index = (props) => {
                 <Row className="align-items-center">
                   <div className="col">
                     <h6 className="text-uppercase text-light ls-1 mb-1">
-                      Cuenca Sagmata
+                      Red de Monitoreo - Cuenca Sagmata
                     </h6>
                     <h2 className="text-white mb-0">Altura del Río</h2>
                   </div>
