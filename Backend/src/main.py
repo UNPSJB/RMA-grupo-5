@@ -23,10 +23,7 @@ async def db_creation_lifespan(app: FastAPI):
 
 app = FastAPI(root_path=ROOT_PATH, lifespan=db_creation_lifespan)
 
-<<<<<<< Updated upstream
-=======
 # Configuración de CORS
->>>>>>> Stashed changes
 origins = [
     "http://localhost:8000",
     "http://localhost:5173",
@@ -51,8 +48,3 @@ def start_mqtt_subscriber():
 async def startup_event():
     # Inicia el suscriptor en un hilo separado
     threading.Thread(target=start_mqtt_subscriber, daemon=True).start()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    # Aquí puedes agregar la lógica para detener el cliente MQTT, si es necesario
-    pass  # Implementa esto según tu necesidad
