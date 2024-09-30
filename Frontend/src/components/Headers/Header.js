@@ -1,15 +1,12 @@
-<<<<<<< Updated upstream
-// reactstrap components
-=======
 import React, { useState, useEffect } from "react";
 import axios from "axios";
->>>>>>> Stashed changes
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 import './Header.css'; // Asegúrate de que este archivo exista
 
 const Header = () => {
     const [temperature, setTemperature] = useState(null);  // Estado para almacenar la temperatura
     const [loading, setLoading] = useState(true);          // Estado para manejar la carga de los datos
+    const [error, setError] = useState(null);              // Estado para manejar errores
     const lat = -43.5833;                                  // Latitud de la ubicación
     const lon = -66.0000;                                  // Longitud de la ubicación
 
@@ -20,22 +17,30 @@ const Header = () => {
                     `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius`
                 );
                 console.log("Respuesta de Open-Meteo:", response.data);
-                setTemperature(response.data.current_weather.temperature);  // Guardar la temperatura
+                setTemperature(response.data.current_weather.temperature); 
+                setError(null); // Resetear el error
             } catch (error) {
                 console.error("Error al obtener la temperatura:", error);
+                setError("No se pudo obtener la temperatura. Inténtalo de nuevo más tarde.");
             } finally {
-                setLoading(false);  // Finalizar la carga
+                setLoading(false); 
             }
         };
 
-        fetchTemperature();  // Llamar a la función al cargar el componente
-    }, []);  // Solo se ejecuta una vez cuando el componente se monta
+        fetchTemperature(); // Llamar a la función al cargar el componente
+        const interval = setInterval(fetchTemperature, 300000); // 300000 ms = 5 min
+
+        return () => clearInterval(interval); // Limpiar el intervalo al desmontar
+    }, []); 
 
     return (
         <>
             <div className="header bg-gradient-info pb-8 pt-5 pt-md-8">
                 <Container fluid>
                     <div className="header-body">
+                        {/* Mensaje de error */}
+                        {error && <div className="error">{error}</div>}
+                        
                         {/* Card stats */}
                         <Row>
                             <Col xs="6" sm="4" md="3" lg="3" xl="2">
