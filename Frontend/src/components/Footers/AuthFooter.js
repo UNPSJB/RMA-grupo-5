@@ -31,49 +31,26 @@ const Login = () => {
                 © {new Date().getFullYear()}{" "}
                 <a
                   className="font-weight-bold ml-1"
-                  href="https://www.creative-tim.com?ref=adr-auth-footer"
+                  href="https://github.com/UNPSJB/RMA-grupo-5/"
                   target="_blank"
                 >
-                  Creative Tim
+                  Grupo 5
                 </a>
               </div>
             </Col>
-            <Col xl="6">
-              <Nav className="nav-footer justify-content-center justify-content-xl-end">
-                <NavItem>
-                  <NavLink
-                    href="https://www.creative-tim.com?ref=adr-auth-footer"
-                    target="_blank"
-                  >
-                    Creative Tim
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    href="https://www.creative-tim.com/presentation?ref=adr-auth-footer"
-                    target="_blank"
-                  >
-                    About Us
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    href="http://blog.creative-tim.com?ref=adr-auth-footer"
-                    target="_blank"
-                  >
-                    Blog
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    href="https://github.com/creativetimofficial/argon-dashboard/blob/master/LICENSE.md?ref=adr-auth-footer"
-                    target="_blank"
-                  >
-                    MIT License
-                  </NavLink>
-                </NavItem>
-              </Nav>
-            </Col>
+
+        <Col xl="6" className="text-center text-xl-right">
+          <img 
+            src="https://raw.githubusercontent.com/UNPSJB/logos_tw/875c81601d5f2e9d6d9e6418db0a4e840c29c376/DIT/logo_mascara_ids_plano.svg" 
+            alt="Logo DIT" 
+            style={{ height: "50px", marginRight: "15px" }} // Ajustar tamaño y espacio entre imágenes
+          />
+          <img 
+            src={require("../../assets/img/brand/escudo_tranparente_sinletras.png")}
+            alt="Logo UNPSJB" 
+            style={{ height: "65px" }} // Ajustar tamaño
+          />
+        </Col>
           </Row>
         </Container>
       </footer>
