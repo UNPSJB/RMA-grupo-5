@@ -128,7 +128,7 @@ const Index = (props) => {
                     <h6 className="text-uppercase text-muted ls-1 mb-1">
                       Medicion semanal
                     </h6>
-                    <h2 className="mb-0">Temperatura</h2>
+                    <h2 className="mb-0">Temperatura del Agua</h2>
                   </div>
                 </Row>
               </CardHeader>

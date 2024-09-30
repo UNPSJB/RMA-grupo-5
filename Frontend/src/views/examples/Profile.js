@@ -63,7 +63,7 @@ const Profile = () => {
                     onClick={(e) => e.preventDefault()}
                     size="sm"
                   >
-                    Connect
+                    Conectar
                   </Button>
                   <Button
                     className="float-right"
@@ -72,7 +72,7 @@ const Profile = () => {
                     onClick={(e) => e.preventDefault()}
                     size="sm"
                   >
-                    Message
+                    Mensaje
                   </Button>
                 </div>
               </CardHeader>
@@ -130,7 +130,7 @@ const Profile = () => {
               <CardHeader className="bg-white border-0">
                 <Row className="align-items-center">
                   <Col xs="8">
-                    <h3 className="mb-0">My account</h3>
+                    <h3 className="mb-0">Mi Cuenta</h3>
                   </Col>
                   <Col className="text-right" xs="4">
                     <Button
@@ -174,7 +174,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-email"
                           >
-                            Direccion de email
+                            Dirección de email
                           </label>
                           <Input
                             className="form-control-alternative"
@@ -235,7 +235,7 @@ const Profile = () => {
                             className="form-control-label"
                             htmlFor="input-address"
                           >
-                            Direccion
+                            Dirección
                           </label>
                           <Input
                             className="form-control-alternative"

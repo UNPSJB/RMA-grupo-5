@@ -33,7 +33,7 @@ var routes = [
   },
   {
     path: "/icons",
-    name: "Icons",
+    name: "Iconos (temporal para desarrollo)",
     icon: "ni ni-planet text-blue",
     component: <Icons />,
     layout: "/admin",
@@ -54,21 +54,21 @@ var routes = [
   },
   {
     path: "/tables",
-    name: "Tables",
+    name: "Tablas",
     icon: "ni ni-bullet-list-67 text-red",
     component: <Tables />,
     layout: "/admin",
   },
   {
     path: "/login",
-    name: "Login",
+    name: "Iniciar Sesion",
     icon: "ni ni-key-25 text-info",
     component: <Login />,
     layout: "/auth",
   },
   {
     path: "/register",
-    name: "Register",
+    name: "Registrar",
     icon: "ni ni-circle-08 text-pink",
     component: <Register />,
     layout: "/auth",
