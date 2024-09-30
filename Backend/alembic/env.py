@@ -5,7 +5,7 @@ from sqlalchemy import pool
 
 from alembic import context, op
 
-from src.models import BaseModel, TipoDato
+from src.nodo.models import BaseModel, TipoDato
 from time import time
 from datetime import datetime
 from dotenv import load_dotenv
@@ -36,15 +36,15 @@ load_dotenv()
 config.set_main_option("sqlalchemy.url", os.getenv("DB_URL"))
 
 def upgrade():
-    op.create_table(
-        'nodos',
-        sa.Column('id', sa.Integer, primary_key=True, index=True),
-        sa.Column('type', sa.Enum(TipoDato), nullable=False, index=True),
-        sa.Column('data', sa.Float, nullable=False),
-        sa.Column('time', sa.Float, default=time.time()),
-        sa.Column('fecha_creacion', sa.DateTime, default=datetime.now, server_default=sa.func.now()),
-        sa.Column('fecha_modificacion', sa.DateTime, default=datetime.now, onupdate=datetime.now, server_default=sa.func.now())
-
+    if not op.get_bind().has_table("nodos"):
+        op.create_table(
+            'nodos',
+            sa.Column('id', sa.Integer, primary_key=True, index=True),
+            sa.Column('type', sa.Enum(TipoDato), nullable=False, index=True),
+            sa.Column('data', sa.Float, nullable=False),
+            sa.Column('time', sa.Float, default=time.time()),
+            sa.Column('fecha_creacion', sa.DateTime, default=datetime.now, server_default=sa.func.now()),
+            sa.Column('fecha_modificacion', sa.DateTime, default=datetime.now, onupdate=datetime.now, server_default=sa.func.now())
     )
 
 def downgrade():

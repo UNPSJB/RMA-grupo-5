@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.db_models import BaseModel
-from src.models import Nodo
+from src.nodo.models import Nodo
 
 # 1. Configurar la conexión a la base de datos
 DATABASE_URL = "sqlite:///mi-db-sqlite.db"

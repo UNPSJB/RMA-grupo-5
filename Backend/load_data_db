@@ -2,7 +2,7 @@ import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.db_models import BaseModel
-from src.models import Nodo, TipoDato
+from src.nodo.models import Nodo, TipoDato
 
 # 1. Configurar la conexión a la base de datos
 DATABASE_URL = "sqlite:///mi-db-sqlite.db"  # Cambia esto a la URL de tu base de datos
