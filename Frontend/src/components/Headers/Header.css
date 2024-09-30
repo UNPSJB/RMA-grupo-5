@@ -1,0 +1,9 @@
+.equal-card {
+    height: 100%;  /* Asegura que todas las tarjetas tengan la misma altura */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;  /* Alinea los elementos dentro de la tarjeta */
+    justify-content: space-between;  /* Espacia los elementos */
+}
