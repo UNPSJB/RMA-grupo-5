@@ -49,7 +49,7 @@ const Maps = () => {
 
               <div style={{ textAlign: "center", marginBottom: "40px" }}>
                 <img
-                  src="https://cuadernosdelcuriham.unr.edu.ar/index.php/CURIHAM/article/download/230/version/197/252/1114/image004.gif"
+                  src={require("../../assets/img/maps/Cuenca-Sagmata-zona-de-estudio.jpg")}
                   alt="Curva Hidrograma"
                   style={{ maxWidth: "80%", height: "auto", borderRadius: "10px", border: "2px solid #ccc" }} // Imagen más grande y con borde
                 />
