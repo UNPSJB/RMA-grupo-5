@@ -2,7 +2,11 @@
 Generador de datos sintéticos para Red de Monitoreo Ambiental
 
 ### Cómo ejecutar:
-0. Renombrar .env.template a .env
+0. Crear un .env y añadir:
+    MQTT_TOPIC="test_topic"
+    MQTT_HOST="localhost"
+    MQTT_PORT=1883
+    MQTT_KEEPALIVE=60
 1. Crear un entorno virtual con [venv](https://docs.python.org/3/library/venv.html): `python -m venv Envs/rma-generador`. La carpeta `Envs` debiera existir mientras que `rma-generador` será creada por venv.
 2. Activar el entorno virtual, ver cómo activarlo según nuestro SO en la [tabla](https://docs.python.org/3/library/venv.html#how-venvs-work). 
 3. Instalar las dependencias con: `pip install -r requirements.txt` .
