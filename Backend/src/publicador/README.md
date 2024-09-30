@@ -2,7 +2,7 @@
 Generador de datos sintéticos para Red de Monitoreo Ambiental
 
 ### Cómo ejecutar:
-0. Renombrar .env.template a .env y añadir:
+0. Crear un .env y añadir:
     MQTT_TOPIC="test_topic"
     MQTT_HOST="localhost"
     MQTT_PORT=1883
