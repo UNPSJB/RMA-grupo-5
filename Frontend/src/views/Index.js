@@ -126,7 +126,7 @@ const Index = (props) => {
                 <Row className="align-items-center">
                   <div className="col">
                     <h6 className="text-uppercase text-muted ls-1 mb-1">
-                      Medicion semanal
+                      Medición semanal
                     </h6>
                     <h2 className="mb-0">Temperatura del Agua</h2>
                   </div>
