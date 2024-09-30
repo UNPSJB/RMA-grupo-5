@@ -27,7 +27,7 @@ const AdminNavbar = (props) => {
             to="/"
           >
             {props.brandText}
-          </Link>
+          </Link>{/* BUSCADOR SI QUERES USARLO DESCOMENTALO TOMAS ENANO
           <Form className="navbar-search navbar-search-dark form-inline mr-3 d-none d-md-flex ml-lg-auto">
             <FormGroup className="mb-0">
               <InputGroup className="input-group-alternative">
@@ -39,7 +39,7 @@ const AdminNavbar = (props) => {
                 <Input placeholder="Buscar" type="text" />
               </InputGroup>
             </FormGroup>
-          </Form>
+          </Form>*/}
           <Nav className="align-items-center d-none d-md-flex" navbar>
             <UncontrolledDropdown nav>
               <DropdownToggle className="pr-0" nav>
