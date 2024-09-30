@@ -8,42 +8,42 @@ from enum import IntEnum
 
 # Definimos el Enum para los tipos de dato
 class TipoDato(IntEnum):
-    STATUS_T = 0      # Estado
-    TEMP_T = 1        # Temperatura
-    TEMP2_T = 2       # Temperatura #2
-    HUMIDITY_T = 3    # Humedad Relativa
-    PRESSURE_T = 4    # Presión Atmosférica
-    LIGHT_T = 5       # Luz (lux)
-    SOIL_T = 6        # Humedad del Suelo
-    SOIL2_T = 7       # Humedad del Suelo #2
-    SOILR_T = 8       # Resistencia del Suelo
-    SOILR2_T = 9      # Resistencia del Suelo #2
-    OXYGEN_T = 10     # Oxígeno
-    CO2_T = 11        # Dióxido de Carbono
-    WINDSPD_T = 12    # Velocidad del Viento
-    WINDHDG_T = 13    # Dirección del Viento
-    RAINFALL_T = 14   # Precipitación
-    MOTION_T = 15     # Movimiento
-    VOLTAGE_T = 16    # Voltaje
-    VOLTAGE2_T = 17   # Voltaje #2
-    CURRENT_T = 18    # Corriente
-    CURRENT2_T = 19   # Corriente #2
-    IT_T = 20         # Iteraciones
-    LATITUDE_T = 21   # Latitud GPS
-    LONGITUDE_T = 22  # Longitud GPS
-    ALTITUDE_T = 23   # Altitud GPS
-    HDOP_T = 24       # HDOP GPS (Horizontal Dilution of Precision)
-    LEVEL_T = 25      # Nivel de Fluido
-    UV_T = 26         # Radiación UV
-    PM1_T = 27        # Partículas 1 
-    PM2_5_T = 28      # Partículas 2.5
-    PM10_T = 29       # Partículas 10 
-    POWER_T = 30      # Potencia
-    POWER2_T = 31     # Potencia #2
-    ENERGY_T = 32     # Energía
-    ENERGY2_T = 33    # Energía #2
-    WEIGHT_T = 34     # Peso
-    WEIGHT2_T = 35    # Peso #2
+    status_t = 0      # Estado
+    temp_t = 1        # Temperatura
+    temp2_t = 2       # Temperatura #2
+    humidity_t = 3    # Humedad Relativa
+    pressure_t = 4    # Presión Atmosférica
+    light_t = 5       # Luz (lux)
+    soil_t = 6        # Humedad del Suelo
+    soil2_t = 7       # Humedad del Suelo #2
+    soilr_t = 8       # Resistencia del Suelo
+    soilr2_t = 9      # Resistencia del Suelo #2
+    oxygen_t = 10     # Oxígeno
+    co2_t = 11        # Dióxido de Carbono
+    windspd_t = 12    # Velocidad del Viento
+    windhdg_t = 13    # Dirección del Viento
+    rainfall_t = 14   # Precipitación
+    motion_t = 15     # Movimiento
+    voltage_t = 16    # Voltaje
+    voltage2_t = 17   # Voltaje #2
+    current_t = 18    # Corriente
+    current2_t = 19   # Corriente #2
+    it_t = 20         # Iteraciones
+    latitude_t = 21   # Latitud GPS
+    longitude_t = 22  # Longitud GPS
+    altitude_t = 23   # Altitud GPS
+    hdop_t = 24       # HDOP GPS (Horizontal Dilution of Precision)
+    level_t = 25      # Nivel de Fluido
+    uv_t = 26         # Radiación UV
+    pm1_t = 27        # Partículas 1 
+    pm2_5_t = 28      # Partículas 2.5
+    pm10_t = 29       # Partículas 10 
+    power_t = 30      # Potencia
+    power2_t = 31     # Potencia #2
+    energy_t = 32     # Energía
+    energy2_t = 33    # Energía #2
+    weight_t = 34     # Peso
+    weight2_t = 35    # Peso #2
 
 
 # Modelo base para nodos
@@ -53,6 +53,6 @@ class Nodo(BaseModel):
     id = Column(Integer, primary_key=True, index=True)
     type = Column(Enum(TipoDato), nullable=False)
     data = Column(String, nullable=False)
-    time = Column(Float, nullable=False)
+    time = Column(DateTime, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

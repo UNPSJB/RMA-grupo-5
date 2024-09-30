@@ -7,7 +7,7 @@ from src.nodo.models import TipoDato
 class NodoBase(BaseModel):
     type: TipoDato 
     data: str
-    time: float 
+    time: datetime 
 
     class Config:
         from_attributes = True
@@ -16,7 +16,7 @@ class NodoBase(BaseModel):
 class NodoCreate(NodoBase):
     type: TipoDato
     data: str 
-    time: float 
+    time: datetime 
 
 class NodoUpdate(NodoBase):
     pass

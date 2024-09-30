@@ -1,18 +1,22 @@
-import os
+import os, sys, json, uvicorn
+import paho.mqtt.client as paho
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import threading
-from src.config_db import engine
+from sqlalchemy.orm import Session
+from datetime import datetime
+from threading import Thread
+
+from src.config_db import engine, SessionLocal
 from src.db_models import BaseModel
-# Importa el router
 from src.nodo.router import router as example_router
-# Importa la función de suscripción
-from src.generador import sub  # Asegúrate de que esta es la ruta correcta
+from src.nodo.services import crear_nodo
+from src.nodo.models import Nodo, TipoDato
 
 load_dotenv()
 
+TOPIC = os.getenv("MQTT_TOPIC")
 ENV = os.getenv("ENV")
 ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}")
 
@@ -40,11 +44,65 @@ app.add_middleware(
 # Asociar los routers a nuestra app
 app.include_router(example_router)
 
-# Función para iniciar el suscriptor en un hilo
-def start_mqtt_subscriber():
-    sub()
+# Logica asociada al suscriptor
+def message_handling(client, userdata, msg):
+    # Crear la sesión de la base de datos
+    db: Session = SessionLocal()
 
-@app.on_event("startup")
-async def startup_event():
-    # Inicia el suscriptor en un hilo separado
-    threading.Thread(target=start_mqtt_subscriber, daemon=True).start()
+    # Decodifica el mensaje JSON
+    mensaje_json = msg.payload.decode()
+    
+    # Convierte el JSON
+    mensaje_dict = json.loads(mensaje_json)
+    time_dt = datetime.fromisoformat(mensaje_dict['time'])
+    type_dt = TipoDato[mensaje_dict['type']]
+    
+    # Crea el objeto Nodo
+    nodo = Nodo(
+        id=mensaje_dict['id'],
+        type=mensaje_dict['type'],
+        data=mensaje_dict['data'],
+        time=time_dt
+    )
+    # Guardar el objeto en la base
+    crear_nodo(db, nodo)
+
+def on_connect(client, obj, flags, reason_code):
+    if client.is_connected():
+        print("Suscriptor conectado!")
+        client.subscribe(TOPIC, qos=1)
+
+def on_subscribe(client, userdata, mid, granted_qos):
+    print(f"Suscrito a {TOPIC}!")
+
+def run_mqtt():
+    client = paho.Client()
+    client.on_message = message_handling
+    client.on_connect = on_connect
+    client.on_subscribe = on_subscribe
+
+    host = os.getenv("MQTT_HOST")
+    port = int(os.getenv("MQTT_PORT"))
+    keepalive = int(os.getenv("MQTT_KEEPALIVE"))
+
+    if client.connect(host, port, keepalive) != 0:
+        print("Ha ocurrido un problema al conectar con el broker MQTT")
+        sys.exit(1)
+
+    client.loop_forever()
+
+# Inicia el hilo para el cliente MQTT
+mqtt_thread = Thread(target=run_mqtt)
+mqtt_thread.start()
+
+# Asegúrate de que tu aplicación FastAPI siga ejecutándose
+try:
+    print("Presione CTRL+C para salir...")
+    import uvicorn
+    uvicorn.run(app, host="127.0.0.1", port=8000)
+except Exception as e:
+    print("Algo malió sal...")
+    print(e)
+finally:
+    print("Desconectando del broker MQTT")
+    mqtt_thread.join()  # Espera a que el hilo de MQTT termine
