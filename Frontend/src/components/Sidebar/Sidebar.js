@@ -232,7 +232,7 @@ const Sidebar = (props) => {
           {/* Divider */}
           <hr className="my-3" />
           {/* Heading */}
-          <h6 className="navbar-heading text-muted">Documentation</h6>
+         
           {/* Navigation 
          
           <Nav className="mb-md-3" navbar>
