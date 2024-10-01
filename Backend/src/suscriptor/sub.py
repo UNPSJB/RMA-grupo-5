@@ -1,6 +1,6 @@
 import sys
 import logging
-from config import config
+from .config import config
 import paho.mqtt.client as paho
 from typing import Callable, Optional
 from datetime import datetime

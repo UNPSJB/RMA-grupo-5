@@ -14,7 +14,8 @@ from src.nodo.router import router as example_router
 from src.nodo.services import crear_nodo
 from src.nodo.schemas import NodoCreate
 from src.nodo.models import TipoDato
-from src.suscriptor import sub, config
+from src.suscriptor.sub import Subscriptor
+from src.suscriptor.config import config
 
 load_dotenv()
 
@@ -42,14 +43,17 @@ app.add_middleware(
 # Asociar los routers a nuestra app
 app.include_router(example_router)
 
-# Callback function to handle incoming messages
+# Callback
 def mi_callback(mensaje: str) -> None:
-    print(f"Mensaje recibido: {mensaje}")
+    #print(f"Mensaje recibido: {mensaje}")
 
     # Crear la sesión de la base de datos
     db: Session = SessionLocal()
 
     try:
+        # Reemplazar comillas simples por comillas dobles para cumplir con el formato JSON
+        mensaje = mensaje.replace("'", '"')
+
         # Decodificar el mensaje JSON
         mensaje_dict = json.loads(mensaje)
         time_dt = datetime.fromisoformat(mensaje_dict['time'])
@@ -65,7 +69,7 @@ def mi_callback(mensaje: str) -> None:
 
         # Guardar el nodo en la base de datos
         crear_nodo(db, nodo)
-        print(f"Nodo creado y guardado: {nodo}")
+        print(f"Nodo recibido y guardado: {nodo}")
 
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
@@ -74,13 +78,13 @@ def mi_callback(mensaje: str) -> None:
 
 # Start the MQTT subscriber in a separate thread
 def run_mqtt_subscriber():
-    sub = sub(client=Client(), on_message_callback=mi_callback)
+    sub  = Subscriptor(client=Client(), on_message_callback=mi_callback)
     
     # Conectar al broker MQTT usando la configuración
-    sub.connect(config.host, config.port, config.keepalive)
+    sub .connect(config.host, config.port, config.keepalive)
 
     # Suscribirse al tópico
-    sub.subscribe(TOPIC, qos=1)
+    sub .subscribe(TOPIC, qos=1)
 
 # Iniciar el hilo del suscriptor MQTT
 def start_mqtt_thread():
@@ -96,4 +100,3 @@ async def startup_event():
 if __name__ == "__main__":
     # Ejecutar la aplicación FastAPI con Uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
