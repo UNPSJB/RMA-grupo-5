@@ -1,10 +1,11 @@
 from typing import List, Optional
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime, UTC, time
+from datetime import datetime, timezone, time
 from src.db_models import BaseModel
 from enum import IntEnum
 
+UTC = timezone.utc
 
 # Definimos el Enum para los tipos de dato
 class TipoDato(IntEnum):
