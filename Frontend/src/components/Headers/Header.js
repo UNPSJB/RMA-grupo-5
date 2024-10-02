@@ -175,8 +175,8 @@ const Header = () => {
                                                 <span className="h2 font-weight-bold mb-0">Bajo</span>
                                             </div>
                                             <Col className="col-auto">
-                                                <div className="icon icon-shape bg-danger text-white rounded-circle shadow">
-                                                    <i className="ni ni-square-pin" />
+                                                <div className="icon icon-shape bg-green text-white rounded-circle shadow">
+                                                    <i className="ni ni-check-bold" />
                                                 </div>
                                             </Col>
                                         </Row>
