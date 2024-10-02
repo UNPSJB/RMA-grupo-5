@@ -42,12 +42,9 @@ app.add_middleware(
 
 # Asociar los routers a nuestra app
 app.include_router(example_router)
-
+ 
 # Callback
 def mi_callback(mensaje: str) -> None:
-    #print(f"Mensaje recibido: {mensaje}")
-
-    # Crear la sesión de la base de datos
     db: Session = SessionLocal()
 
     try:
@@ -81,10 +78,10 @@ def run_mqtt_subscriber():
     sub  = Subscriptor(client=Client(), on_message_callback=mi_callback)
     
     # Conectar al broker MQTT usando la configuración
-    sub .connect(config.host, config.port, config.keepalive)
+    sub.connect(config.host, config.port, config.keepalive)
 
     # Suscribirse al tópico
-    sub .subscribe(TOPIC, qos=1)
+    sub.subscribe(TOPIC, qos=1)
 
 # Iniciar el hilo del suscriptor MQTT
 def start_mqtt_thread():
@@ -95,6 +92,10 @@ def start_mqtt_thread():
 # Ejecutar el suscriptor MQTT al iniciar FastAPI
 @app.on_event("startup")
 async def startup_event():
+    # Crear las tablas en la base de datos si no existen
+    from src.db_models import Base
+    Base.metadata.create_all(bind=engine)
+    
     start_mqtt_thread()
 
 if __name__ == "__main__":
