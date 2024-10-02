@@ -13,7 +13,7 @@ from src.db_models import BaseModel
 from src.nodo.router import router as example_router
 from src.nodo.services import crear_nodo
 from src.nodo.schemas import NodoCreate
-from src.nodo.models import TipoDato
+from src.nodo.models import Nodo, TipoDato
 from src.suscriptor.sub import Subscriptor
 from src.suscriptor.config import config
 
