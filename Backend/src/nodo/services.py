@@ -81,3 +81,15 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     db.delete(nodo)
     db.commit()
     return nodo
+
+def eliminar_nodo(db: Session, nodo_id: int) -> Nodo:
+    db_nodo = leer_nodo(db, nodo_id)
+    db.delete(db_nodo)
+    db.commit()
+    return db_nodo
+
+def leer_ultimo_nodo(db: Session) -> Nodo:
+    db_nodo = db.query(Nodo).order_by(Nodo.time.desc()).first()
+    if db_nodo is None:
+        raise exceptions.NodoNoEncontrado()
+    return db_nodo

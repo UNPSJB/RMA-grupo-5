@@ -48,10 +48,10 @@ def obtener_nodos(db: Session = Depends(get_db)):
     nodos = services.listar_nodos(db)
     return nodos
 
-@router.delete("/eliminar_nodo/{numero_nodo}", response_model=schemas.Nodo)
-def eliminar_nodo(numero_nodo: int, db: Session = Depends(get_db)):
-    try:
-        nodo = services.eliminar_nodo(db, numero_nodo)
-        return nodo
-    except exceptions.NodoNoEncontrado:
-        raise HTTPException(status_code=404, detail="Nodo no encontrado")
+@router.delete("/eliminar_nodo/{nodo_id}", response_model=schemas.Nodo)
+def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
+    return services.eliminar_nodo(db, nodo_id)
+
+@router.get("/leer_ultimo_nodo", response_model=schemas.Nodo)
+def read_ultimo_nodo(db: Session = Depends(get_db)):
+    return services.leer_ultimo_nodo(db)
