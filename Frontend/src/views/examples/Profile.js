@@ -39,7 +39,7 @@ const Profile = () => {
       {/* Page content */}
       <Container className="mt--7" fluid>
         <Row>
-          <Col className="order-xl-2 mb-5 mb-xl-0" xl="4">
+         {/* <Col className="order-xl-2 mb-5 mb-xl-0" xl="4">
             <Card className="card-profile shadow">
               <Row className="justify-content-center">
                 <Col className="order-lg-2" lg="3">
@@ -54,47 +54,9 @@ const Profile = () => {
                   </div>
                 </Col>
               </Row>
-              <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
-                <div className="d-flex justify-content-between">
-                  <Button
-                    className="mr-4"
-                    color="info"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                    size="sm"
-                  >
-                    Conectar
-                  </Button>
-                  <Button
-                    className="float-right"
-                    color="default"
-                    href="#pablo"
-                    onClick={(e) => e.preventDefault()}
-                    size="sm"
-                  >
-                    Mensaje
-                  </Button>
-                </div>
-              </CardHeader>
+            
               <CardBody className="pt-0 pt-md-4">
-                <Row>
-                  <div className="col">
-                    <div className="card-profile-stats d-flex justify-content-center mt-md-5">
-                      <div>
-                        <span className="heading">1</span>
-                        <span className="description">Amigos</span>
-                      </div>
-                      <div>
-                        <span className="heading">9</span>
-                        <span className="description">Fotos</span>
-                      </div>
-                      <div>
-                        <span className="heading">2</span>
-                        <span className="description">Comentarios</span>
-                      </div>
-                    </div>
-                  </div>
-                </Row>
+
                 <div className="text-center">
                   <h3>
                     Tomas "Holder" Fernandez
@@ -124,7 +86,7 @@ const Profile = () => {
                 </div>
               </CardBody>
             </Card>
-          </Col>
+          </Col>*/}
           <Col className="order-xl-1" xl="8">
             <Card className="bg-secondary shadow">
               <CardHeader className="bg-white border-0">

@@ -159,7 +159,7 @@ const Sidebar = (props) => {
               <DropdownItem divider />
               <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
                 <i className="ni ni-user-run" />
-                <span>Logout</span>
+                <span>Salir</span>
               </DropdownItem>
             </DropdownMenu>
           </UncontrolledDropdown>
