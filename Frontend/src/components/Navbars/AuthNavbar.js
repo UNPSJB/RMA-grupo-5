@@ -20,7 +20,7 @@ const AdminNavbar = () => {
           <NavbarBrand to="/" tag={Link}>
             <img
               alt="..."
-              src={require("../../assets/img/brand/escudo_tranparente_sinletras.png")}
+              src={require("../../assets/img/brand/rma-b.png")}
             />
           </NavbarBrand>
           <button className="navbar-toggler" id="navbar-collapse-main">

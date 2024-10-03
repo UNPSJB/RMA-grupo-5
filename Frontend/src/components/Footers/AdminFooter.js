@@ -22,6 +22,11 @@ const Footer = () => {
         </Col>
         <Col xl="6" className="text-center text-xl-right">
           <img 
+            src={require("../../assets/img/brand/rma-azul.png")}
+            alt="Logo RMA" 
+            style={{ height: "65px", marginRight: "15px"}} // Ajustar tamaño
+          />
+          <img 
             src="https://raw.githubusercontent.com/UNPSJB/logos_tw/875c81601d5f2e9d6d9e6418db0a4e840c29c376/DIT/logo_mascara_ids_plano.svg" 
             alt="Logo DIT" 
             style={{ height: "50px", marginRight: "15px" }} // Ajustar tamaño y espacio entre imágenes
