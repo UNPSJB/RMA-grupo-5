@@ -27,3 +27,7 @@ def update_nodo(
 @router.delete("/eliminar_nodo/{nodo_id}", response_model=schemas.Nodo)
 def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
     return services.eliminar_nodo(db, nodo_id)
+
+@router.get("/leer_ultimo_nodo", response_model=schemas.Nodo)
+def read_ultimo_nodo(db: Session = Depends(get_db)):
+    return services.leer_ultimo_nodo(db)
