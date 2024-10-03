@@ -3,8 +3,8 @@ from typing import List, Optional
 from datetime import datetime
 from src.nodo.models import TipoDato
 
-# Clase base Nodo
-class NodoBase(BaseModel):
+# Clase base Medicion
+class MedicionBase(BaseModel):
     type: TipoDato 
     data: str
     time: datetime 
@@ -12,16 +12,16 @@ class NodoBase(BaseModel):
     class Config:
         from_attributes = True
 
-# Clases de creación y actualización de Nodo
-class NodoCreate(NodoBase):
+# Clases de creación y actualización de Medicion
+class MedicionCreate(MedicionBase):
     type: TipoDato
     data: str 
     time: datetime 
 
-class NodoUpdate(NodoBase):
+class MedicionUpdate(MedicionBase):
     pass
 
-class Nodo(NodoBase):
+class Medicion(MedicionBase):
     id: int
 
 # Para validar que el tipo sea uno de los permitidos

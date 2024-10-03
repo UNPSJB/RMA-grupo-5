@@ -1,11 +1,11 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.nodo.models import Nodo, TipoDato
+from src.nodo.models import Medicion, TipoDato
 from src.nodo import schemas
 from src import exceptions
 
-def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
-    db_nodo = Nodo(
+def crear_nodo(db: Session, nodo: schemas.MedicionCreate) -> Medicion:
+    db_nodo = Medicion(
         type=nodo.type,
         data=nodo.data,
         time=nodo.time
@@ -15,18 +15,18 @@ def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db.refresh(db_nodo)
     return db_nodo
 
-def listar_nodos(db: Session) -> List[Nodo]:
-    return db.query(Nodo).all()
+def listar_nodos(db: Session) -> List[Medicion]:
+    return db.query(Medicion).all()
 
-def leer_nodo(db: Session, nodo_id: int) -> Nodo:
-    db_nodo = db.query(Nodo).filter(Nodo.id == nodo_id).first()
+def leer_nodo(db: Session, nodo_id: int) -> Medicion:
+    db_nodo = db.query(Medicion).filter(Medicion.id == nodo_id).first()
     if db_nodo is None:
-        raise exceptions.NodoNoEncontrado() 
+        raise exceptions.MedicionNoEncontrado() 
     return db_nodo
 
 def modificar_nodo(
-    db: Session, nodo_id: int, nodo: schemas.NodoUpdate
-) -> Nodo:
+    db: Session, nodo_id: int, nodo: schemas.MedicionUpdate
+) -> Medicion:
     db_nodo = leer_nodo(db, nodo_id)
     if nodo.type is not None:
         db_nodo.type = nodo.type
@@ -39,7 +39,7 @@ def modificar_nodo(
     return db_nodo
 
 
-def eliminar_nodo(db: Session, nodo_id: int) -> Nodo:
+def eliminar_nodo(db: Session, nodo_id: int) -> Medicion:
     db_nodo = leer_nodo(db, nodo_id)
     db.delete(db_nodo)
     db.commit()

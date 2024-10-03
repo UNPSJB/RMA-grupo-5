@@ -9,8 +9,8 @@ from src.main import app
 from src.db_models import get_db
 from src.nodo.models import BaseModel
 from src.nodo.services import crear_nodo
-from src.nodo.schemas import NodoCreate 
-from src.nodo.models import Nodo
+from src.nodo.schemas import MedicionCreate 
+from src.nodo.models import Medicion
 
 load_dotenv()
 

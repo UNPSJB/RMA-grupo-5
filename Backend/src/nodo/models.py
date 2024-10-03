@@ -48,8 +48,8 @@ class TipoDato(IntEnum):
 
 
 # Modelo base para nodos
-class Nodo(BaseModel):
-    __tablename__ = 'nodos'
+class Medicion(BaseModel):
+    __tablename__ = 'mediciones'
 
     id = Column(Integer, primary_key=True, index=True)
     type = Column(Enum(TipoDato), nullable=False)
