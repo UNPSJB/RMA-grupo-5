@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // node.js library that concatenates classes (strings)
 import classnames from "classnames";
 // javascipt plugin for creating charts
@@ -31,9 +31,40 @@ import {
 
 import Header from "components/Headers/Header.js";
 
+
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  const [chartExample1Data, setChartExample1Data] = useState("data1");
+  //const [chartExample1Data, setChartExample1Data] = useState("data1");
+  
+  const [nodoData, setNodoData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getNodoData = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/leer_nodos");
+        if (!response.ok) {
+          throw new Error("Error al hacer el fetch");
+        }
+        const data = await response.json(); // Asumiendo que la respuesta es JSON
+        setNodoData(data);  // Almacena los datos en el estado
+        setLoading(false);
+      } catch (error) {
+        console.error("Error cargando los datos", error);
+        setError(error);
+        setLoading(false);
+      }
+    };
+    getNodoData();
+  }, []);
+
+    // Manejo de carga y errores
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error loading data: {error.message}</p>;
+  
+    // Extraer los valores de "data" del nodoData
+    const valoresNodos = nodoData.map(item => parseFloat(item.data)); // Convierte a float si es necesario
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -42,8 +73,10 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setChartExample1Data("data" + index);
+    setNodoData("data" + index);
   };
+
+
   return (
     <>
       <Header />
@@ -95,7 +128,7 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    data={chartExample1[chartExample1Data]}
+                    data={chartExample1.data1(valoresNodos)}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
@@ -128,7 +161,11 @@ const Index = (props) => {
           </Col>
         </Row>
         <Row className="mt-5">
-
+          
+        <div>
+          <h2>Datos JSON:</h2>
+          <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
+        </div>
  
         </Row>
       </Container>

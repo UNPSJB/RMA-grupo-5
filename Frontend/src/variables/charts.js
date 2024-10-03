@@ -1,4 +1,5 @@
 const Chart = require("chart.js");
+
 //
 // Chart extension for making the bars rounded
 // Code from: https://codepen.io/jedtrow/full/ygRYgo
@@ -327,24 +328,25 @@ let chartExample1 = {
       },
     },
   },
-  data1: (canvas) => {
+  // nodoDataValues son los parametros recibidos desde "views/index"
+  data1: (nodoDataValues) => {
     return {
       labels: ["12 am", "2 am", "4 am", "6 am", "8 am", "10 am", "12 am", "2 pm", "4 pm","6 pm", "8 pm", "10 pm", "12 pm"],
       datasets: [
         {
           label: "Performance",
-          data: [0.1, 0.7, 1.5, 1.8, 1.5,1.2 , 0.8, 0.1, 0.2,1.8, 1.5,1.2 , 0.8,],
+          data: nodoDataValues,
         },
       ],
     };
   },
-  data2: (canvas) => {
+  data2: (nodoDataValues) => {
     return {
       labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
       datasets: [
         {
           label: "Performance",
-          data: [1.8, 1.7,1.6, 1.4, 0.9, 1.9, 0.1, 0.2, 0.2],
+          data: nodoDataValues,
         },
       ],
     };
