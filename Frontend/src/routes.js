@@ -9,16 +9,16 @@ import Icons from "views/examples/Icons.js";
 var routes = [
   {
     path: "/index",
-    name: "Tablas de Datos",
+    name: "Graficos",
     icon: "ni ni-tv-2 text-primary",
     component: <Index />,
     layout: "/admin",
   },
   {
-    path: "/icons",
-    name: "Iconos (temporal para desarrollo)",
-    icon: "ni ni-planet text-blue",
-    component: <Icons />,
+    path: "/tables",
+    name: "Tablas",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: <Tables />,
     layout: "/admin",
   },
   {
@@ -27,19 +27,19 @@ var routes = [
     icon: "ni ni-pin-3 text-orange",
     component: <Maps />,
     layout: "/admin",
+  }, /*
+  {
+    path: "/icons",
+    name: "Iconos (temporal para desarrollo)",
+    icon: "ni ni-planet text-blue",
+    component: <Icons />,
+    layout: "/admin",
   },
   {
     path: "/user-profile",
     name: "Perfil de Usuario",
     icon: "ni ni-single-02 text-yellow",
     component: <Profile />,
-    layout: "/admin",
-  },
-  {
-    path: "/tables",
-    name: "Tablas",
-    icon: "ni ni-bullet-list-67 text-red",
-    component: <Tables />,
     layout: "/admin",
   },
   {
@@ -55,6 +55,6 @@ var routes = [
     icon: "ni ni-circle-08 text-pink",
     component: <Register />,
     layout: "/auth",
-  },
+  },*/
 ];
 export default routes;
