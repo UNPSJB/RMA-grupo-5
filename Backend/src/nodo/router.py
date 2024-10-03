@@ -6,24 +6,28 @@ from src import exceptions
 
 router = APIRouter()
 
-@router.post("/crear_nodo", response_model=schemas.Medicion)
-def create_nodo(nodo: schemas.MedicionCreate, db: Session = Depends(get_db)):
-    return services.crear_nodo(db, nodo)
+#Rutas de clase Medicion
+@router.post("/crear_medicion", response_model=schemas.Medicion)
+def create_medicion(nodo: schemas.MedicionCreate, db: Session = Depends(get_db)):
+    print('soy el docs')
+    return services.crear_medicion(db, nodo)
 
-@router.get("/leer_nodos", response_model=list[schemas.Medicion])
-def read_nodos(db: Session = Depends(get_db)):
-    return services.listar_nodos(db)
+@router.get("/leer_mediciones", response_model=list[schemas.Medicion])
+def read_mediciones(db: Session = Depends(get_db)):
+    return services.listar_mediciones(db)
 
-@router.get("/leer_nodo/{nodo_id}", response_model=schemas.Medicion)
-def read_nodo(nodo_id: int, db: Session = Depends(get_db)):
-    return services.leer_nodo(db, nodo_id)
+@router.get("/leer_medicion/{medicion_id}", response_model=schemas.Medicion)
+def read_medicion(medicion_id: int, db: Session = Depends(get_db)):
+    return services.leer_medicion(db, medicion_id)
 
-@router.put("/actualizar_nodo/{nodo_id}", response_model=schemas.Medicion)
-def update_nodo(
-    nodo_id: int, nodo: schemas.MedicionUpdate, db: Session = Depends(get_db)
+@router.put("/actualizar_medicion/{medicion_id}", response_model=schemas.Medicion)
+def update_medicion(
+    medicion_id: int, nodo: schemas.MedicionUpdate, db: Session = Depends(get_db)
 ):
-    return services.modificar_nodo(db, nodo_id, nodo)
+    return services.modificar_medicion(db, medicion_id, nodo)
 
-@router.delete("/eliminar_nodo/{nodo_id}", response_model=schemas.Medicion)
-def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
-    return services.eliminar_nodo(db, nodo_id)
+@router.delete("/eliminar_medicion/{medicion_id}", response_model=schemas.Medicion)
+def delete_nodo(medicion_id: int, db: Session = Depends(get_db)):
+    return services.eliminar_medicion(db, medicion_id)
+
+#Rutas de clase Nodo

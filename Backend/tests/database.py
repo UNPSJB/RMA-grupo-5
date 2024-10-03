@@ -1,5 +1,4 @@
 import os
-import pytest
 from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from typing import Generator
@@ -8,7 +7,6 @@ from sqlalchemy.orm import sessionmaker, Session
 from src.main import app
 from src.db_models import get_db
 from src.nodo.models import BaseModel
-from src.nodo.services import crear_nodo
 from src.nodo.schemas import MedicionCreate 
 from src.nodo.models import Medicion
 

@@ -11,7 +11,7 @@ from paho.mqtt.client import Client
 from src.config_db import engine, SessionLocal
 from src.db_models import BaseModel
 from src.nodo.router import router as example_router
-from src.nodo.services import crear_nodo
+from src.nodo.services import crear_medicion
 from src.nodo.schemas import MedicionCreate
 from src.nodo.models import Medicion, TipoDato
 from src.suscriptor.sub import Subscriptor
@@ -57,17 +57,19 @@ def mi_callback(mensaje: str) -> None:
         type_dt = TipoDato[mensaje_dict['type']]
 
         # Crear un objeto MedicionCreate
-        nodo = MedicionCreate(
-            id=mensaje_dict['id'],
+        #print(mensaje)
+        medicion = MedicionCreate(
+            #id=mensaje_dict['id'],
+            nodo_numero= mensaje_dict['id'],
             type=type_dt,
             data=mensaje_dict['data'],
             time=time_dt
         )
-
+        #print('MEDICION------------------------',medicion)
         # Guardar el nodo en la base de datos
-        crear_nodo(db, nodo)
-        print(f"Medicion recibido y guardado: {nodo}")
-
+        crear_medicion(db, medicion)
+        #print(f"Medicion recibido y guardado: {medicion}")
+        
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
     finally:
