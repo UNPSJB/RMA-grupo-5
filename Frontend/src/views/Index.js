@@ -59,12 +59,13 @@ const Index = (props) => {
     getNodoData();
   }, []);
 
-    // Manejo de carga y errores
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error loading data: {error.message}</p>;
+  // Manejo de carga y errores
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error loading data: {error.message}</p>;
   
-    // Extraer los valores de "data" del nodoData
-    const valoresNodos = nodoData.map(item => parseFloat(item.data)); // Convierte a float si es necesario
+  // Extraer los valores de "data" del nodoData y redondear a 1 decimal
+  const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
+
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
