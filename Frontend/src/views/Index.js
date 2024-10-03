@@ -36,19 +36,19 @@ const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   //const [chartExample1Data, setChartExample1Data] = useState("data1");
   
-  const [nodoData, setNodoData] = useState(null);
+  const [nodoData, setMedicionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getNodoData = async () => {
+    const getMedicionData = async () => {
       try {
         const response = await fetch("http://localhost:8000/leer_nodos");
         if (!response.ok) {
           throw new Error("Error al hacer el fetch");
         }
         const data = await response.json(); // Asumiendo que la respuesta es JSON
-        setNodoData(data);  // Almacena los datos en el estado
+        setMedicionData(data);  // Almacena los datos en el estado
         setLoading(false);
       } catch (error) {
         console.error("Error cargando los datos", error);
@@ -56,7 +56,7 @@ const Index = (props) => {
         setLoading(false);
       }
     };
-    getNodoData();
+    getMedicionData();
   }, []);
 
   // Manejo de carga y errores
@@ -64,7 +64,7 @@ const Index = (props) => {
   if (error) return <p>Error loading data: {error.message}</p>;
   
   // Extraer los valores de "data" del nodoData y redondear a 1 decimal
-  const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
+  const valoresMedicions = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -73,7 +73,7 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setNodoData("data" + index);
+    setMedicionData("data" + index);
   };
 
 
@@ -128,7 +128,7 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    data={chartExample1.data1(valoresNodos)}
+                    data={chartExample1.data1(valoresMedicions)}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
@@ -164,10 +164,10 @@ const Index = (props) => {
         <Row className="mt-5">
         {/* Nueva sección para mostrar los valores de los nodos */}
         <Col>
-          <h2>Valores de Nodos (Data)</h2>
+          <h2>Valores de Medicions (Data)</h2>
           <ul>
-            {valoresNodos.map((valor, index) => (
-              <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+            {valoresMedicions.map((valor, index) => (
+              <li key={index}>Valor Medicion {index + 1}: {valor}</li>
             ))}
           </ul>
         </Col>
