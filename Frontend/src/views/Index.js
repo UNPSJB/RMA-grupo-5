@@ -66,7 +66,6 @@ const Index = (props) => {
   // Extraer los valores de "data" del nodoData y redondear a 1 decimal
   const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
 
-
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -161,14 +160,27 @@ const Index = (props) => {
             </Card>
           </Col>
         </Row>
+
         <Row className="mt-5">
-          
+        {/* Nueva sección para mostrar los valores de los nodos */}
+        <Col>
+          <h2>Valores de Nodos (Data)</h2>
+          <ul>
+            {valoresNodos.map((valor, index) => (
+              <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+            ))}
+          </ul>
+        </Col>
+      </Row>
+
+      <Row className="mt-5">
+        {/* Mostrar los datos JSON formateados */}
         <div>
           <h2>Datos JSON:</h2>
           <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
         </div>
- 
-        </Row>
+      </Row>
+      
       </Container>
     </>
   );
