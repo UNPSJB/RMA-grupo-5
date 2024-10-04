@@ -27,7 +27,7 @@ const Header = () => {
             }
         };
 
-        // Petición para obtener el último nodo registrado
+        // Función de polling para obtener el último nodo registrado
         const fetchUltimoNodo = async () => {
             try {
                 const response = await axios.get("http://localhost:8000/leer_ultimo_nodo");
@@ -38,11 +38,17 @@ const Header = () => {
             }
         };
 
-        fetchTemperature(); // Llamar a la función al cargar el componente
-        fetchUltimoNodo();  // Llamar a la función para obtener el nodo
+        fetchTemperature(); // Llamar a la función para obtener la temperatura al cargar el componente
+        fetchUltimoNodo();  // Llamar a la función para obtener el nodo al cargar el componente
 
-        const interval = setInterval(fetchTemperature, 300000); // Actualizar temperatura cada 5 minutos
-        return () => clearInterval(interval); // Limpiar el intervalo al desmontar el componente
+        // Polling para obtener el último nodo cada 5 segundos (o el intervalo que desees)
+        const interval = setInterval(fetchUltimoNodo, 5000); // 5000 ms = 5 segundos
+        const tempInterval = setInterval(fetchTemperature, 300000); // Actualizar temperatura cada 5 minutos
+
+        return () => {
+            clearInterval(interval); // Limpiar el intervalo de polling al desmontar el componente
+            clearInterval(tempInterval); // Limpiar el intervalo de temperatura al desmontar
+        };
     }, []);
 
     return (
