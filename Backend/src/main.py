@@ -1,8 +1,6 @@
-import os
-import json
-import asyncio
+import os, sys, json
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -44,22 +42,7 @@ app.add_middleware(
 
 # Asociar los routers a nuestra app
 app.include_router(example_router)
-
-# Conexiones activas de WebSockets
-connected_clients = []
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    connected_clients.append(websocket)
-    
-    try:
-        while True:
-            # Mantener el WebSocket abierto
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        connected_clients.remove(websocket)
-
+ 
 # Callback
 def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
@@ -93,7 +76,7 @@ def mi_callback(mensaje: str) -> None:
 
 # Start the MQTT subscriber in a separate thread
 def run_mqtt_subscriber():
-    sub = Subscriptor(client=Client(), on_message_callback=mi_callback)
+    sub  = Subscriptor(client=Client(), on_message_callback=mi_callback)
     
     # Conectar al broker MQTT usando la configuración
     sub.connect(config.host, config.port, config.keepalive)
@@ -111,11 +94,11 @@ def start_mqtt_thread():
 @app.on_event("startup")
 async def startup_event():
     # Crear las tablas en la base de datos si no existen
-    BaseModel.metadata.create_all(bind=engine)
+    from src.db_models import Base
+    Base.metadata.create_all(bind=engine)
     
     start_mqtt_thread()
 
 if __name__ == "__main__":
     # Ejecutar la aplicación FastAPI con Uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
