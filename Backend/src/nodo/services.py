@@ -1,8 +1,10 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.nodo.models import Medicion
+from src.nodo.models import Medicion, Nodo
 from src.nodo import schemas
 from src import exceptions
+
+#/--- Metodos de clase Medicion ---/
 
 def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     db_medicion = Medicion(
@@ -44,3 +46,38 @@ def eliminar_medicion(db: Session, medicion_id: int) -> Medicion:
     db.delete(db_medicion)
     db.commit()
     return db_medicion
+
+#/--- Metodos de clase Nodo ---/
+def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
+    db_nodo = Nodo(
+        ubicacion_x = nodo.ubicacion_x,
+        ubicacion_y = nodo.ubicacion_y,
+    )
+    db.add(db_nodo)
+    db.commit()
+    db.refresh(db_nodo)
+    return db_nodo
+
+def obtener_nodo(db: Session, numero_nodo: int) -> Nodo:
+    # Buscar el nodo por su número
+    nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
+    
+    # Si no encuentra el nodo, lanza una excepción
+    if nodo is None:
+        raise exceptions.NodoNoEncontrado()
+    return nodo
+
+def listar_nodos(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos de la base de datos
+    nodos = db.query(Nodo).all()
+    return nodos
+
+def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
+
+    nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
+    
+    if nodo is None:
+        raise exceptions.NodoNoEncontrado()
+    db.delete(nodo)
+    db.commit()
+    return nodo

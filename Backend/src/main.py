@@ -43,7 +43,6 @@ app.add_middleware(
 # Asociar los routers a nuestra app
 app.include_router(example_router)
  
-# Callback
 def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
 
@@ -51,24 +50,19 @@ def mi_callback(mensaje: str) -> None:
         # Reemplazar comillas simples por comillas dobles para cumplir con el formato JSON
         mensaje = mensaje.replace("'", '"')
 
-        # Decodificar el mensaje JSON
         mensaje_dict = json.loads(mensaje)
         time_dt = datetime.fromisoformat(mensaje_dict['time'])
         type_dt = TipoDato[mensaje_dict['type']]
 
         # Crear un objeto MedicionCreate
-        #print(mensaje)
         medicion = MedicionCreate(
-            #id=mensaje_dict['id'],
             nodo_numero= mensaje_dict['id'],
             type=type_dt,
             data=mensaje_dict['data'],
             time=time_dt
         )
-        #print('MEDICION------------------------',medicion)
-        # Guardar el nodo en la base de datos
         crear_medicion(db, medicion)
-        #print(f"Medicion recibido y guardado: {medicion}")
+        
         
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")

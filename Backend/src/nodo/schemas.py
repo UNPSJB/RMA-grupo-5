@@ -28,7 +28,7 @@ class Medicion(MedicionBase):
     id: int
     nodo_numero: int
 
-# Clase base Medicion
+# Clase Nodo
 class NodoBase(BaseModel):
     numero: int
     ubicacion_x: float 
