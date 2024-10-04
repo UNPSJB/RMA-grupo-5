@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-// node.js library that concatenates classes (strings)
+
 import classnames from "classnames";
-// javascipt plugin for creating charts
+
 import Chart from "chart.js";
-// react plugin used to create charts
+
 import { Line, Bar } from "react-chartjs-2";
-// reactstrap components
+
 import {
   //button,
   Card,
@@ -75,8 +75,7 @@ const Index = (props) => {
     setActiveNav(index);
     setMedicionData("data" + index);
   };
-
-
+  
   return (
     <>
       <Header />
@@ -128,7 +127,7 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    data={chartExample1.data1(valoresMedicions)}
+                    data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
@@ -160,29 +159,29 @@ const Index = (props) => {
             </Card>
           </Col>
         </Row>
-
-        <Row className="mt-5">
+  
         {/* Nueva sección para mostrar los valores de los nodos */}
-        <Col>
-          <h2>Valores de Medicions (Data)</h2>
-          <ul>
-            {valoresMedicions.map((valor, index) => (
-              <li key={index}>Valor Medicion {index + 1}: {valor}</li>
-            ))}
-          </ul>
-        </Col>
-      </Row>
-
-      <Row className="mt-5">
-        {/* Mostrar los datos JSON formateados */}
-        <div>
-          <h2>Datos JSON:</h2>
-          <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
-        </div>
-      </Row>
-      
+        <Row className="mt-5">
+          <Col>
+            <h2>Valores de Nodos (Data)</h2>
+            <ul>
+              {valoresNodos.map((valor, index) => (
+                <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+              ))}
+            </ul>
+          </Col>
+        </Row>
+  
+        <Row className="mt-5">
+          {/* Mostrar los datos JSON formateados */}
+          <div>
+            <h2>Datos JSON:</h2>
+            <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
+          </div>
+        </Row>
+        
       </Container>
-    </>
+    </>  
   );
 };
 

@@ -163,9 +163,7 @@ var colors = {
   transparent: "transparent",
 };
 
-// Methods
 
-// Chart.js global options
 function chartOptions() {
   // Options
   var options = {
@@ -290,7 +288,7 @@ function parseOptions(parent, options) {
   }
 }
 
-// Example 1 of Chart inside src/views/Index.js (Sales value - Card)
+
 let chartExample1 = {
   options: {
     scales: {
@@ -322,7 +320,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "" + yLabel + " metros"; 
+          content += "" + yLabel + " Metros"; 
           return content;
         },
       },
@@ -353,7 +351,7 @@ let chartExample1 = {
   },
 };
 
-// Example 2 of Chart inside src/views/Index.js (Temperatura - Card)
+
 let chartExample2 = {
   options: {
     scales: {
