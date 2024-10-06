@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy.orm import Session
 from src.nodo.models import Medicion, Nodo
 from src.nodo import schemas
-from src import exceptions
+from nodo import exceptions
 
 #/--- Metodos de clase Medicion ---/
 
@@ -24,7 +24,7 @@ def listar_mediciones(db: Session) -> List[Medicion]:
 def leer_medicion(db: Session, medicion_id: int) -> Medicion:
     db_medicion = db.query(Medicion).filter(Medicion.id == medicion_id).first()
     if db_medicion is None:
-        raise exceptions.MedicionNoEncontrado() 
+        raise exceptions.MedicionNoEncontrada() 
     return db_medicion
 
 def modificar_medicion(
@@ -50,9 +50,15 @@ def eliminar_medicion(db: Session, medicion_id: int) -> Medicion:
 #/--- Metodos de clase Nodo ---/
 def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db_nodo = Nodo(
+        numero = nodo.numero,
         ubicacion_x = nodo.ubicacion_x,
         ubicacion_y = nodo.ubicacion_y,
     )
+    # Buscar si el nodo ya existe segun el numero
+    nodo = db.query(Nodo).filter(Nodo.numero == db_nodo.numero).first()
+    if nodo is not None:
+        raise exceptions.NodoDuplicado()
+    
     db.add(db_nodo)
     db.commit()
     db.refresh(db_nodo)
@@ -78,6 +84,9 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     
     if nodo is None:
         raise exceptions.NodoNoEncontrado()
+    elif len(nodo.mediciones) > 0:
+        raise exceptions.NodoTieneMediciones()
+    
     db.delete(nodo)
     db.commit()
     return nodo
