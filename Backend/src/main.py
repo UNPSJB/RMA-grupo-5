@@ -66,8 +66,8 @@ def mi_callback(mensaje: str) -> None:
         
         
         # Enviar el nodo a través de WebSocket a los clientes conectados
-        for client in connected_clients:
-            asyncio.create_task(client.send_text(json.dumps(mensaje_dict)))
+        #for client in connected_clients:
+        #    asyncio.create_task(client.send_text(json.dumps(mensaje_dict)))
 
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
