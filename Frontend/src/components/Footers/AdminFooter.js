@@ -13,8 +13,8 @@ const Footer = () => {
             <a
               className="font-weight-bold ml-1"
               href="https://github.com/UNPSJB/RMA-grupo-5/"
-              rel="noopener noreferrer"
-              target="_blank"
+              rel="noreferrer"
+              target="_blank" 
             >
               Grupo 5
             </a>

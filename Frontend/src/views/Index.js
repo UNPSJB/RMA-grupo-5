@@ -86,6 +86,7 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
+   // setMedicionData("data" + index);
   };
 
   return (
