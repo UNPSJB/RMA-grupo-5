@@ -36,7 +36,3 @@ class NotAuthenticated(DetailedHTTPException):
 
     def __init__(self) -> None:
         super().__init__(headers={"WWW-Authenticate": "Bearer"})
-
-
-class ProductoNoEncontrado(NotFound):
-    DETAIL = ErrorCode.NODO_NO_ENCONTRADO
