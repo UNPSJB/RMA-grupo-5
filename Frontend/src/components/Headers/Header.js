@@ -92,7 +92,7 @@ const Header = () => {
                                 </Card>
                             </Col>
 
-                            {/* Último nodo registrado */}
+                            {/* Última medición registrada */}
                             <Col xs="6" sm="4" md="3" lg="3" xl="2">
                                 <Card className="card-stats mb-4 mb-xl-0 equal-card">
                                     <CardBody>
@@ -102,7 +102,7 @@ const Header = () => {
                                                     tag="h5"
                                                     className="text-uppercase text-muted mb-0"
                                                 >
-                                                    Último NODO registrado
+                                                    Última Medicion registrada
                                                 </CardTitle>
                                                 {/* Mostrar ID o nombre del último nodo */}
                                                 <span className="h2 font-weight-bold mb-0">

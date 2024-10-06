@@ -65,7 +65,7 @@ const Index = (props) => {
   
   // Extraer los valores de "data" del nodoData y redondear a 1 decimal
   const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
-
+  console.log(valoresNodos);
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
