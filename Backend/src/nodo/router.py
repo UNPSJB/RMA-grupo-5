@@ -14,7 +14,6 @@ def create_medicion(nodo: schemas.MedicionCreate, db: Session = Depends(get_db))
 
 @router.get("/leer_mediciones", response_model=list[schemas.Medicion])
 def read_mediciones(db: Session = Depends(get_db)):
-    print('----------------------------------------LEER MEDICIONES----------------------------------------')
     mediciones = services.listar_mediciones(db)
     print(mediciones)  # Imprime las mediciones para revisar su contenido
     return services.listar_mediciones(db)
@@ -55,6 +54,6 @@ def obtener_nodos(db: Session = Depends(get_db)):
 def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
     return services.eliminar_nodo(db, nodo_id)
 
-@router.get("/leer_ultimo_nodo", response_model=schemas.Medicion)
+@router.get("/leer_ultima_medicion", response_model=schemas.Medicion)
 def read_ultimo_nodo(db: Session = Depends(get_db)):
-    return services.leer_ultimo_nodo(db)
+    return services.leer_ultima_medicion(db)

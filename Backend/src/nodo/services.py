@@ -83,8 +83,8 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     return nodo
 
 
-def leer_ultimo_nodo(db: Session) -> Medicion:
-    db_nodo = db.query(Medicion).order_by(Medicion.time.desc()).first()
-    if db_nodo is None:
+def leer_ultima_medicion(db: Session) -> Medicion:
+    db_medicion = db.query(Medicion).order_by(Medicion.time.desc()).first()
+    if db_medicion is None:
         raise exceptions.MedicionNoEncontrada()
-    return db_nodo
+    return db_medicion
