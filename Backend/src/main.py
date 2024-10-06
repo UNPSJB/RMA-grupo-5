@@ -43,7 +43,6 @@ app.add_middleware(
 # Asociar los routers a nuestra app
 app.include_router(example_router)
  
-# Callback
 def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
 
@@ -65,10 +64,6 @@ def mi_callback(mensaje: str) -> None:
         crear_medicion(db, medicion)
         
         
-        # Enviar el nodo a través de WebSocket a los clientes conectados
-        #for client in connected_clients:
-        #    asyncio.create_task(client.send_text(json.dumps(mensaje_dict)))
-
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
     finally:
