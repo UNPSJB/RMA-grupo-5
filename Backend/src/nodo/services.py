@@ -2,11 +2,17 @@ from typing import List
 from sqlalchemy.orm import Session
 from src.nodo.models import Medicion, Nodo
 from src.nodo import schemas
-from nodo import exceptions
+from src.nodo import exceptions
 
 #/--- Metodos de clase Medicion ---/
 
 def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
+
+    nodo_existente = db.query(Nodo).filter(Nodo.numero == medicion.nodo_numero).first()
+    
+    if nodo_existente is None:
+        raise exceptions.NodoNoEncontrado()  # Lanza una excepción si el nodo no existe
+
     db_medicion = Medicion(
         type=medicion.type,
         data=medicion.data,
