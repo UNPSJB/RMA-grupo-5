@@ -15,7 +15,6 @@ def create_medicion(nodo: schemas.MedicionCreate, db: Session = Depends(get_db))
 @router.get("/leer_mediciones", response_model=list[schemas.Medicion])
 def read_mediciones(db: Session = Depends(get_db)):
     mediciones = services.listar_mediciones(db)
-    print(mediciones)  # Imprime las mediciones para revisar su contenido
     return services.listar_mediciones(db)
 
 @router.get("/leer_medicion/{medicion_id}", response_model=schemas.Medicion)

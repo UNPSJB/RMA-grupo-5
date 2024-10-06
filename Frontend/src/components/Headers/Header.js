@@ -30,7 +30,7 @@ const Header = () => {
         // Función de polling para obtener el último nodo registrado
         const fetchUltimoNodo = async () => {
             try {
-                const response = await axios.get("http://localhost:8000/leer_ultimo_nodo");
+                const response = await axios.get("http://localhost:8000/leer_ultima_medicion");
                 setUltimoNodo(response.data); // Actualizar estado con el último nodo
             } catch (error) {
                 console.error("Error al obtener el último nodo:", error);
