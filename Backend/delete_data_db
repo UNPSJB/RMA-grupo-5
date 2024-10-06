@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.db_models import BaseModel
-from src.nodo.models import Nodo
+from src.nodo.models import Medicion, Nodo
 
 # 1. Configurar la conexión a la base de datos
 DATABASE_URL = "sqlite:///mi-db-sqlite.db"
@@ -15,7 +15,8 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def limpiar_datos():
     session = SessionLocal()  # Crear una nueva sesión
     try:
-        session.query(Nodo).delete()  # Eliminar todos los registros de la tabla Nodo
+        session.query(Medicion).delete()  # Eliminar todos los registros de la tabla Medicion
+        #session.query(Nodo).delete()  # Eliminar todos los registros de la tabla Nodo
         session.commit()  # Confirmar los cambios
         print("Datos limpiados correctamente.")
     except Exception as e:
