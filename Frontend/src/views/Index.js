@@ -43,7 +43,7 @@ const Index = (props) => {
   useEffect(() => {
     const getMedicionData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
+        const response = await fetch("http://localhost:8000/leer_mediciones");//###
         if (!response.ok) {
           throw new Error("Error al hacer el fetch");
         }
@@ -64,7 +64,7 @@ const Index = (props) => {
   if (error) return <p>Error loading data: {error.message}</p>;
   
   // Extraer los valores de "data" del nodoData y redondear a 1 decimal
-  const valoresMedicions = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
+  const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
