@@ -1,54 +1,64 @@
 import { useState, useEffect } from "react";
-
 import classnames from "classnames";
-
 import Chart from "chart.js";
-
 import { Line, Bar } from "react-chartjs-2";
-
 import {
-  //button,
   Card,
   CardHeader,
   CardBody,
   NavItem,
   NavLink,
   Nav,
-  //Progress,
-  //Table,
   Container,
   Row,
   Col,
 } from "reactstrap";
-
-// core components
-import {
-  chartOptions,
-  parseOptions,
-  chartExample1,
-  chartExample2,
-} from "variables/charts.js";
-
+import { chartOptions, parseOptions, chartExample1, chartExample2 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
-
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  //const [chartExample1Data, setChartExample1Data] = useState("data1");
-  
-  const [nodoData, setMedicionData] = useState(null);
+  const [nodoData, setNodoData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [averagesList, setAveragesList] = useState([]); // Lista de promedios
+
+  // Función para obtener el día de la semana a partir de la fecha
+  const getDayOfWeek = (dateString) => {
+    const date = new Date(dateString);
+    const days = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    return days[date.getDay()];
+  };
 
   useEffect(() => {
-    const getMedicionData = async () => {
+    const getNodoData = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_mediciones");//###
+        const response = await fetch("http://localhost:8000/leer_nodos");
         if (!response.ok) {
           throw new Error("Error al hacer el fetch");
         }
-        const data = await response.json(); // Asumiendo que la respuesta es JSON
-        setMedicionData(data);  // Almacena los datos en el estado
+        const data = await response.json(); 
+        setNodoData(data); 
+
+        // Agrupar valores por día
+        const groupedByDay = data.reduce((acc, nodo) => {
+          const dayOfWeek = getDayOfWeek(nodo.time);
+          if (!acc[dayOfWeek]) {
+            acc[dayOfWeek] = [];
+          }
+          acc[dayOfWeek].push(parseFloat(nodo.data));
+          return acc;
+        }, {});
+
+        // Calcular promedios
+        const averages = Object.keys(groupedByDay).map((day) => {
+          const values = groupedByDay[day];
+          const sum = values.reduce((a, b) => a + b, 0);
+          const avg = (sum / values.length).toFixed(1);
+          return parseFloat(avg); // Solo el promedio como número
+        });
+
+        setAveragesList(averages); // Actualizar el estado con la lista de promedios
         setLoading(false);
       } catch (error) {
         console.error("Error cargando los datos", error);
@@ -56,16 +66,12 @@ const Index = (props) => {
         setLoading(false);
       }
     };
-    getMedicionData();
+    getNodoData();
   }, []);
 
-  // Manejo de carga y errores
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data: {error.message}</p>;
-  
-  // Extraer los valores de "data" del nodoData y redondear a 1 decimal
-  const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
-  console.log(valoresNodos);
+
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -73,9 +79,8 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-    setMedicionData("data" + index);
   };
-  
+
   return (
     <>
       <Header />
@@ -127,7 +132,7 @@ const Index = (props) => {
                 {/* Chart */}
                 <div className="chart">
                   <Line
-                    data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
+                    data={activeNav === 1 ? chartExample1.data1(averagesList) : chartExample1.data2(averagesList)}
                     options={chartExample1.options}
                     getDatasetAtEvent={(e) => console.log(e)}
                   />
@@ -159,30 +164,26 @@ const Index = (props) => {
             </Card>
           </Col>
         </Row>
-  
-        {/* Nueva sección para mostrar los valores de los nodos */}
+
+        {/* Nueva sección para mostrar los promedios por día */}
         <Row className="mt-5">
           <Col>
-            <h2>Valores de Nodos (Data)</h2>
+            <h2>Promedios por Día</h2>
             <ul>
-              {valoresNodos.map((valor, index) => (
-                <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+              {averagesList.map((avg, index) => (
+                <li key={index}>Día {index + 1}: {avg}</li>
               ))}
             </ul>
           </Col>
         </Row>
-  
-        <Row className="mt-5">
-          {/* Mostrar los datos JSON formateados */}
-          <div>
-            <h2>Datos JSON:</h2>
-            <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
-          </div>
-        </Row>
-        
-      </Container>
-    </>  
-  );
-};
 
-export default Index;
+        {/* Mostrar los datos JSON formateados */}
+        <Row className="mt-5">
+          <Col>
+            <h2>Datos JSON:</h2>
+            <pre>{JSON.stringify(nodoData, null, 2)}</pre>
+          </Col>
+        </Row>
+      </Container>
+    </>
+
