@@ -33,6 +33,12 @@ def leer_medicion(db: Session, medicion_id: int) -> Medicion:
         raise exceptions.MedicionNoEncontrada() 
     return db_medicion
 
+def leer_mediciones_nodo(db: Session, numero_nodo: int) -> List[Medicion]:
+    db_nodo = obtener_nodo(db, numero_nodo)
+    if db_nodo is None:
+        raise exceptions.NodoNoEncontrado()
+    return db.query(Medicion).filter(Medicion.nodo_numero == numero_nodo).all()
+    
 def modificar_medicion(
     db: Session, medicion_id: int, nodo: schemas.MedicionUpdate
 ) -> Medicion:
@@ -72,12 +78,26 @@ def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
 
 def obtener_nodo(db: Session, numero_nodo: int) -> Nodo:
     # Buscar el nodo por su número
-    nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
+    db_nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
     
     # Si no encuentra el nodo, lanza una excepción
-    if nodo is None:
+    if db_nodo is None:
         raise exceptions.NodoNoEncontrado()
-    return nodo
+    return db_nodo
+
+def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.NodoUpdate) -> Nodo:
+    db_nodo = obtener_nodo(db, numero_nodo)
+    
+    if nodo_actualizado.numero is not None:
+        db_nodo.numero = nodo_actualizado.numero
+    if nodo_actualizado.ubicacion_x is not None:
+        db_nodo.ubicacion_x = nodo_actualizado.ubicacion_x
+    if nodo_actualizado.ubicacion_y is not None:
+        db_nodo.ubicacion_y = nodo_actualizado.ubicacion_y
+
+    db.commit()
+    db.refresh(db_nodo)
+    return db_nodo
 
 def listar_nodos(db: Session) -> List[Nodo]:
     # Obtener todos los nodos de la base de datos
