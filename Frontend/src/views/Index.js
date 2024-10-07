@@ -1,21 +1,14 @@
 import { useState, useEffect } from "react";
-
 import classnames from "classnames";
-
 import Chart from "chart.js";
-
 import { Line, Bar } from "react-chartjs-2";
-
 import {
-  //button,
   Card,
   CardHeader,
   CardBody,
   NavItem,
   NavLink,
   Nav,
-  //Progress,
-  //Table,
   Container,
   Row,
   Col,
@@ -28,42 +21,64 @@ import {
   chartExample1,
   chartExample2,
 } from "variables/charts.js";
-
 import Header from "components/Headers/Header.js";
-
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [nodoData, setMedicionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [nodos, setNodos] = useState([]);
+  const [nodoSeleccionado, setNodoSeleccionado] = useState(null);
+
+  useEffect(() => {
+    const getNodos = async () => {
+      setLoading(true); // Asegúrate de iniciar la carga
+      try {
+        const response = await fetch("http://localhost:8000/obtener_nodos");
+        if (!response.ok) {
+          throw new Error("Error al hacer el fetch de nodos");
+        }
+        const data = await response.json();
+        setNodos(data);
+      } catch (error) {
+        console.error("Error cargando los nodos", error);
+        setError(error);
+      } finally {
+        setLoading(false); // Finaliza la carga
+      }
+    };
+    getNodos();
+  }, []);
 
   useEffect(() => {
     const getMedicionData = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/leer_mediciones");//###
-        if (!response.ok) {
-          throw new Error("Error al hacer el fetch");
+      if (nodoSeleccionado) {
+        setLoading(true); // Inicia la carga de mediciones
+        try {
+          const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
+          if (!response.ok) {
+            throw new Error("Error al hacer el fetch de mediciones");
+          }
+          const data = await response.json();
+          setMedicionData(data);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false); // Finaliza la carga
         }
-        const data = await response.json(); // Asumiendo que la respuesta es JSON
-        setMedicionData(data);  // Almacena los datos en el estado
-        setLoading(false);
-      } catch (error) {
-        console.error("Error cargando los datos", error);
-        setError(error);
-        setLoading(false);
       }
     };
     getMedicionData();
-  }, []);
+  }, [nodoSeleccionado]);
 
   // Manejo de carga y errores
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading data: {error.message}</p>;
-  
-  // Extraer los valores de "data" del nodoData y redondear a 1 decimal
-  const valoresNodos = nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1)));
-  console.log(valoresNodos);
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error cargando datos: {error.message}</p>;
+
+  const valoresNodos = nodoData ? nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1))) : [];
+
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -73,12 +88,28 @@ const Index = (props) => {
     setActiveNav(index);
    // setMedicionData("data" + index);
   };
-  
+
   return (
     <>
       <Header />
-      {/* Page content */}
-      <Container className="mt--7" fluid>
+      <Container className="mt--9" fluid>
+        <Row className="mt-5 mb-2">
+          <Col xl="2">
+            <h2>Seleccionar Nodo:</h2>
+            <select
+              value={nodoSeleccionado || ""}
+              onChange={(e) => setNodoSeleccionado(e.target.value)}
+              className="form-control"
+            >
+              <option value="" disabled>Seleccione un nodo</option>
+              {nodos.map((nodo, index) => (
+                <option key={index} value={nodo.numero}>
+                  Nodo {nodo.numero}
+                </option>
+              ))}
+            </select>
+          </Col>
+        </Row>
         <Row>
           <Col className="mb-5 mb-xl-0" xl="8">
             <Card className="bg-gradient-default shadow">
@@ -94,9 +125,7 @@ const Index = (props) => {
                     <Nav className="justify-content-end" pills>
                       <NavItem>
                         <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: activeNav === 1,
-                          })}
+                          className={classnames("py-2 px-3", { active: activeNav === 1 })}
                           href="#pablo"
                           onClick={(e) => toggleNavs(e, 1)}
                         >
@@ -106,9 +135,7 @@ const Index = (props) => {
                       </NavItem>
                       <NavItem>
                         <NavLink
-                          className={classnames("py-2 px-3", {
-                            active: activeNav === 2,
-                          })}
+                          className={classnames("py-2 px-3", { active: activeNav === 2 })}
                           data-toggle="tab"
                           href="#pablo"
                           onClick={(e) => toggleNavs(e, 2)}
@@ -122,7 +149,6 @@ const Index = (props) => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
                 <div className="chart">
                   <Line
                     data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
@@ -146,7 +172,6 @@ const Index = (props) => {
                 </Row>
               </CardHeader>
               <CardBody>
-                {/* Chart */}
                 <div className="chart">
                   <Bar
                     data={chartExample2.data}
@@ -157,8 +182,7 @@ const Index = (props) => {
             </Card>
           </Col>
         </Row>
-  
-        {/* Nueva sección para mostrar los valores de los nodos */}
+
         <Row className="mt-5">
           <Col>
             <h2>Valores de Nodos (Data)</h2>
@@ -169,18 +193,17 @@ const Index = (props) => {
             </ul>
           </Col>
         </Row>
-  
+
         <Row className="mt-5">
-          {/* Mostrar los datos JSON formateados */}
           <div>
             <h2>Datos JSON:</h2>
-            <pre>{JSON.stringify(nodoData, null, 2)}</pre> {/* Mostrar el JSON formateado */}
+            <pre>{JSON.stringify(nodoData, null, 2)}</pre>
           </div>
         </Row>
-        
       </Container>
-    </>  
+    </>
   );
 };
 
 export default Index;
+

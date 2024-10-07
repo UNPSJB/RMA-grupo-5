@@ -1,5 +1,5 @@
 // reactstrap components
-import { NavItem, NavLink, Nav, Container, Row, Col } from "reactstrap";
+import {Container, Row, Col } from "reactstrap";
 
 const Login = () => {
   return (
@@ -13,7 +13,7 @@ const Login = () => {
                 <a
                   className="font-weight-bold ml-1"
                   href="https://github.com/UNPSJB/RMA-grupo-5/"
-                  target="_blank"
+                  target="_blank" rel="noreferrer"
                 >
                   Grupo 5
                 </a>

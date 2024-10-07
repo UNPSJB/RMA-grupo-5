@@ -142,7 +142,7 @@ const Header = () => {
                         
                         {/* Card stats */}
                         <Row>
-                            <Col xs="6" sm="4" md="3" lg="3" xl="2">
+                            <Col xs="6" sm="4" md="3" lg="3" xl="3">
                                 <Card className="card-stats mb-4 mb-xl-0 equal-card">
                                     <CardBody>
                                         <Row>
@@ -174,7 +174,7 @@ const Header = () => {
                             </Col>
 
                             {/* Última medición registrada */}
-                            <Col xs="6" sm="4" md="3" lg="3" xl="2">
+                            <Col xs="6" sm="4" md="3" lg="3" xl="3">
                                 <Card className="card-stats mb-4 mb-xl-0 equal-card">
                                     <CardBody>
                                         <Row>
@@ -207,7 +207,7 @@ const Header = () => {
                             </Col>
 
                             {/* Otras tarjetas permanecen igual */}
-                            <Col xs="6" sm="4" md="3" lg="3" xl="2">
+                            <Col xs="6" sm="4" md="3" lg="3" xl="3">
                                 <Card className="card-stats mb-4 mb-xl-0 equal-card">
                                     <CardBody>
                                         <Row>

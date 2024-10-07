@@ -6,4 +6,14 @@
     display: flex;
     flex-direction: column;  /* Alinea los elementos dentro de la tarjeta */
     justify-content: space-between;  /* Espacia los elementos */
+    flex-wrap: wrap; /* Permite que las tarjetas se envuelvan si no hay suficiente espacio */
+
 }
+.header-body {
+    margin-top: -50px; /* Ajusta este valor según lo necesites */
+}
+
+.card-stats {
+    margin-bottom: 15px; /* Asegúrate de que haya espacio entre las tarjetas */
+}
+
