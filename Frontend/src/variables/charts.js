@@ -299,7 +299,7 @@ let chartExample1 = {
             zeroLineColor: colors.gray[900],
           },
           ticks: {
-            max: 30, // Máxima altura de las mareas en metros
+            max: 2, // Máxima altura de las mareas en metros
             min: 0, // Altura mínima
             stepSize: 0.5, // Tamaño de paso en metros
             callback: function (value) {
@@ -358,11 +358,12 @@ let chartExample2 = {
       yAxes: [
         {
           ticks: {
+            max: 25, // Máxima tempreratura en c°
+            min: 0, // Minima tempreratura en c°
+            stepSize: 5, // Tamaño de paso en C°
             callback: function (value) {
-              if (!(value % 10)) {
-                //return '$' + value + 'k'
-                return value;
-              }
+            return value;
+              
             },
           },
         },
@@ -383,15 +384,17 @@ let chartExample2 = {
       },
     },
   },
-  data: {
-    labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
-    datasets: [
-      {
-        label: "Sales",
-        data: [25, 20, 30, 22, 17, 29, 35],
-        maxBarThickness: 10,
+  data: (nodoDataValues) => {
+    return {
+      labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
+      datasets: [
+        {
+          label: "Sales",
+        data: nodoDataValues,
+        maxBarThickness: 20 ,
       },
     ],
+    };
   },
 };
 
