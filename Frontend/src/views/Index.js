@@ -174,7 +174,7 @@ const Index = (props) => {
               <CardBody>
                 <div className="chart">
                   <Bar
-                    data={chartExample2.data}
+                    data={chartExample2.data(valoresNodos)}
                     options={chartExample2.options}
                   />
                 </div>
