@@ -92,115 +92,113 @@ const Index = (props) => {
   return (
     <>
       <Header />
-      <Container className="mt--9" fluid>
-        <Row className="mt-5 mb-2">
-          <Col xl="2">
-            <h2>Seleccionar Nodo:</h2>
-            <select
-              value={nodoSeleccionado || ""}
-              onChange={(e) => setNodoSeleccionado(e.target.value)}
-              className="form-control"
-            >
-              <option value="" disabled>Seleccione un nodo</option>
-              {nodos.map((nodo, index) => (
-                <option key={index} value={nodo.numero}>
-                  Nodo {nodo.numero}
-                </option>
-              ))}
-            </select>
-          </Col>
-        </Row>
-        <Row>
-          <Col className="mb-5 mb-xl-0" xl="8">
-            <Card className="bg-gradient-default shadow">
-              <CardHeader className="bg-transparent">
-                <Row className="align-items-center">
-                  <div className="col">
-                    <h6 className="text-uppercase text-light ls-1 mb-1">
-                      Red de Monitoreo - Cuenca Sagmata
-                    </h6>
-                    <h2 className="text-white mb-0">Altura del Río</h2>
+        <Container className="mt--9" fluid>
+          <Row className="mt-5 mb-2">
+            <Col xl="2">     
+              <select
+                value={nodoSeleccionado || ""}
+                onChange={(e) => setNodoSeleccionado(e.target.value)}
+                className="form-control"
+              >
+                {nodos.map((nodo, index) => (
+                  <option key={index} value={nodo.numero}>
+                    Nodo {nodo.numero}
+                  </option>
+                ))}
+              </select>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="mb-5 mb-xl-0" xl="8">
+              <Card className="bg-gradient-default shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-light ls-1 mb-1">
+                        Red de Monitoreo - Cuenca Sagmata
+                      </h6>
+                      <h2 className="text-white mb-0">Altura del Río</h2>
+                    </div>
+                    <div className="col">
+                      <Nav className="justify-content-end" pills>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", { active: activeNav === 1 })}
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 1)}
+                          >
+                            <span className="d-none d-md-block">Diario</span>
+                            <span className="d-md-none">D</span>
+                          </NavLink>
+                        </NavItem>
+                        <NavItem>
+                          <NavLink
+                            className={classnames("py-2 px-3", { active: activeNav === 2 })}
+                            data-toggle="tab"
+                            href="#pablo"
+                            onClick={(e) => toggleNavs(e, 2)}
+                          >
+                            <span className="d-none d-md-block">Semanal</span>
+                            <span className="d-md-none">S</span>
+                          </NavLink>
+                        </NavItem>
+                      </Nav>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart">
+                    <Line
+                      data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
+                      options={chartExample1.options}
+                      getDatasetAtEvent={(e) => console.log(e)}
+                    />
                   </div>
-                  <div className="col">
-                    <Nav className="justify-content-end" pills>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", { active: activeNav === 1 })}
-                          href="#pablo"
-                          onClick={(e) => toggleNavs(e, 1)}
-                        >
-                          <span className="d-none d-md-block">Diario</span>
-                          <span className="d-md-none">D</span>
-                        </NavLink>
-                      </NavItem>
-                      <NavItem>
-                        <NavLink
-                          className={classnames("py-2 px-3", { active: activeNav === 2 })}
-                          data-toggle="tab"
-                          href="#pablo"
-                          onClick={(e) => toggleNavs(e, 2)}
-                        >
-                          <span className="d-none d-md-block">Semanal</span>
-                          <span className="d-md-none">S</span>
-                        </NavLink>
-                      </NavItem>
-                    </Nav>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col xl="4">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Medición semanal
+                      </h6>
+                      <h2 className="mb-0">Temperatura del Agua</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart">
+                    <Bar
+                      data={chartExample2.data(valoresNodos)}
+                      options={chartExample2.options}
+                    />
                   </div>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <div className="chart">
-                  <Line
-                    data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
-                    options={chartExample1.options}
-                    getDatasetAtEvent={(e) => console.log(e)}
-                  />
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col xl="4">
-            <Card className="shadow">
-              <CardHeader className="bg-transparent">
-                <Row className="align-items-center">
-                  <div className="col">
-                    <h6 className="text-uppercase text-muted ls-1 mb-1">
-                      Medición semanal
-                    </h6>
-                    <h2 className="mb-0">Temperatura del Agua</h2>
-                  </div>
-                </Row>
-              </CardHeader>
-              <CardBody>
-                <div className="chart">
-                  <Bar
-                    data={chartExample2.data(valoresNodos)}
-                    options={chartExample2.options}
-                  />
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
 
-        <Row className="mt-5">
-          <Col>
-            <h2>Valores de Nodos (Data)</h2>
-            <ul>
-              {valoresNodos.map((valor, index) => (
-                <li key={index}>Valor Nodo {index + 1}: {valor}</li>
-              ))}
-            </ul>
-          </Col>
-        </Row>
+          <Row className="mt-5">
+            <Col>
+              <h2>Valores de Nodos (Data)</h2>
+              <ul>
+                {valoresNodos.map((valor, index) => (
+                  <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+                ))}
+              </ul>
+            </Col>
+          </Row>
 
-        <Row className="mt-5">
-          <div>
-            <h2>Datos JSON:</h2>
-            <pre>{JSON.stringify(nodoData, null, 2)}</pre>
-          </div>
-        </Row>
-      </Container>
+          <Row className="mt-5">
+            <div>
+              <h2>Datos JSON:</h2>
+              <pre>{JSON.stringify(nodoData, null, 2)}</pre>
+            </div>
+          </Row>
+        </Container>
     </>
   );
 };

@@ -1,0 +1,7 @@
+.card-body-temp {
+    border-top: 2px solid #dcdcdc;
+    border-bottom: 2px solid #ececec;
+    border-radius: 0.25rem;        /* Bordes redondeados (opcional) */
+    padding: 1.5rem;               /* Mantener el padding que ya tienes */
+    background-color: #f8f9fa;     /* Color de fondo gris claro */
+};

@@ -6,6 +6,7 @@ import { Container } from "reactstrap";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import Header from "components/Headers/Header";
 
 import routes from "routes.js";
 
@@ -46,8 +47,9 @@ const Admin = (props) => {
   return (
     <>
       <Sidebar
-        {...props}
+        {...props}     
         routes={routes}
+
         logo={{
           innerLink: "/admin/index",
           imgSrc: require("../assets/img/brand/rma-a.png"),
