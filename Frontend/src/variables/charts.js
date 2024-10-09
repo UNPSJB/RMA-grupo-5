@@ -299,7 +299,7 @@ let chartExample1 = {
             zeroLineColor: colors.gray[900],
           },
           ticks: {
-            max: 30, // Máxima altura de las mareas en metros
+            max: 2, // Máxima altura de las mareas en metros
             min: 0, // Altura mínima
             stepSize: 0.5, // Tamaño de paso en metros
             callback: function (value) {

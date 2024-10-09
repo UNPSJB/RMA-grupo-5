@@ -78,6 +78,17 @@ const Index = (props) => {
   if (error) return <p>Error cargando datos: {error.message}</p>;
 
   const valoresNodos = nodoData ? nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1))) : [];
+  
+  // Función para filtrar los datos cuyo type es 1
+  const filtrarDatosType1 = (data) => {
+    return data
+      ? data
+          .filter((item) => item.type === 1) // Filtra los datos con type 1
+          .map((item) => parseFloat(parseFloat(item.data).toFixed(1))) // Convierte los valores a float y redondea
+      : [];
+  };
+
+  const valoresNodosTemp = filtrarDatosType1(nodoData);
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -172,7 +183,7 @@ const Index = (props) => {
                 <CardBody>
                   <div className="chart">
                     <Bar
-                      data={chartExample2.data(valoresNodos)}
+                      data={chartExample2.data(valoresNodosTemp)}
                       options={chartExample2.options}
                     />
                   </div>
