@@ -54,19 +54,46 @@ const Index = (props) => {
   useEffect(() => {
     const getMedicionData = async () => {
       if (nodoSeleccionado) {
-        setLoading(true); // Inicia la carga de mediciones
+        setLoading(true);
         try {
           const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
           if (!response.ok) {
             throw new Error("Error al hacer el fetch de mediciones");
           }
           const data = await response.json();
-          setMedicionData(data);
+  
+          // Obtener la fecha actual
+          const today = new Date().toISOString().split('T')[0];
+  
+          // Filtrar las mediciones del día actual
+          const medicionesFiltradas = data.filter(medicion => medicion.time.startsWith(today));
+  
+          // Dividir el día en intervalos de 2 horas
+          const medicionesPorIntervalo = [];
+          for (let hour = 0; hour < 24; hour += 2) {
+            const startTime = new Date(`${today}T${String(hour).padStart(2, '0')}:00:00`);
+            const endTime = new Date(`${today}T${String(hour + 2).padStart(2, '0')}:00:00`);
+  
+            // Buscar la medición más cercana al final del intervalo
+            const medicionEnIntervalo = medicionesFiltradas
+              .filter(medicion => {
+                const time = new Date(medicion.time);
+                return time >= startTime && time < endTime;
+              })
+              .sort((a, b) => new Date(b.time) - new Date(a.time)); // Ordena por la más cercana al final del intervalo
+  
+            // Si hay al menos una medición en este intervalo, tomar la más reciente
+            if (medicionEnIntervalo.length > 0) {
+              medicionesPorIntervalo.push(medicionEnIntervalo[0]);
+            }
+          }
+  
+          setMedicionData(medicionesPorIntervalo);
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
         } finally {
-          setLoading(false); // Finaliza la carga
+          setLoading(false);
         }
       }
     };
@@ -106,17 +133,20 @@ const Index = (props) => {
         <Container className="mt--9" fluid>
           <Row className="mt-5 mb-2">
             <Col xl="2">     
-              <select
-                value={nodoSeleccionado || ""}
-                onChange={(e) => setNodoSeleccionado(e.target.value)}
-                className="form-control"
-              >
-                {nodos.map((nodo, index) => (
-                  <option key={index} value={nodo.numero}>
-                    Nodo {nodo.numero}
-                  </option>
-                ))}
-              </select>
+            <select
+              value={nodoSeleccionado || ""}
+              onChange={(e) => setNodoSeleccionado(e.target.value)}
+              className="form-control"
+            >
+              <option value="" disabled>
+                Seleccionar nodo
+              </option>
+              {nodos.map((nodo, index) => (
+                <option key={index} value={nodo.numero}>
+                  Nodo {nodo.numero}
+                </option>
+              ))}
+            </select>
             </Col>
           </Row>
           <Row>
