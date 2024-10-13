@@ -1,459 +1,219 @@
-
-// reactstrap components
+import React, { useState, useEffect } from "react";
 import {
   Badge,
   Card,
   CardHeader,
-  CardFooter,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
-  DropdownToggle,
-  Media,
-  Pagination,
-  PaginationItem,
-  PaginationLink,
-  Progress,
   Table,
   Container,
   Row,
-  UncontrolledTooltip,
+  Col,
+  Pagination,
+  PaginationItem,
+  PaginationLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 // core components
 import Header from "components/Headers/Header.js";
 
-const Tables = () => { // FALTA MODIFICAR ESTO CUANDO TENGAMOS LA ESTRUCTURA BIEN DEFINIDA
+const Tables = () => {
+  const [nodos, setNodos] = useState([]);
+  const [medicionData, setMedicionData] = useState([]);
+  const [nodoSeleccionado, setNodoSeleccionado] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(15);
+
+  // Carga de nodos
+  useEffect(() => {
+    const getNodos = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch("http://localhost:8000/obtener_nodos");
+        if (!response.ok) {
+          throw new Error("Error al hacer el fetch de nodos");
+        }
+        const data = await response.json();
+        setNodos(data);
+      } catch (error) {
+        console.error("Error cargando los nodos", error);
+        setError(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getNodos();
+  }, []);
+
+  // Carga de mediciones según el nodo seleccionado
+  useEffect(() => {
+    const getMedicionData = async () => {
+      if (nodoSeleccionado) {
+        setLoading(true);
+        try {
+          const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
+          if (!response.ok) {
+            throw new Error("Error al hacer el fetch de mediciones");
+          }
+          const data = await response.json();
+          setMedicionData(data);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    getMedicionData();
+  }, [nodoSeleccionado]);
+
+  // Manejo de carga y errores
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error cargando datos: {error.message}</p>;
+
+  // Ordenar mediciones de más reciente a más antiguo
+  const sortedMedicionData = [...medicionData].sort((a, b) => new Date(b.time) - new Date(a.time));
+
+  // Lógica de paginación
+  const indexOfLastItem = currentPage * itemsPerPage; // Último índice de los elementos
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // Primer índice de los elementos
+  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem); // Elementos actuales a mostrar
+  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage); // Total de páginas
+
   return (
     <>
       <Header />
-      {/* Page content */}
       <Container className="mt--7" fluid>
-        {/* Table */}
+        <Row className="mb-3">
+          <Col xl="2">
+            <select
+              value={nodoSeleccionado || ""}
+              onChange={(e) => {
+                setNodoSeleccionado(e.target.value);
+                setCurrentPage(1); // Resetear a la primera página al cambiar nodo
+              }}
+              className="form-control"
+            >
+              <option value="">Seleccione un Nodo</option>
+              {nodos.map((nodo, index) => (
+                <option key={index} value={nodo.numero}>
+                  Nodo {nodo.numero}
+                </option>
+              ))}
+            </select>
+          </Col>
+        </Row>
+
         <Row>
           <div className="col">
             <Card className="shadow">
               <CardHeader className="border-0">
-                <h3 className="mb-0">Historial de Mediciones</h3>
+                <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado || "Todos"}</h3>
+                <p className="text-muted">
+                  Mostrando datos de más reciente a más antiguo.
+                </p>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
                   <tr>
                     <th scope="col">Nodo</th>
-                    <th scope="col">Altura</th>
-                    <th scope="col">Riesgo</th>
-                    <th scope="col">Temp. agua</th>
+                    <th scope="col">Tipo</th>
+                    <th scope="col">Data</th>
                     <th scope="col">Fecha-Hora</th>
-                    <th scope="col" />
+                    <th scope="col">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <img
-                            alt="..."
-                            src={require("../../assets/img/theme/nodo-0.jpg")}
-                          />
-                        </a>
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            Nodo 1
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">0,8 m</span>
-                        <div>
-                          <Progress
-                            max="150"
-                            value="80"
-                            barClassName="bg-success"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge color="" className="badge-dot mr-4">
-                        <i className="bg-success" />
-                        Bajo
-                      </Badge>
-                    </td>
-                    <td>14 °C</td>
-                    <td>2024/10/03 12:01:56</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                          <DropdownItem
+                  {currentItems.map((dato) => (
+                    <tr key={dato.id}>
+                      <th scope="row">{dato.nodo_numero}</th>
+                      <td>{dato.type}</td>
+                      <td>{dato.data}</td>
+                      <td>{new Date(dato.time).toLocaleString()}</td>
+                      <td className="text-right">
+                        <UncontrolledDropdown>
+                          <DropdownToggle
+                            className="btn-icon-only text-light"
                             href="#pablo"
+                            role="button"
+                            size="sm"
+                            color=""
                             onClick={(e) => e.preventDefault()}
                           >
-                            Ver nodo
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ir a ubicación
-                          </DropdownItem>
-
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <img
-                            alt="..."
-                            src={require("../../assets/img/theme/nodo-0.jpg")}
-                          />
-                        </a>
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            Nodo 3
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">0,2 m</span>
-                        <div>
-                          <Progress
-                            max="150"
-                            value="20"
-                            barClassName="bg-success"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge color="" className="badge-dot mr-4">
-                        <i className="bg-success" />
-                        Bajo
-                      </Badge>
-                    </td>
-                    <td>4 °C</td>
-                    <td>2024/10/03 11:59:06</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                        <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ver nodo
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ir a ubicación
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <img
-                            alt="..."
-                            src={require("../../assets/img/theme/nodo-0.jpg")}
-                          />
-                        </a>
-                        <Media>
-                          <span className="mb-0 text-sm">Nodo 1</span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">0,7 m</span>
-                        <div>
-                          <Progress
-                            max="150"
-                            value="70"
-                            barClassName="bg-success"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge color="" className="badge-dot mr-4">
-                        <i className="bg-success" />
-                        Bajo
-                      </Badge>
-                    </td>
-                    <td>12 °C</td>
-                    <td>2024/10/03 11:55:02</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                        <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ver nodo
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ir a ubicación
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <img
-                            alt="..."
-                            src={require("../../assets/img/theme/nodo-0.jpg")}
-                          />
-                        </a>
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            Nodo 2
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">1,3 m</span>
-                        <div>
-                          <Progress
-                            max="150"
-                            value="130"
-                            barClassName="bg-warning"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge color="" className="badge-dot mr-4">
-                        <i className="bg-warning" />
-                        Alto
-                      </Badge>
-                    </td>
-                    <td>19 °C</td>
-                    <td>2024/10/03 11:54:30</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                        <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ver nodo
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ir a ubicación
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">
-                      <Media className="align-items-center">
-                        <a
-                          className="avatar rounded-circle mr-3"
-                          href="#pablo"
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <img
-                            alt="..."
-                            src={require("../../assets/img/theme/nodo-0.jpg")}
-                          />
-                        </a>
-                        <Media>
-                          <span className="mb-0 text-sm">
-                            Nodo 1
-                          </span>
-                        </Media>
-                      </Media>
-                    </th>
-                    <td>
-                      <div className="d-flex align-items-center">
-                        <span className="mr-2">0,4 m</span>
-                        <div>
-                          <Progress
-                            max="150"
-                            value="40"
-                            barClassName="bg-success"
-                          />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <Badge color="" className="badge-dot mr-4">
-                        <i className="bg-success" />
-                        Bajo
-                      </Badge>
-                    </td>
-                    <td>12 °C</td>
-                    <td>2024/10/03 12:50:44</td>
-                    <td className="text-right">
-                      <UncontrolledDropdown>
-                        <DropdownToggle
-                          className="btn-icon-only text-light"
-                          href="#pablo"
-                          role="button"
-                          size="sm"
-                          color=""
-                          onClick={(e) => e.preventDefault()}
-                        >
-                          <i className="fas fa-ellipsis-v" />
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-arrow" right>
-                        <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ver nodo
-                          </DropdownItem>
-                          <DropdownItem
-                            href="#pablo"
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            Ir a ubicación
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledDropdown>
-                    </td>
-                  </tr>
+                            <i className="fas fa-ellipsis-v" />
+                          </DropdownToggle>
+                          <DropdownMenu className="dropdown-menu-arrow" right>
+                            <DropdownItem
+                              href="#pablo"
+                              onClick={(e) => e.preventDefault()} // Falta implementar
+                            >
+                              Ver nodo
+                            </DropdownItem>
+                            <DropdownItem
+                              href="#pablo"
+                              onClick={(e) => e.preventDefault()} // Falta implementar
+                            >
+                              Ir a ubicación
+                            </DropdownItem>
+                          </DropdownMenu>
+                        </UncontrolledDropdown>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
-              
-              <CardFooter className="py-4">
-                <nav aria-label="...">
-                  <Pagination
-                    className="pagination justify-content-end mb-0"
-                    listClassName="justify-content-end mb-0"
-                  >
-                    <PaginationItem className="disabled">
+              <div className="d-flex justify-content-between">
+                <Pagination className="pagination justify-content-end mb-0">
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink
+                      href="#pablo"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(currentPage - 1);
+                      }}
+                    >
+                      <i className="fas fa-angle-left" />
+                      <span className="sr-only">Previous</span>
+                    </PaginationLink>
+                  </PaginationItem>
+                  {[...Array(totalPages)].map((_, index) => (
+                    <PaginationItem active={index + 1 === currentPage} key={index}>
                       <PaginationLink
                         href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                        tabIndex="-1"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(index + 1);
+                        }}
                       >
-                        <i className="fas fa-angle-left" />
-                        <span className="sr-only">Previous</span>
+                        {index + 1}
                       </PaginationLink>
                     </PaginationItem>
-                    <PaginationItem className="active">
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        1
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        2 <span className="sr-only">(current)</span>
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        3
-                      </PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fas fa-angle-right" />
-                        <span className="sr-only">Next</span>
-                      </PaginationLink>
-                    </PaginationItem>
-                  </Pagination>
-                </nav>
-              </CardFooter>
+                  ))}
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      href="#pablo"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(currentPage + 1);
+                      }}
+                    >
+                      <i className="fas fa-angle-right" />
+                      <span className="sr-only">Next</span>
+                    </PaginationLink>
+                  </PaginationItem>
+                </Pagination>
+              </div>
             </Card>
           </div>
         </Row>
-       
       </Container>
     </>
   );
 };
 
 export default Tables;
+
