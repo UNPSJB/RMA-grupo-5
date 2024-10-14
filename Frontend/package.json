@@ -61,6 +61,7 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "6.21.1",
     "react-scripts": "5.0.1",
+    "react-toastify": "^10.0.5",
     "reactstrap": "8.10.0",
     "sass": "1.69.5"
   },

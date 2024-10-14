@@ -2,10 +2,8 @@ import os
 import json
 import asyncio
 from dotenv import load_dotenv
-from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from datetime import datetime
 from threading import Thread
 import uvicorn
 from paho.mqtt.client import Client
@@ -13,11 +11,10 @@ from paho.mqtt.client import Client
 from src.config_db import engine, SessionLocal
 from src.db_models import BaseModel
 from src.nodo.router import router as example_router
-from src.nodo.services import crear_nodo
-from src.nodo.schemas import NodoCreate
-from src.nodo.models import Nodo, TipoDato
 from src.suscriptor.sub import Subscriptor
 from src.suscriptor.config import config
+from src.suscriptor.services import procesar_mensaje
+from src import config_cors
 
 load_dotenv()
 
@@ -28,67 +25,17 @@ ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}")
 # FastAPI configuration
 app = FastAPI(root_path=ROOT_PATH)
 
-# Configuración de CORS
-origins = [
-    "http://localhost:8000",
-    "http://localhost:3000"
-]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Configuracion de CORS
+config_cors.add_cors(app)
 
 # Asociar los routers a nuestra app
 app.include_router(example_router)
-
-# Conexiones activas de WebSockets
-connected_clients = []
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    connected_clients.append(websocket)
-    
-    try:
-        while True:
-            # Mantener el WebSocket abierto
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        connected_clients.remove(websocket)
-
-# Callback
+ 
 def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
 
     try:
-        # Reemplazar comillas simples por comillas dobles para cumplir con el formato JSON
-        mensaje = mensaje.replace("'", '"')
-
-        # Decodificar el mensaje JSON
-        mensaje_dict = json.loads(mensaje)
-        time_dt = datetime.fromisoformat(mensaje_dict['time'])
-        type_dt = TipoDato[mensaje_dict['type']]
-
-        # Crear un objeto NodoCreate
-        nodo = NodoCreate(
-            id=mensaje_dict['id'],
-            type=type_dt,
-            data=mensaje_dict['data'],
-            time=time_dt
-        )
-
-        # Guardar el nodo en la base de datos
-        crear_nodo(db, nodo)
-        print(f"Nodo recibido y guardado: {nodo}")
-
-        # Enviar el nodo a través de WebSocket a los clientes conectados
-        for client in connected_clients:
-            asyncio.create_task(client.send_text(json.dumps(mensaje_dict)))
-
+        procesar_mensaje(mensaje, db)
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
     finally:
@@ -114,6 +61,7 @@ def start_mqtt_thread():
 @app.on_event("startup")
 async def startup_event():
     # Crear las tablas en la base de datos si no existen
+    from src.db_models import Base
     BaseModel.metadata.create_all(bind=engine)
     
     start_mqtt_thread()

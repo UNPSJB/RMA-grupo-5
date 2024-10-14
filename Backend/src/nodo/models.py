@@ -51,9 +51,23 @@ class TipoDato(IntEnum):
 class Nodo(BaseModel):
     __tablename__ = 'nodos'
 
+    numero = Column(Integer, primary_key=True, index=True) 
+    ubicacion_x = Column(Float)
+    ubicacion_y = Column(Float)
+    mediciones = relationship("Medicion", back_populates="nodo")
+
+# Modelo base para mediciones
+class Medicion(BaseModel):
+    __tablename__ = 'mediciones'
+
     id = Column(Integer, primary_key=True, index=True)
     type = Column(Enum(TipoDato), nullable=False)
     data = Column(String, nullable=False)
     time = Column(DateTime, nullable=False)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    nodo_numero = Column(Integer, ForeignKey('nodos.numero'), nullable=True)  # Clave foránea
+    nodo = relationship("Nodo", back_populates="mediciones")  # Relación con la tabla Nodo
+
+
+

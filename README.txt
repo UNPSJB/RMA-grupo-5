@@ -2,5 +2,5 @@ Integrantes:
 	Tomas Fernandez
 	Juan Vedoya
 	Yamila Collado
-	Cristian Gutiérrez
+	Cristian Gutierrez
 	Mateo Gonzalez

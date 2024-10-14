@@ -2,7 +2,7 @@ import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from src.db_models import BaseModel
-from src.nodo.models import Nodo, TipoDato
+from src.nodo.models import Medicion, TipoDato
 
 # 1. Configurar la conexión a la base de datos
 DATABASE_URL = "sqlite:///mi-db-sqlite.db"  # Cambia esto a la URL de tu base de datos
@@ -21,9 +21,9 @@ def generar_datos_aleatorios():
     tipo_dato = random.choice(list(TipoDato))
     data = random.uniform(0, 100)  # Genera un número aleatorio entre 0 y 100
     time = random.uniform(0, 10)  # Genera un número aleatorio entre 0 y 10
-    return Nodo(type=tipo_dato.value, data=str(round(data, 2)), time=round(time, 2))
+    return Medicion(type=tipo_dato.value, data=str(round(data, 2)), time=round(time, 2))
 
-# 5. Instanciar objetos de la clase Nodo
+# 5. Instanciar objetos de la clase Medicion
 nodos = [generar_datos_aleatorios() for _ in range(NUM_REGISTROS)]
 
 # 6. Agregar los objetos a la sesión y confirmarlos
