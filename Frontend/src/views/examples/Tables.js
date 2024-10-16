@@ -14,6 +14,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Button, // Añadido para el botón de exportar
 } from "reactstrap";
 import Header from "components/Headers/Header.js";
 
@@ -96,6 +97,21 @@ const Tables = () => {
   const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem); // Elementos actuales a mostrar
   const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage); // Total de páginas
 
+  // Función para exportar datos a un archivo de texto
+  const exportToText = () => {
+    const content = currentItems.map(dato => {
+      return `Nodo: ${dato.nodo_numero}, Tipo: ${dato.type}, Data: ${dato.data}, Fecha-Hora: ${new Date(dato.time).toLocaleString()}`;
+    }).join("\n");
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `mediciones_nodo_${nodoSeleccionado || "todos"}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <>
       <Header />
@@ -129,7 +145,7 @@ const Tables = () => {
               <option value="TEMP_T">Temperatura</option>
               <option value="HUMIDITY_T">Humedad</option>
               <option value="PRESSURE_T">Presión</option>
-              <option value="ALTITUDE_T">23</option>
+              <option value="ALTITUDE_T">Altitud</option>
             </select>
           </Col>
 
@@ -148,6 +164,13 @@ const Tables = () => {
               value={fechaFin}
               onChange={(e) => setFechaFin(e.target.value)}
             />
+          </Col>
+
+          {/* Botón para exportar a texto */}
+          <Col xl="2">
+            <Button color="primary" onClick={exportToText}>
+              Exportar a Texto
+            </Button>
           </Col>
         </Row>
 
@@ -204,67 +227,64 @@ const Tables = () => {
                 </tbody>
               </Table>
               <div className="d-flex justify-content-between">
-              <Pagination className="pagination justify-content-end mb-0">
-              {/* Botón para página anterior */}
-              <PaginationItem disabled={currentPage === 1}>
-                <PaginationLink
-                  href="#pablo"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage(currentPage - 1);
-                  }}
-                >
-                  <i className="fas fa-angle-left" />
-                  <span className="sr-only">Previous</span>
-                </PaginationLink>
-              </PaginationItem>
+                <Pagination className="pagination justify-content-end mb-0">
+                  {/* Botón para página anterior */}
+                  <PaginationItem disabled={currentPage === 1}>
+                    <PaginationLink
+                      href="#pablo"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(currentPage - 1);
+                      }}
+                    >
+                      <i className="fas fa-angle-left" />
+                      <span className="sr-only">Previous</span>
+                    </PaginationLink>
+                  </PaginationItem>
 
-              {/* Lógica para limitar la cantidad de botones */}
-              {(() => {
-                const pageButtons = [];
-                const maxButtons = 5; // Cambia este valor si deseas más/menos botones
-                let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                  {/* Lógica para limitar la cantidad de botones */}
+                  {(() => {
+                    const pageButtons = [];
+                    const maxButtons = 5;
+                    let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
 
-                // Ajusta la posición de las páginas si está al principio o final
-                if (endPage - startPage < maxButtons - 1) {
-                  startPage = Math.max(1, endPage - maxButtons + 1);
-                }
+                    if (endPage - startPage < maxButtons - 1) {
+                      startPage = Math.max(1, endPage - maxButtons + 1);
+                    }
 
-                for (let i = startPage; i <= endPage; i++) {
-                  pageButtons.push(
-                    <PaginationItem active={i === currentPage} key={i}>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentPage(i);
-                        }}
-                      >
-                        {i}
-                      </PaginationLink>
-                    </PaginationItem>
-                  );
-                }
+                    for (let i = startPage; i <= endPage; i++) {
+                      pageButtons.push(
+                        <PaginationItem active={i === currentPage} key={i}>
+                          <PaginationLink
+                            href="#pablo"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setCurrentPage(i);
+                            }}
+                          >
+                            {i}
+                          </PaginationLink>
+                        </PaginationItem>
+                      );
+                    }
+                    return pageButtons;
+                  })()}
 
-                return pageButtons;
-              })()}
-
-              {/* Botón para la página siguiente */}
-              <PaginationItem disabled={currentPage === totalPages}>
-                <PaginationLink
-                  href="#pablo"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setCurrentPage(currentPage + 1);
-                  }}
-                >
-                  <i className="fas fa-angle-right" />
-                  <span className="sr-only">Next</span>
-                </PaginationLink>
-              </PaginationItem>
-            </Pagination>
-
+                  {/* Botón para página siguiente */}
+                  <PaginationItem disabled={currentPage === totalPages}>
+                    <PaginationLink
+                      href="#pablo"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentPage(currentPage + 1);
+                      }}
+                    >
+                      <i className="fas fa-angle-right" />
+                      <span className="sr-only">Next</span>
+                    </PaginationLink>
+                  </PaginationItem>
+                </Pagination>
               </div>
             </Card>
           </div>
@@ -275,3 +295,4 @@ const Tables = () => {
 };
 
 export default Tables;
+
