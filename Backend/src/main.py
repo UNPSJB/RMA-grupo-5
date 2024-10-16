@@ -1,6 +1,4 @@
-import os
-import json
-import asyncio
+import os, sys, json
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
@@ -43,7 +41,7 @@ def mi_callback(mensaje: str) -> None:
 
 # Start the MQTT subscriber in a separate thread
 def run_mqtt_subscriber():
-    sub = Subscriptor(client=Client(), on_message_callback=mi_callback)
+    sub  = Subscriptor(client=Client(), on_message_callback=mi_callback)
     
     # Conectar al broker MQTT usando la configuración
     sub.connect(config.host, config.port, config.keepalive)
@@ -69,4 +67,3 @@ async def startup_event():
 if __name__ == "__main__":
     # Ejecutar la aplicación FastAPI con Uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
-
