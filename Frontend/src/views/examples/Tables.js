@@ -15,13 +15,15 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-// core components
 import Header from "components/Headers/Header.js";
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
   const [medicionData, setMedicionData] = useState([]);
   const [nodoSeleccionado, setNodoSeleccionado] = useState("");
+  const [tipoSeleccionado, setTipoSeleccionado] = useState(""); 
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,14 +77,24 @@ const Tables = () => {
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error cargando datos: {error.message}</p>;
 
+  // Filtrar los datos por tipo y rango de fechas
+  const filteredData = medicionData.filter((dato) => {
+    const fechaMedicion = new Date(dato.time);
+    const dentroRango =
+      (!fechaInicio || fechaMedicion >= new Date(fechaInicio)) &&
+      (!fechaFin || fechaMedicion <= new Date(fechaFin));
+    const tipoCoincide = !tipoSeleccionado || dato.type === tipoSeleccionado;
+    return dentroRango && tipoCoincide;
+  });
+
   // Ordenar mediciones de más reciente a más antiguo
-  const sortedMedicionData = [...medicionData].sort((a, b) => new Date(b.time) - new Date(a.time));
+  const sortedMedicionData = [...filteredData].sort((a, b) => new Date(b.time) - new Date(a.time));
 
   // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage; // Último índice de los elementos
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // Primer índice de los elementos
-  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem); // Elementos actuales a mostrar
-  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage); // Total de páginas
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
 
   return (
     <>
@@ -94,7 +106,7 @@ const Tables = () => {
               value={nodoSeleccionado || ""}
               onChange={(e) => {
                 setNodoSeleccionado(e.target.value);
-                setCurrentPage(1); // Resetear a la primera página al cambiar nodo
+                setCurrentPage(1); 
               }}
               className="form-control"
             >
@@ -106,6 +118,37 @@ const Tables = () => {
               ))}
             </select>
           </Col>
+
+          <Col xl="2">
+            <select
+              value={tipoSeleccionado}
+              onChange={(e) => setTipoSeleccionado(e.target.value)}
+              className="form-control"
+            >
+              <option value="">Seleccione Tipo de Dato</option>
+              <option value="TEMP_T">Temperatura</option>
+              <option value="HUMIDITY_T">Humedad</option>
+              <option value="PRESSURE_T">Presión</option>
+              <option value="ALTITUDE_T">23</option>
+            </select>
+          </Col>
+
+          <Col xl="2">
+            <input
+              type="date"
+              className="form-control"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+          </Col>
+          <Col xl="2">
+            <input
+              type="date"
+              className="form-control"
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+            />
+          </Col>
         </Row>
 
         <Row>
@@ -113,9 +156,7 @@ const Tables = () => {
             <Card className="shadow">
               <CardHeader className="border-0">
                 <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado || "Todos"}</h3>
-                <p className="text-muted">
-                  Mostrando datos de más reciente a más antiguo.
-                </p>
+                <p className="text-muted">Mostrando datos de más reciente a más antiguo.</p>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead className="thead-light">
@@ -147,16 +188,10 @@ const Tables = () => {
                             <i className="fas fa-ellipsis-v" />
                           </DropdownToggle>
                           <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()} // Falta implementar
-                            >
+                            <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
                               Ver nodo
                             </DropdownItem>
-                            <DropdownItem
-                              href="#pablo"
-                              onClick={(e) => e.preventDefault()} // Falta implementar
-                            >
+                            <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
                               Ir a ubicación
                             </DropdownItem>
                           </DropdownMenu>
@@ -167,45 +202,67 @@ const Tables = () => {
                 </tbody>
               </Table>
               <div className="d-flex justify-content-between">
-                <Pagination className="pagination justify-content-end mb-0">
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink
-                      href="#pablo"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(currentPage - 1);
-                      }}
-                    >
-                      <i className="fas fa-angle-left" />
-                      <span className="sr-only">Previous</span>
-                    </PaginationLink>
-                  </PaginationItem>
-                  {[...Array(totalPages)].map((_, index) => (
-                    <PaginationItem active={index + 1 === currentPage} key={index}>
-                      <PaginationLink
-                        href="#pablo"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setCurrentPage(index + 1);
-                        }}
-                      >
-                        {index + 1}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      href="#pablo"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(currentPage + 1);
-                      }}
-                    >
-                      <i className="fas fa-angle-right" />
-                      <span className="sr-only">Next</span>
-                    </PaginationLink>
-                  </PaginationItem>
-                </Pagination>
+              <Pagination className="pagination justify-content-end mb-0">
+  {/* Botón para página anterior */}
+  <PaginationItem disabled={currentPage === 1}>
+    <PaginationLink
+      href="#pablo"
+      onClick={(e) => {
+        e.preventDefault();
+        setCurrentPage(currentPage - 1);
+      }}
+    >
+      <i className="fas fa-angle-left" />
+      <span className="sr-only">Previous</span>
+    </PaginationLink>
+  </PaginationItem>
+
+  {/* Lógica para limitar la cantidad de botones */}
+  {(() => {
+    const pageButtons = [];
+    const maxButtons = 5; // Cambia este valor si deseas más/menos botones
+    let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+
+    // Ajusta la posición de las páginas si está al principio o final
+    if (endPage - startPage < maxButtons - 1) {
+      startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageButtons.push(
+        <PaginationItem active={i === currentPage} key={i}>
+          <PaginationLink
+            href="#pablo"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage(i);
+            }}
+          >
+            {i}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    return pageButtons;
+  })()}
+
+  {/* Botón para la página siguiente */}
+  <PaginationItem disabled={currentPage === totalPages}>
+    <PaginationLink
+      href="#pablo"
+      onClick={(e) => {
+        e.preventDefault();
+        setCurrentPage(currentPage + 1);
+      }}
+    >
+      <i className="fas fa-angle-right" />
+      <span className="sr-only">Next</span>
+    </PaginationLink>
+  </PaginationItem>
+</Pagination>
+
               </div>
             </Card>
           </div>
@@ -216,4 +273,3 @@ const Tables = () => {
 };
 
 export default Tables;
-
