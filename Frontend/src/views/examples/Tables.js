@@ -22,7 +22,7 @@ import Header from "components/Headers/Header.js";
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
   const [medicionData, setMedicionData] = useState([]);
-  const [nodoSeleccionado, setNodoSeleccionado] = useState("");
+  const [nodoSeleccionado, setNodoSeleccionado] = useState(0);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -43,6 +43,11 @@ const Tables = () => {
         }
         const data = await response.json();
         setNodos(data);
+
+        // Establecer el nodo por defecto si hay nodos disponibles
+        if (data.length > 0) {
+          setNodoSeleccionado(data[0].numero); // Establece el primer nodo como seleccionado
+        }
       } catch (error) {
         console.error("Error cargando los nodos", error);
         setError(error);
@@ -56,7 +61,7 @@ const Tables = () => {
   // Carga de mediciones según el nodo seleccionado
   useEffect(() => {
     const getMedicionData = async () => {
-      if (nodoSeleccionado) {
+      if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
           const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
@@ -73,6 +78,8 @@ const Tables = () => {
         }
       }
     };
+
+    // Llamar a getMedicionData al montar el componente o cuando nodoSeleccionado cambie
     getMedicionData();
   }, [nodoSeleccionado]);
 
@@ -136,16 +143,15 @@ const Tables = () => {
       <Header />
       <Container className="mt--7" fluid>
         <Row className="mb-3">
-          <Col xl="2">
+        <Col xl="2">
             <select
-              value={nodoSeleccionado || ""}
+              value={nodoSeleccionado}
               onChange={(e) => {
                 setNodoSeleccionado(e.target.value);
                 setCurrentPage(1);
               }}
               className="form-control"
             >
-              <option value="">Nodo</option>
               {nodos.map((nodo, index) => (
                 <option key={index} value={nodo.numero}>
                   Nodo {nodo.numero}
