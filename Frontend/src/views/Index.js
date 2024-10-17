@@ -25,15 +25,17 @@ import Header from "components/Headers/Header.js";
 
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
-  const [nodoData, setMedicionData] = useState(null);
+  const [nodos, setNodos] = useState([]);
+  const [medicionesDiarias, setMedicionesDiarias] = useState(null);
+  const [medicionesSemanales, setMedicionesSemanales] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [nodos, setNodos] = useState([]);
-  const [nodoSeleccionado, setNodoSeleccionado] = useState(null);
+  const [nodoSeleccionado, setNodoSeleccionado] = useState(0); // Nodo seleccionado por defecto en 0
 
+  // Obtener todos los nodos para el desplegable
   useEffect(() => {
     const getNodos = async () => {
-      setLoading(true); // Asegúrate de iniciar la carga
+      setLoading(true); // Iniciar la carga
       try {
         const response = await fetch("http://localhost:8000/obtener_nodos");
         if (!response.ok) {
@@ -41,6 +43,11 @@ const Index = (props) => {
         }
         const data = await response.json();
         setNodos(data);
+
+        // Si no hay nodos, el nodo seleccionado será 0
+        if (data.length === 0) {
+          setNodoSeleccionado(0);
+        }
       } catch (error) {
         console.error("Error cargando los nodos", error);
         setError(error);
@@ -51,9 +58,10 @@ const Index = (props) => {
     getNodos();
   }, []);
 
+  // Según el nodo seleccionado, obtener sus mediciones del dia
   useEffect(() => {
-    const getMedicionData = async () => {
-      if (nodoSeleccionado) {
+    const getMedicionesDiarias = async () => {
+      if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
           const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
@@ -61,19 +69,19 @@ const Index = (props) => {
             throw new Error("Error al hacer el fetch de mediciones");
           }
           const data = await response.json();
-  
+
           // Obtener la fecha actual
           const today = new Date().toISOString().split('T')[0];
-  
+
           // Filtrar las mediciones del día actual
           const medicionesFiltradas = data.filter(medicion => medicion.time.startsWith(today));
-  
+
           // Dividir el día en intervalos de 2 horas
           const medicionesPorIntervalo = [];
           for (let hour = 0; hour < 24; hour += 2) {
             const startTime = new Date(`${today}T${String(hour).padStart(2, '0')}:00:00`);
             const endTime = new Date(`${today}T${String(hour + 2).padStart(2, '0')}:00:00`);
-  
+
             // Buscar la medición más cercana al final del intervalo
             const medicionEnIntervalo = medicionesFiltradas
               .filter(medicion => {
@@ -81,14 +89,14 @@ const Index = (props) => {
                 return time >= startTime && time < endTime;
               })
               .sort((a, b) => new Date(b.time) - new Date(a.time)); // Ordena por la más cercana al final del intervalo
-  
+
             // Si hay al menos una medición en este intervalo, tomar la más reciente
             if (medicionEnIntervalo.length > 0) {
               medicionesPorIntervalo.push(medicionEnIntervalo[0]);
             }
           }
-  
-          setMedicionData(medicionesPorIntervalo);
+          // Guardar solo las mediciones filtradas por el día actual
+          setMedicionesDiarias(medicionesPorIntervalo); // Guardar las mediciones por intervalo en vez de todas las mediciones
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -97,25 +105,70 @@ const Index = (props) => {
         }
       }
     };
-    getMedicionData();
+    getMedicionesDiarias();
+  }, [nodoSeleccionado]);
+
+  // Según el nodo seleccionado, obtener sus mediciones de la semana
+  useEffect(() => {
+    const getMedicionesSemanales = async () => {
+      if (nodoSeleccionado !== null) {
+        setLoading(true);
+        try {
+          const response = await fetch(`http://localhost:8000/leer_mediciones_nodo/${nodoSeleccionado}`);
+          if (!response.ok) {
+            throw new Error("Error al hacer el fetch de mediciones");
+          }
+          const data = await response.json();
+
+          // Obtener la fecha actual y calcular el inicio de la semana (lunes)
+          const today = new Date();
+          const firstDayOfWeek = new Date(today);
+          firstDayOfWeek.setDate(today.getDate() - today.getDay() + 1); // Ajuste para lunes
+
+          // Filtrar las mediciones de la semana actual
+          const medicionesFiltradas = data.filter(medicion => {
+            const fechaMedicion = new Date(medicion.time);
+            return fechaMedicion >= firstDayOfWeek && fechaMedicion <= today;
+          });
+
+          // Agrupar las mediciones por día de la semana
+          const medicionesPorDia = Array(7).fill(null).map(() => []);
+          medicionesFiltradas.forEach(medicion => {
+            const fechaMedicion = new Date(medicion.time);
+            const diaDeLaSemana = fechaMedicion.getDay(); // 0 para domingo, 1 para lunes, etc.
+            medicionesPorDia[diaDeLaSemana].push(medicion);
+          });
+
+          // Guardar las mediciones filtradas y agrupadas en el estado
+          setMedicionesSemanales(medicionesFiltradas);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    getMedicionesSemanales();
   }, [nodoSeleccionado]);
 
   // Manejo de carga y errores
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error cargando datos: {error.message}</p>;
 
-  const valoresNodos = nodoData ? nodoData.map(item => parseFloat(parseFloat(item.data).toFixed(1))) : [];
-  
-  // Función para filtrar los datos cuyo type es 1
-  const filtrarDatosType1 = (data) => {
+  // Función para filtrar los datos cuyo type es 1-Temperatura
+  const filtrarDatosTipo = (data, tipo) => {
     return data
       ? data
-          .filter((item) => item.type === 1) // Filtra los datos con type 1
+          .filter((item) => item.type === tipo) // Filtra los datos con el tipo proporcionado
           .map((item) => parseFloat(parseFloat(item.data).toFixed(1))) // Convierte los valores a float y redondea
       : [];
   };
 
-  const valoresNodosTemp = filtrarDatosType1(nodoData);
+  // Filtrar los valores diarios y semanales
+  const valoresNodosDiario = medicionesDiarias ? filtrarDatosTipo(medicionesDiarias, 23) : [];
+  const valoresNodosSemanal = medicionesSemanales ? filtrarDatosTipo(medicionesSemanales, 23) : [];
+  const valoresNodosTemp = filtrarDatosTipo(medicionesSemanales, 1);
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -124,31 +177,27 @@ const Index = (props) => {
   const toggleNavs = (e, index) => {
     e.preventDefault();
     setActiveNav(index);
-   // setMedicionData("data" + index);
   };
 
   return (
     <>
       <Header />
-        <Container className="mt--9" fluid>
-          <Row className="mt-5 mb-2">
-            <Col xl="2">     
+      <Container className="mt--9" fluid>
+        <Row className="mt-5 mb-2">
+          <Col xl="2">
             <select
-              value={nodoSeleccionado || ""}
-              onChange={(e) => setNodoSeleccionado(e.target.value)}
+              value={nodoSeleccionado}
+              onChange={(e) => setNodoSeleccionado(parseInt(e.target.value))}
               className="form-control"
             >
-              <option value="" disabled>
-                Seleccionar nodo
-              </option>
               {nodos.map((nodo, index) => (
                 <option key={index} value={nodo.numero}>
                   Nodo {nodo.numero}
                 </option>
               ))}
             </select>
-            </Col>
-          </Row>
+          </Col>
+        </Row>
           <Row>
             <Col className="mb-5 mb-xl-0" xl="8">
               <Card className="bg-gradient-default shadow">
@@ -190,7 +239,7 @@ const Index = (props) => {
                 <CardBody>
                   <div className="chart">
                     <Line
-                      data={activeNav === 1 ? chartExample1.data1(valoresNodos) : chartExample1.data2(valoresNodos)}
+                      data={activeNav === 1 ? chartExample1.data1(valoresNodosDiario) : chartExample1.data2(valoresNodosSemanal)}
                       options={chartExample1.options}
                       getDatasetAtEvent={(e) => console.log(e)}
                     />
@@ -220,24 +269,6 @@ const Index = (props) => {
                 </CardBody>
               </Card>
             </Col>
-          </Row>
-
-          <Row className="mt-5">
-            <Col>
-              <h2>Valores de Nodos (Data)</h2>
-              <ul>
-                {valoresNodos.map((valor, index) => (
-                  <li key={index}>Valor Nodo {index + 1}: {valor}</li>
-                ))}
-              </ul>
-            </Col>
-          </Row>
-
-          <Row className="mt-5">
-            <div>
-              <h2>Datos JSON:</h2>
-              <pre>{JSON.stringify(nodoData, null, 2)}</pre>
-            </div>
           </Row>
         </Container>
     </>
