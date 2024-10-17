@@ -14,17 +14,19 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button, // Añadido para el botón de exportar
+  Button,
 } from "reactstrap";
+import * as XLSX from "xlsx"; // Importar la librería XLSX
 import Header from "components/Headers/Header.js";
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
   const [medicionData, setMedicionData] = useState([]);
   const [nodoSeleccionado, setNodoSeleccionado] = useState("");
-  const [tipoSeleccionado, setTipoSeleccionado] = useState(""); 
+  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
+  const [cantidadExportar, setCantidadExportar] = useState(""); // Nueva variable para cantidad
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,24 +94,41 @@ const Tables = () => {
   const sortedMedicionData = [...filteredData].sort((a, b) => new Date(b.time) - new Date(a.time));
 
   // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage; // Último índice de los elementos
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage; // Primer índice de los elementos
-  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem); // Elementos actuales a mostrar
-  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage); // Total de páginas
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
 
-  // Función para exportar datos a un archivo de texto
-  const exportToText = () => {
-    const content = currentItems.map(dato => {
-      return `Nodo: ${dato.nodo_numero}, Tipo: ${dato.type}, Data: ${dato.data}, Fecha-Hora: ${new Date(dato.time).toLocaleString()}`;
-    }).join("\n");
+  // Función para exportar todos los datos del nodo seleccionado
+  const exportAllToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      sortedMedicionData.map((dato) => ({
+        Nodo: dato.nodo_numero,
+        Tipo: dato.type,
+        Data: dato.data,
+        "Fecha-Hora": new Date(dato.time).toLocaleString(),
+      }))
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_completo.xlsx`);
+  };
 
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `mediciones_nodo_${nodoSeleccionado || "todos"}.txt`;
-    a.click();
-    window.URL.revokeObjectURL(url);
+  // Función para exportar una cantidad específica de datos
+  const exportSelectedToExcel = () => {
+    const cantidad = parseInt(cantidadExportar) || sortedMedicionData.length; // Determinar cantidad a exportar
+    const dataToExport = sortedMedicionData.slice(0, cantidad); // Obtener la cantidad seleccionada
+    const ws = XLSX.utils.json_to_sheet(
+      dataToExport.map((dato) => ({
+        Nodo: dato.nodo_numero,
+        Tipo: dato.type,
+        Data: dato.data,
+        "Fecha-Hora": new Date(dato.time).toLocaleString(),
+      }))
+    );
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_${cantidad}.xlsx`);
   };
 
   return (
@@ -122,11 +141,11 @@ const Tables = () => {
               value={nodoSeleccionado || ""}
               onChange={(e) => {
                 setNodoSeleccionado(e.target.value);
-                setCurrentPage(1); 
+                setCurrentPage(1);
               }}
               className="form-control"
             >
-              <option value="">Seleccione un Nodo</option>
+              <option value="">Nodo</option>
               {nodos.map((nodo, index) => (
                 <option key={index} value={nodo.numero}>
                   Nodo {nodo.numero}
@@ -141,7 +160,7 @@ const Tables = () => {
               onChange={(e) => setTipoSeleccionado(e.target.value)}
               className="form-control"
             >
-              <option value="">Seleccione Tipo de Dato</option>
+              <option value="">Tipo de Dato</option>
               <option value="TEMP_T">Temperatura</option>
               <option value="HUMIDITY_T">Humedad</option>
               <option value="PRESSURE_T">Presión</option>
@@ -166,10 +185,28 @@ const Tables = () => {
             />
           </Col>
 
-          {/* Botón para exportar a texto */}
+          {/* Campo para seleccionar la cantidad de datos a exportar */}
           <Col xl="2">
-            <Button color="primary" onClick={exportToText}>
-              Exportar a Texto
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Cantidad a exportar"
+              value={cantidadExportar}
+              onChange={(e) => setCantidadExportar(e.target.value)}
+            />
+          </Col>
+
+          {/* Botón para exportar cantidad seleccionada */}
+          <Col xl="2">
+            <Button color="primary" onClick={exportSelectedToExcel}>
+              Exportar Cantidad
+            </Button>
+          </Col>
+
+          {/* Botón para exportar todos los datos */}
+          <Col xl="2">
+            <Button color="primary" onClick={exportAllToExcel}>
+              Exportar Todo
             </Button>
           </Col>
         </Row>
@@ -190,43 +227,22 @@ const Tables = () => {
                     <th scope="col">Tipo</th>
                     <th scope="col">Data</th>
                     <th scope="col">Fecha-Hora</th>
-                    <th scope="col">Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.map((dato) => (
-                    <tr key={dato.id}>
-                      <th scope="row">{dato.nodo_numero}</th>
-                      <td>{dato.type}</td>
-                      <td>{dato.data}</td>
-                      <td>{new Date(dato.time).toLocaleString()}</td>
-                      <td className="text-right">
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                            className="btn-icon-only text-light"
-                            href="#pablo"
-                            role="button"
-                            size="sm"
-                            color=""
-                            onClick={(e) => e.preventDefault()}
-                          >
-                            <i className="fas fa-ellipsis-v" />
-                          </DropdownToggle>
-                          <DropdownMenu className="dropdown-menu-arrow" right>
-                            <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
-                              Ver nodo
-                            </DropdownItem>
-                            <DropdownItem href="#pablo" onClick={(e) => e.preventDefault()}>
-                              Ir a ubicación
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
+                  {currentItems.map((medicion, index) => (
+                    <tr key={index}>
+                      <td>{medicion.nodo_numero}</td>
+                      <td>{medicion.type}</td>
+                      <td>{medicion.data}</td>
+                      <td>{new Date(medicion.time).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
               </Table>
-              <div className="d-flex justify-content-between">
+
+              {/* Paginación */}
+              <div className="py-3">
                 <Pagination className="pagination justify-content-end mb-0">
                   {/* Botón para página anterior */}
                   <PaginationItem disabled={currentPage === 1}>
@@ -242,20 +258,15 @@ const Tables = () => {
                     </PaginationLink>
                   </PaginationItem>
 
-                  {/* Lógica para limitar la cantidad de botones */}
+                  {/* Botones de paginación */}
                   {(() => {
                     const pageButtons = [];
                     const maxButtons = 5;
-                    let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-
-                    if (endPage - startPage < maxButtons - 1) {
-                      startPage = Math.max(1, endPage - maxButtons + 1);
-                    }
-
+                    const startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                    const endPage = Math.min(totalPages, startPage + maxButtons - 1);
                     for (let i = startPage; i <= endPage; i++) {
                       pageButtons.push(
-                        <PaginationItem active={i === currentPage} key={i}>
+                        <PaginationItem key={i} active={i === currentPage}>
                           <PaginationLink
                             href="#pablo"
                             onClick={(e) => {
