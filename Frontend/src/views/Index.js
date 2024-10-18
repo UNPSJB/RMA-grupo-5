@@ -58,7 +58,6 @@ const Index = (props) => {
     getNodos();
   }, []);
 
-  // Según el nodo seleccionado, obtener sus mediciones del dia
   useEffect(() => {
     const getMedicionesDiarias = async () => {
       if (nodoSeleccionado !== null) {
@@ -69,34 +68,60 @@ const Index = (props) => {
             throw new Error("Error al hacer el fetch de mediciones");
           }
           const data = await response.json();
-
-          // Obtener la fecha actual
-          const today = new Date().toISOString().split('T')[0];
-
-          // Filtrar las mediciones del día actual
-          const medicionesFiltradas = data.filter(medicion => medicion.time.startsWith(today));
-
-          // Dividir el día en intervalos de 2 horas
-          const medicionesPorIntervalo = [];
-          for (let hour = 0; hour < 24; hour += 2) {
-            const startTime = new Date(`${today}T${String(hour).padStart(2, '0')}:00:00`);
-            const endTime = new Date(`${today}T${String(hour + 2).padStart(2, '0')}:00:00`);
-
-            // Buscar la medición más cercana al final del intervalo
-            const medicionEnIntervalo = medicionesFiltradas
-              .filter(medicion => {
-                const time = new Date(medicion.time);
-                return time >= startTime && time < endTime;
-              })
-              .sort((a, b) => new Date(b.time) - new Date(a.time)); // Ordena por la más cercana al final del intervalo
-
-            // Si hay al menos una medición en este intervalo, tomar la más reciente
-            if (medicionEnIntervalo.length > 0) {
-              medicionesPorIntervalo.push(medicionEnIntervalo[0]);
+  
+          // Definir las horas deseadas (en formato de 24 horas)
+          const horasDeseadas = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
+  
+          // Obtener la fecha y hora actual
+          const ahora = new Date();
+          const hoy = new Date();
+          const inicioDia = new Date(hoy.setHours(0, 0, 0, 0)); // 0 am del día actual
+          const horaActual = ahora.getHours(); // Hora actual en formato 24 horas
+  
+          // Crear un objeto para almacenar la medición más cercana para cada hora deseada
+          const medicionesPorHora = {};
+  
+          data.forEach(medicion => {
+            const fechaMedicion = new Date(medicion.time);
+  
+            // Filtrar solo mediciones del día actual y hasta la hora actual
+            if (fechaMedicion >= inicioDia && fechaMedicion.getHours() <= horaActual) {
+              const horaMedicion = fechaMedicion.getHours();
+  
+              // Si la hora de la medición está dentro de las horas deseadas
+              if (horasDeseadas.includes(horaMedicion)) {
+                // Si no hay una medición almacenada para esta hora, o si esta medición es más cercana
+                if (!medicionesPorHora[horaMedicion] || Math.abs(medicion.data - medicionesPorHora[horaMedicion].data) < Math.abs(medicionesPorHora[horaMedicion].data - medicion.data)) {
+                  medicionesPorHora[horaMedicion] = medicion;
+                }
+              }
             }
-          }
-          // Guardar solo las mediciones filtradas por el día actual
-          setMedicionesDiarias(medicionesPorIntervalo); // Guardar las mediciones por intervalo en vez de todas las mediciones
+          });
+  
+          // Convertir el objeto a un arreglo
+          const medicionesFiltradas = Object.values(medicionesPorHora);
+  
+          // Llenar los huecos con las mediciones más cercanas anteriores
+          horasDeseadas.forEach(hora => {
+            if (hora <= horaActual) {
+              // Si no hay medición para esta hora deseada
+              if (!medicionesFiltradas.some(m => new Date(m.time).getHours() === hora)) {
+                // Intentar tomar la medición más cercana anterior
+                const medicionCercana = medicionesFiltradas
+                  .filter(m => new Date(m.time).getHours() < hora)
+                  .sort((a, b) => new Date(b.time) - new Date(a.time))[0]; // Obtener la más reciente anterior
+  
+                if (medicionCercana) {
+                  medicionesFiltradas.push(medicionCercana);
+                }
+              }
+            }
+          });
+  
+          // Limitar a 13 mediciones
+          const medicionesLimitadas = medicionesFiltradas.slice(0, 13);
+  
+          setMedicionesDiarias(medicionesLimitadas);
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -107,6 +132,8 @@ const Index = (props) => {
     };
     getMedicionesDiarias();
   }, [nodoSeleccionado]);
+  
+  
 
   // Según el nodo seleccionado, obtener sus mediciones de la semana
   useEffect(() => {
@@ -156,12 +183,12 @@ const Index = (props) => {
   if (loading) return <p>Cargando...</p>;
   if (error) return <p>Error cargando datos: {error.message}</p>;
 
-  // Función para filtrar los datos cuyo type es 1-Temperatura
+  // Función para filtrar los datos segun tipo
   const filtrarDatosTipo = (data, tipo) => {
     return data
       ? data
-          .filter((item) => item.type === tipo) // Filtra los datos con el tipo proporcionado
-          .map((item) => parseFloat(parseFloat(item.data).toFixed(1))) // Convierte los valores a float y redondea
+          .filter((item) => item && item.type === tipo) // Verifica que item no sea null o undefined
+          .map((item) => parseFloat(item.data)) // Convierte los valores a float
       : [];
   };
 
@@ -269,6 +296,23 @@ const Index = (props) => {
                 </CardBody>
               </Card>
             </Col>
+          </Row>
+          <Row className="mt-5">
+            <Col>
+              <h2>Valores de Nodos (Data)</h2>
+              <ul>
+                {valoresNodosDiario.map((valor, index) => (
+                  <li key={index}>Valor Nodo {index + 1}: {valor}</li>
+                ))}
+              </ul>
+            </Col>
+          </Row>
+
+          <Row className="mt-5">
+            <div>
+              <h2>Datos JSON:</h2>
+              <pre>{JSON.stringify(medicionesDiarias, null, 2)}</pre>
+            </div>
           </Row>
         </Container>
     </>
