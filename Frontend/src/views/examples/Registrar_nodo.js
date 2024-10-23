@@ -1,7 +1,7 @@
 
   import React, { useState } from "react";
   import axios from "axios"; 
-
+  import Header from "components/Headers/Header.js";
   
   const RegistrarNodo = () => {
     const [nodo, setNodo] = useState('');
@@ -44,7 +44,7 @@
     padding: "30px",
     borderRadius: "8px",
     boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f1f1f9",
   };
 
   const inputStyle = {
@@ -74,11 +74,13 @@
 
   const cardStyle = {
     padding: "20px",
-    marginTop: "100px",
+    marginTop: "20px",
   };
 
   return (
-    
+    <>
+    <Header />
+
     <div style={cardStyle}>
       <div style={formStyle}>
         <h2 style={{ textAlign: "center", color: "#333" }}>Registrar Nodo</h2>
@@ -122,6 +124,7 @@
         </form>
       </div>
     </div>
+    </>
   );
 };
 
