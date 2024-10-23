@@ -240,7 +240,7 @@ const Tables = () => {
                     <tr key={index}>
                       <td>{medicion.nodo_numero}</td>
                       <td>{medicion.type}</td>
-                      <td>{medicion.data}</td>
+                      <td>{parseFloat(medicion.data).toFixed(2)}</td>
                       <td>{new Date(medicion.time).toLocaleString()}</td>
                     </tr>
                   ))}

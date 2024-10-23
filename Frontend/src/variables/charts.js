@@ -320,7 +320,7 @@ let chartExample1 = {
             content += label;
           }
 
-          content += "" + yLabel + " Metros"; 
+          content += "" + parseFloat(yLabel.toFixed(2)) + " Metros"; 
           return content;
         },
       },
@@ -378,7 +378,7 @@ let chartExample2 = {
           if (data.datasets.length > 1) {
             content += label;
           }
-          content += yLabel;
+          content += "" + parseFloat(yLabel.toFixed(1)) + "°c";
           return content;
         },
       },
