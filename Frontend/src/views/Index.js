@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import classnames from "classnames";
 import Chart from "chart.js";
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar, Pie, Radar, Polar, Doughnut} from "react-chartjs-2";
 import {
   Card,
   CardHeader,
@@ -20,9 +20,11 @@ import {
   parseOptions,
   chartExample1,
   chartExample2,
+  compuesto,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
 
+  
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [nodos, setNodos] = useState([]);
@@ -121,7 +123,7 @@ const Index = (props) => {
           // Limitar a 13 mediciones
           const medicionesLimitadas = medicionesFiltradas.slice(0, 13);
   
-          setMedicionesDiarias(medicionesLimitadas);
+          setMedicionesDiarias(medicionesLimitadas); 
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -210,7 +212,7 @@ const Index = (props) => {
     <>
       <Header />
       <Container className="mt--9" fluid>
-        <Row className="mt-5 mb-2">
+        <Row className="mt-5 mb-3">
           <Col xl="2">
             <select
               value={nodoSeleccionado}
@@ -226,6 +228,7 @@ const Index = (props) => {
           </Col>
         </Row>
           <Row>
+            {/* GRAFICO LINEAL */}
             <Col className="mb-5 mb-xl-0" xl="8">
               <Card className="bg-gradient-default shadow">
                 <CardHeader className="bg-transparent">
@@ -274,6 +277,7 @@ const Index = (props) => {
                 </CardBody>
               </Card>
             </Col>
+            {/* GRAFICO BARRAS */}
             <Col xl="4">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
@@ -297,7 +301,75 @@ const Index = (props) => {
               </Card>
             </Col>
           </Row>
-          <Row className="mt-5">
+          <Row className="mt-4 mb-2">
+            {/* GRAFICO RADAR */}
+            <Col xl="4">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Medición semanal
+                      </h6>
+                      <h2 className="mb-0">Temperatura del Agua</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart">
+                    <Radar
+                      data={chartExample2.data(valoresNodosTemp)}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            {/* GRAFICO COMPUESTO */}
+            <Col xl="4">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Medición semanal
+                      </h6>
+                      <h2 className="mb-0"> Ejemplo</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart">
+                  <Bar data={compuesto.data} options={compuesto.options} />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          {/* GRAFICO POLAR */}
+            <Col xl="4">
+              <Card className="shadow">
+                <CardHeader className="bg-transparent">
+                  <Row className="align-items-center">
+                    <div className="col">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
+                        Medición semanal
+                      </h6>
+                      <h2 className="mb-0">Temperatura del Agua</h2>
+                    </div>
+                  </Row>
+                </CardHeader>
+                <CardBody>
+                  <div className="chart">
+                    <Polar
+                      data={chartExample2.data(valoresNodosTemp)}
+                    />
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            
+          </Row>
+          {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE*/}
+          {/*<Row className="mt-5">
             <Col>
               <h2>Valores de Nodos (Data)</h2>
               <ul>
@@ -306,14 +378,14 @@ const Index = (props) => {
                 ))}
               </ul>
             </Col>
-          </Row>
+          </Row> */}
 
-          <Row className="mt-5">
+          {/*<Row className="mt-5"> 
             <div>
               <h2>Datos JSON:</h2>
               <pre>{JSON.stringify(medicionesDiarias, null, 2)}</pre>
             </div>
-          </Row>
+          </Row>*/} 
         </Container>
     </>
   );
