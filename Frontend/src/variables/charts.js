@@ -398,9 +398,67 @@ let chartExample2 = {
   },
 };
 
+let compuesto = {
+  data: {
+    labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
+    datasets: [
+      {
+        label: 'Temperatura',
+        data: [20, 40, 30, 35, 25, 45, 30],
+        backgroundColor: 'rgba(54, 150, 235, 0.5)',
+        borderWidth: 0.5,
+        maxBarThickness: 30,
+      },
+      {
+        label: 'Humedad',
+        data: [30, 50, 40, 38, 40, 50, 20],
+        type: 'line',
+        borderColor: 'rgba(50, 50, 200, 1)',
+        fill: false,
+        lineTension: 0,
+      },
+      {
+        label: 'Presion',
+        data: [5, 15, 10, 12, 10, 20, 10],
+        type: 'line',
+        borderColor: 'rgba(255, 50, 132, 1)',
+        fill: true,
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        lineTension: 0,
+      },
+    ],
+  },
+
+  options: {
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+            callback: (value) => `${value}`, // Formatting y-axis labels
+          },
+        },
+      ],
+    },
+    tooltips: {
+      callbacks: {
+        label: (tooltipItem, data) => {
+          let dataset = data.datasets[tooltipItem.datasetIndex];
+          return `${dataset.label}: ${tooltipItem.yLabel}`;
+        },
+      },
+    },
+    legend: {
+      display: true,
+      position: 'bottom',
+    },
+  },
+};
+
 module.exports = {
   chartOptions, // used inside src/views/Index.js
   parseOptions, // used inside src/views/Index.js
   chartExample1, // used inside src/views/Index.js
   chartExample2, // used inside src/views/Index.js
+  compuesto, //grafico compuesto
 };
