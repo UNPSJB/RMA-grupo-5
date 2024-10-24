@@ -65,3 +65,10 @@ def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
 @router.get("/leer_ultimo_nodo", response_model=schemas.Nodo)
 def read_ultimo_nodo(db: Session = Depends(get_db)):
     return services.leer_ultimo_nodo(db)
+
+@router.get("/tipo_dato/{nombre}")
+def get_tipo_dato(nombre: str, db: Session = Depends(get_db)):
+    tipo_dato = getattr(models.TipoDato, nombre)
+    if not tipo_dato:
+        raise HTTPException(status_code=404, detail="Tipo de dato no encontrado")
+    return {"tipo": tipo_dato.value}

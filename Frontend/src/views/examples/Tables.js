@@ -24,6 +24,7 @@ const Tables = () => {
   const [medicionData, setMedicionData] = useState([]);
   const [nodoSeleccionado, setNodoSeleccionado] = useState(0);
   const [tipoSeleccionado, setTipoSeleccionado] = useState("");
+  const [tipoIdSeleccionado, setTipoIdSeleccionado] = useState(null);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [cantidadExportar, setCantidadExportar] = useState(""); // Nueva variable para cantidad
@@ -31,6 +32,17 @@ const Tables = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15);
+
+  // Filtrar los datos por tipo y rango de fechas
+  let filteredData;
+  let sortedMedicionData;
+
+  // Lógica de paginación
+  let indexOfLastItem; 
+  let indexOfFirstItem; 
+  let currentItems = [];
+  let totalPages;
+  
 
   // Carga de nodos
   useEffect(() => {
@@ -83,28 +95,56 @@ const Tables = () => {
     getMedicionData();
   }, [nodoSeleccionado]);
 
-  // Manejo de carga y errores
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>Error cargando datos: {error.message}</p>;
+  useEffect(() => {
+    const getTipoDato = async () => {
+      if (tipoSeleccionado) {
+        try {
+          const response = await fetch(`http://localhost:8000/tipo_dato/${tipoSeleccionado}`);
+          if (!response.ok) {
+            throw new Error("Error al hacer el fetch de mediciones");
+          }
+          const data = await response.json();
+          console.log(`el tipo es ${data.tipo}`)
+          setTipoIdSeleccionado(data.tipo);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } 
+      }else{
+        setTipoIdSeleccionado(null);
+      }
+      
+    };
 
-  // Filtrar los datos por tipo y rango de fechas
-  const filteredData = medicionData.filter((dato) => {
-    const fechaMedicion = new Date(dato.time);
-    const dentroRango =
-      (!fechaInicio || fechaMedicion >= new Date(fechaInicio)) &&
-      (!fechaFin || fechaMedicion <= new Date(fechaFin));
-    const tipoCoincide = !tipoSeleccionado || dato.type === tipoSeleccionado;
-    return dentroRango && tipoCoincide;
-  });
+    // Llamar a getMedicionData al montar el componente o cuando nodoSeleccionado cambie
+    getTipoDato();
+  }, [tipoSeleccionado]);
 
-  // Ordenar mediciones de más reciente a más antiguo
-  const sortedMedicionData = [...filteredData].sort((a, b) => new Date(b.time) - new Date(a.time));
+  const filtrar_datos = () => {
+    // Filtrar los datos por tipo y rango de fechas
+    filteredData = medicionData.filter((dato) => {
+      const fechaMedicion = new Date(dato.time);
+      const dentroRango =
+        (!fechaInicio || fechaMedicion >= new Date(fechaInicio)) &&
+        (!fechaFin || fechaMedicion <= new Date(fechaFin));
+      if (tipoIdSeleccionado === null)
+        return dentroRango;
+      return dentroRango && dato.type == tipoIdSeleccionado;
+    });
 
-  // Lógica de paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
+    
+    // Ordenar mediciones de más reciente a más antiguo
+    sortedMedicionData = [...filteredData].sort((a, b) => new Date(b.time) - new Date(a.time));
+
+    // Lógica de paginación
+    indexOfLastItem = currentPage * itemsPerPage;
+    indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem);
+    totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
+  };
+
+  //useEffect(() => { filtrar_datos() })
+  filtrar_datos();
 
   // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
@@ -138,6 +178,10 @@ const Tables = () => {
     XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_${cantidad}.xlsx`);
   };
 
+  // Manejo de carga y errores
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error cargando datos: {error.message}</p>;
+  
   return (
     <>
       <Header />
@@ -163,14 +207,14 @@ const Tables = () => {
           <Col xl="2">
             <select
               value={tipoSeleccionado}
-              onChange={(e) => setTipoSeleccionado(e.target.value)}
+              onChange={(e) => {setTipoSeleccionado(e.target.value); filtrar_datos(); setCurrentPage(1)}}
               className="form-control"
             >
               <option value="">Tipo de Dato</option>
-              <option value="TEMP_T">Temperatura</option>
-              <option value="HUMIDITY_T">Humedad</option>
-              <option value="PRESSURE_T">Presión</option>
-              <option value="ALTITUDE_T">Altitud</option>
+              <option value="temp_t">Temperatura</option>
+              <option value="humidity_t">Humedad</option>
+              <option value="pressure_t">Presión</option>
+              <option value="altitude_t">Altitud</option>
             </select>
           </Col>
 
