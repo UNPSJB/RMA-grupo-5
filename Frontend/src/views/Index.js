@@ -60,6 +60,39 @@ const Index = (props) => {
     getNodos();
   }, []);
 
+    // Función para obtener la diferencia en minutos entre dos fechas
+  const diferenciaEnMinutos = (fecha1, fecha2) => {
+    return Math.abs((new Date(fecha1) - new Date(fecha2)) / (1000 * 60));
+  };
+
+  // Función para obtener el valor más cercano a una hora específica
+  const obtenerValorMasCercano = (mediciones, horaObjetivo) => {
+    let valorMasCercano = null;
+    let diferenciaMinima = Infinity;
+
+    mediciones.forEach((medicion) => {
+      const diferencia = diferenciaEnMinutos(medicion.time, horaObjetivo);
+      if (diferencia < diferenciaMinima) {
+        diferenciaMinima = diferencia;
+        valorMasCercano = medicion;
+      }
+    });
+
+    return valorMasCercano;
+  };
+
+  
+  // Función para obtener la fecha actual (año, mes, día)
+  const esMismaFecha = (fechaMedicion) => {
+    const hoy = new Date();
+    const fecha = new Date(fechaMedicion);
+    return (
+      hoy.getFullYear() === fecha.getFullYear() &&
+      hoy.getMonth() === fecha.getMonth() &&
+      hoy.getDate() === fecha.getDate()
+    );
+  };
+
   useEffect(() => {
     const getMedicionesDiarias = async () => {
       if (nodoSeleccionado !== null) {
@@ -69,61 +102,32 @@ const Index = (props) => {
           if (!response.ok) {
             throw new Error("Error al hacer el fetch de mediciones");
           }
+  
           const data = await response.json();
   
-          // Definir las horas deseadas (en formato de 24 horas)
-          const horasDeseadas = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22];
+          // Filtrar mediciones del día actual
+          const medicionesHoy = data.filter((medicion) => esMismaFecha(medicion.time));
   
-          // Obtener la fecha y hora actual
-          const ahora = new Date();
-          const hoy = new Date();
-          const inicioDia = new Date(hoy.setHours(0, 0, 0, 0)); // 0 am del día actual
-          const horaActual = ahora.getHours(); // Hora actual en formato 24 horas
+          // Obtener la hora actual y establecer la hora objetivo a la hora anterior
+          const fechaHoy = new Date();
+          const horaObjetivo = new Date(fechaHoy.setHours(fechaHoy.getHours() - 1, 0, 0, 0));
   
-          // Crear un objeto para almacenar la medición más cercana para cada hora deseada
-          const medicionesPorHora = {};
-  
-          data.forEach(medicion => {
+          // Filtrar mediciones hasta la hora objetivo
+          const medicionesFiltradas = medicionesHoy.filter((medicion) => {
             const fechaMedicion = new Date(medicion.time);
-  
-            // Filtrar solo mediciones del día actual y hasta la hora actual
-            if (fechaMedicion >= inicioDia && fechaMedicion.getHours() <= horaActual) {
-              const horaMedicion = fechaMedicion.getHours();
-  
-              // Si la hora de la medición está dentro de las horas deseadas
-              if (horasDeseadas.includes(horaMedicion)) {
-                // Si no hay una medición almacenada para esta hora, o si esta medición es más cercana
-                if (!medicionesPorHora[horaMedicion] || Math.abs(medicion.data - medicionesPorHora[horaMedicion].data) < Math.abs(medicionesPorHora[horaMedicion].data - medicion.data)) {
-                  medicionesPorHora[horaMedicion] = medicion;
-                }
-              }
-            }
+            return fechaMedicion <= horaObjetivo;
           });
   
-          // Convertir el objeto a un arreglo
-          const medicionesFiltradas = Object.values(medicionesPorHora);
-  
-          // Llenar los huecos con las mediciones más cercanas anteriores
-          horasDeseadas.forEach(hora => {
-            if (hora <= horaActual) {
-              // Si no hay medición para esta hora deseada
-              if (!medicionesFiltradas.some(m => new Date(m.time).getHours() === hora)) {
-                // Intentar tomar la medición más cercana anterior
-                const medicionCercana = medicionesFiltradas
-                  .filter(m => new Date(m.time).getHours() < hora)
-                  .sort((a, b) => new Date(b.time) - new Date(a.time))[0]; // Obtener la más reciente anterior
-  
-                if (medicionCercana) {
-                  medicionesFiltradas.push(medicionCercana);
-                }
-              }
+          // Verificar si hay mediciones filtradas
+          if (medicionesFiltradas.length === 0) {
+            // Si no hay mediciones, obtener el valor más cercano
+            const valorMasCercano = obtenerValorMasCercano(medicionesHoy, horaObjetivo);
+            if (valorMasCercano) {
+              setMedicionesDiarias([valorMasCercano]); // Puedes establecerlo como un array si es necesario
             }
-          });
-  
-          // Limitar a 13 mediciones
-          const medicionesLimitadas = medicionesFiltradas.slice(0, 13);
-  
-          setMedicionesDiarias(medicionesLimitadas); 
+          } else {
+            setMedicionesDiarias(medicionesFiltradas);
+          }
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -132,12 +136,11 @@ const Index = (props) => {
         }
       }
     };
+  
     getMedicionesDiarias();
   }, [nodoSeleccionado]);
   
-  
 
-  // Según el nodo seleccionado, obtener sus mediciones de la semana
   useEffect(() => {
     const getMedicionesSemanales = async () => {
       if (nodoSeleccionado !== null) {
@@ -147,29 +150,56 @@ const Index = (props) => {
           if (!response.ok) {
             throw new Error("Error al hacer el fetch de mediciones");
           }
+  
           const data = await response.json();
-
-          // Obtener la fecha actual y calcular el inicio de la semana (lunes)
-          const today = new Date();
-          const firstDayOfWeek = new Date(today);
-          firstDayOfWeek.setDate(today.getDate() - today.getDay() + 1); // Ajuste para lunes
-
-          // Filtrar las mediciones de la semana actual
-          const medicionesFiltradas = data.filter(medicion => {
+  
+          // Obtener la fecha actual
+          const hoy = new Date();
+  
+          // Calcular el último lunes
+          const ultimoLunes = new Date(hoy);
+          ultimoLunes.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1));
+  
+          // Filtrar mediciones desde el último lunes hasta el día actual
+          const medicionesFiltradas = data.filter((medicion) => {
             const fechaMedicion = new Date(medicion.time);
-            return fechaMedicion >= firstDayOfWeek && fechaMedicion <= today;
+            return fechaMedicion >= ultimoLunes && fechaMedicion <= hoy;
           });
-
-          // Agrupar las mediciones por día de la semana
-          const medicionesPorDia = Array(7).fill(null).map(() => []);
-          medicionesFiltradas.forEach(medicion => {
-            const fechaMedicion = new Date(medicion.time);
-            const diaDeLaSemana = fechaMedicion.getDay(); // 0 para domingo, 1 para lunes, etc.
-            medicionesPorDia[diaDeLaSemana].push(medicion);
+  
+          // Agrupar mediciones por día de la semana
+          const medicionesPorDia = {};
+          medicionesFiltradas.forEach((medicion) => {
+            const fecha = new Date(medicion.time);
+            const dia = fecha.toISOString().split('T')[0]; // Usar solo la parte de la fecha (YYYY-MM-DD)
+  
+            // Asegúrate de que los datos estén dentro del rango esperado
+            const valor = parseFloat(medicion.data);
+            if (valor >= 0 && valor <= 1.8) {
+              if (!medicionesPorDia[dia]) {
+                medicionesPorDia[dia] = [];
+              }
+              medicionesPorDia[dia].push(valor); // Agregar solo valores válidos
+            }
           });
-
-          // Guardar las mediciones filtradas y agrupadas en el estado
-          setMedicionesSemanales(medicionesFiltradas);
+  
+          // Calcular el promedio de cada día y crear un nuevo arreglo de objetos
+          const promedios = Object.keys(medicionesPorDia).map((dia) => {
+            const mediciones = medicionesPorDia[dia];
+            const suma = mediciones.reduce((acc, val) => acc + val, 0);
+            const promedio = mediciones.length > 0 ? suma / mediciones.length : 0;
+  
+            // Usar el tipo de la primera medición para el nuevo objeto
+            const tipo = medicionesFiltradas.find(m => new Date(m.time).toISOString().split('T')[0] === dia)?.type;
+  
+            return {
+              type: tipo,
+              data: promedio.toString(), // Convertir a string
+              time: dia + "T00:00:00", // Mantener la fecha en el formato requerido
+            };
+          });
+  
+          // Guardar los promedios en el estado
+          setMedicionesSemanales(promedios);
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -180,6 +210,7 @@ const Index = (props) => {
     };
     getMedicionesSemanales();
   }, [nodoSeleccionado]);
+  
 
   // Manejo de carga y errores
   if (loading) return <p>Cargando...</p>;
@@ -189,7 +220,7 @@ const Index = (props) => {
   const filtrarDatosTipo = (data, tipo) => {
     return data
       ? data
-          .filter((item) => item && item.type === tipo) // Verifica que item no sea null o undefined
+          .filter((item) => item && (item.type) === tipo) // Verifica que item no sea null o undefined
           .map((item) => parseFloat(item.data)) // Convierte los valores a float
       : [];
   };
@@ -369,23 +400,23 @@ const Index = (props) => {
             
           </Row>
           {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE*/}
-          {/*<Row className="mt-5">
+          <Row className="mt-5">
             <Col>
               <h2>Valores de Nodos (Data)</h2>
               <ul>
-                {valoresNodosDiario.map((valor, index) => (
+                {valoresNodosSemanal.map((valor, index) => (
                   <li key={index}>Valor Nodo {index + 1}: {valor}</li>
                 ))}
               </ul>
             </Col>
-          </Row> */}
+          </Row>
 
-          {/*<Row className="mt-5"> 
+          <Row className="mt-5"> 
             <div>
               <h2>Datos JSON:</h2>
-              <pre>{JSON.stringify(medicionesDiarias, null, 2)}</pre>
+              <pre>{JSON.stringify(medicionesSemanales, null, 2)}</pre>
             </div>
-          </Row>*/} 
+          </Row>
         </Container>
     </>
   );
