@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Badge,
   Card,
   CardHeader,
   Table,
@@ -10,10 +9,6 @@ import {
   Pagination,
   PaginationItem,
   PaginationLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Button,
 } from "reactstrap";
 import * as XLSX from "xlsx"; // Importar la librería XLSX
@@ -95,6 +90,36 @@ const Tables = () => {
     getMedicionData();
   }, [nodoSeleccionado]);
 
+
+  const unidadesMedida = {
+    1: "°C",       // Grados Celsius para temperatura
+    2: "°C",       // Grados Celsius para temperatura 2
+    3: "%",        // Porcentaje para humedad
+    4: "hPa",      // Hectopascales para presión
+    5: "Luz",
+    23: "m",        // Metros para altitud
+    // Agrega aquí los demás casos con sus unidades correspondientes
+    // ...
+  };
+  const obtenerUnidad = (tipo) => {
+    // Si el tipo existe devuelve la unidad, sino, devuelve una cadena vacía.
+    return unidadesMedida[tipo] || "";
+  };
+
+  const nombreTipo = {
+    1: "Temperatura",
+    2: "Temperatura",       
+    3: "Humedad",        
+    4: "Presión atmosférica",
+    5: "Luz",      
+    23: "Altitud",        
+    // Agrega aquí los demás casos con sus unidades correspondientes
+    // ...
+  };
+  const obtenerNombreTipo = (data) => {
+    return nombreTipo[data] || "";
+  };
+
   useEffect(() => {
     const getTipoDato = async () => {
       if (tipoSeleccionado) {
@@ -129,7 +154,7 @@ const Tables = () => {
         (!fechaFin || fechaMedicion <= new Date(fechaFin));
       if (tipoIdSeleccionado === null)
         return dentroRango;
-      return dentroRango && dato.type == tipoIdSeleccionado;
+      return dentroRango && dato.type === tipoIdSeleccionado;
     });
 
     
@@ -283,10 +308,13 @@ const Tables = () => {
                   {currentItems.map((medicion, index) => (
                     <tr key={index}>
                       <td>{medicion.nodo_numero}</td>
-                      <td>{medicion.type}</td>
-                      <td>{parseFloat(medicion.data).toFixed(2)}</td>
+                      <td>{obtenerNombreTipo(medicion.type)}</td>
+                      <td>
+                        {parseFloat(medicion.data).toFixed(2)}{" "}
+                        {obtenerUnidad(medicion.type)} 
+                      </td> 
                       <td>{new Date(medicion.time).toLocaleString()}</td>
-                    </tr>
+                      </tr>
                   ))}
                 </tbody>
               </Table>
