@@ -97,9 +97,38 @@ const Tables = () => {
     3: "%",        // Porcentaje para humedad
     4: "hPa",      // Hectopascales para presión
     5: "Luz",
-    23: "m",        // Metros para altitud
-    // Agrega aquí los demás casos con sus unidades correspondientes
-    // ...
+    6: "%",       // Humedad del suelo
+    7: "%",       // Humedad del suelo 2
+    8: "Ω.m2/m",       //Ohmios Resistencia del suelo
+    9:"Ω.m2/m",        //Ohmios Resistencia del suelo 2
+    10: "%",        //Porcentaje para el oxígeno
+    11: "ppm", //Partes por millón (ppm) (Dióxido de Carbono)
+    12: "m/s",  // Metros por segundo (Velocidad del Viento)
+    13: "°",    // Grados (Dirección del Viento)
+    14: "mm",   // Milímetros (Precipitación)
+    15: "",     // Sin unidad específica (Movimiento)
+    16: "V",    // Voltios (Voltaje)
+    17: "V",    // Voltios (Voltaje #2)
+    18: "A",    // Amperios (Corriente)
+    19: "A",    // Amperios (Corriente #2)
+    20: "",     // Sin unidad específica (Iteraciones)
+    21: "°",    // Grados (Latitud GPS)
+    22: "°",    // Grados (Longitud GPS)
+    23: "m",    // Metros (Altitud GPS)
+    24: "",     // Sin unidad específica (HDOP GPS)
+    25: "m",    // Metros (Nivel de Fluido)
+    26: "Índice UV",  // Índice UV (Radiación UV)
+    27: "µg/m³",      // Microgramos por metro cúbico (Partículas 1)
+    28: "µg/m³",      // Microgramos por metro cúbico (Partículas 2.5)
+    29: "µg/m³",      // Microgramos por metro cúbico (Partículas 10)
+    30: "W",    // Vatios (Potencia)
+    31: "W",    // Vatios (Potencia #2)
+    32: "Wh",   // Vatios-hora (Energía)
+    33: "Wh",   // Vatios-hora (Energía #2)
+    34: "kg",   // Kilogramos (Peso)
+    35: "kg"    // Kilogramos (Peso #2)
+    
+    
   };
   const obtenerUnidad = (tipo) => {
     // Si el tipo existe devuelve la unidad, sino, devuelve una cadena vacía.
@@ -111,10 +140,37 @@ const Tables = () => {
     2: "Temperatura",       
     3: "Humedad",        
     4: "Presión atmosférica",
-    5: "Luz",      
-    23: "Altitud",        
-    // Agrega aquí los demás casos con sus unidades correspondientes
-    // ...
+    5: "Luz",  
+    6: "Humedad del suelo",  
+    7: "Humedad del suelo 2",
+    8: "Resistencia del suelo",
+    9: "Resistencia del suelo 2",
+    10: "Oxígeno",
+    11: "Dióxido de Carbono",
+    12: "Velocidad del viento",
+    13: "Dirección del Viento",
+    14: "Precipitación",
+    15: "Movimiento",
+    16: "Voltaje",
+    17: "Voltaje #2",
+    18: "Corriente",
+    19: "Corriente #2",
+    20: "Iteraciones",
+    21: "Latitud GPS",
+    22: "Longitud GPS",
+    23: "Altitud GPS",
+    24: "HDOP GPS (Dilución Horizontal de Precisión)",
+    25: "Nivel de Fluido",
+    26: "Radiación UV",
+    27: "Partículas 1",
+    28: "Partículas 2.5",
+    29: "Partículas 10",
+    30: "Potencia",
+    31: "Potencia #2",
+    32: "Energía",
+    33: "Energía #2",
+    34: "Peso",
+    35: "Peso #2"         
   };
   const obtenerNombreTipo = (data) => {
     return nombreTipo[data] || "";
@@ -236,10 +292,41 @@ const Tables = () => {
               className="form-control"
             >
               <option value="">Tipo de Dato</option>
-              <option value="temp_t">Temperatura</option>
-              <option value="humidity_t">Humedad</option>
-              <option value="pressure_t">Presión</option>
-              <option value="altitude_t">Altitud</option>
+              <option value="temp_t ">Temperatura</option>
+              <option value="temp2_t">Temperatura #2</option>
+              <option value="humidity_t">Humedad Relativa</option>
+              <option value="pressure_t">Presión Atmosférica</option>
+              <option value="light_t">Luz (lux)</option>
+              <option value="soil_t">Humedad del Suelo</option>
+              <option value="soil2_t">Humedad del Suelo #2</option>
+              <option value="soilr_t">Resistencia del Suelo</option>
+              <option value="soilr2_t">Resistencia del Suelo #2</option>
+              <option value="oxygen_t">Oxígeno</option>
+              <option value="co2_t">Dióxido de Carbono</option>
+              <option value="windspd_t">Velocidad del Viento</option>
+              <option value="windhdg_t">Dirección del Viento</option>
+              <option value="rainfall_t">Precipitación</option>
+              <option value="motion_t">Movimiento</option>
+              <option value="voltage_t">Voltaje</option>
+              <option value="voltage2_t">Voltaje #2</option>
+              <option value="current_t">Corriente</option>
+              <option value="current2_t">Corriente #2</option>
+              <option value="it_t">Iteraciones</option>
+              <option value="latitude_t">Latitud GPS</option>
+              <option value="longitude_t">Longitud GPS</option>
+              <option value="altitude_t">Altitud GPS</option>
+              <option value="hdop_t">HDOP GPS (Horizontal Dilution of Precision)</option>
+              <option value="level_t">Nivel de Fluido</option>
+              <option value="uv_t">Radiación UV</option>
+              <option value="pm1_t">Partículas 1</option>
+              <option value="pm2_5_t">Partículas 2.5</option>
+              <option value="pm10_t">Partículas 10</option>
+              <option value="power_t">Potencia</option>
+              <option value="power2_t">Potencia #2</option>
+              <option value="energy_t">Energía</option>
+              <option value="energy2_t">Energía #2</option>
+              <option value="weight_t">Peso</option>
+              <option value="weight2_t">Peso #2</option>
             </select>
           </Col>
 
