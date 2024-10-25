@@ -1,9 +1,95 @@
 const Chart = require("chart.js");
+const { info } = require("sass");
 
 //
 // Chart extension for making the bars rounded
 // Code from: https://codepen.io/jedtrow/full/ygRYgo
 //
+
+const nombreTipo = {
+  1: "Temperatura",
+  2: "Temperatura",       
+  3: "Humedad",        
+  4: "Presión atmosférica",
+  5: "Luz",  
+  6: "Humedad del suelo",  
+  7: "Humedad del suelo 2",
+  8: "Resistencia del suelo",
+  9: "Resistencia del suelo 2",
+  10: "Oxígeno",
+  11: "Dióxido de Carbono",
+  12: "Velocidad del viento",
+  13: "Dirección del Viento",
+  14: "Precipitación",
+  15: "Movimiento",
+  16: "Voltaje",
+  17: "Voltaje #2",
+  18: "Corriente",
+  19: "Corriente #2",
+  20: "Iteraciones",
+  21: "Latitud GPS",
+  22: "Longitud GPS",
+  23: "Altitud GPS",
+  24: "HDOP GPS (Dilución Horizontal de Precisión)",
+  25: "Nivel de Fluido",
+  26: "Radiación UV",
+  27: "Partículas 1",
+  28: "Partículas 2.5",
+  29: "Partículas 10",
+  30: "Potencia",
+  31: "Potencia #2",
+  32: "Energía",
+  33: "Energía #2",
+  34: "Peso",
+  35: "Peso #2"         
+};
+const obtenerNombreTipo = (data) => {
+  return nombreTipo[data] || "";
+};
+
+const unidadesMedida = {
+  1: "°C",       // Grados Celsius para temperatura
+  2: "°C",       // Grados Celsius para temperatura 2
+  3: "%",        // Porcentaje para humedad
+  4: "hPa",      // Hectopascales para presión
+  5: "Luz",
+  6: "%",       // Humedad del suelo
+  7: "%",       // Humedad del suelo 2
+  8: "Ω.m2/m",       //Ohmios Resistencia del suelo
+  9:"Ω.m2/m",        //Ohmios Resistencia del suelo 2
+  10: "%",        //Porcentaje para el oxígeno
+  11: "ppm", //Partes por millón (ppm) (Dióxido de Carbono)
+  12: "m/s",  // Metros por segundo (Velocidad del Viento)
+  13: "°",    // Grados (Dirección del Viento)
+  14: "mm",   // Milímetros (Precipitación)
+  15: "",     // Sin unidad específica (Movimiento)
+  16: "V",    // Voltios (Voltaje)
+  17: "V",    // Voltios (Voltaje #2)
+  18: "A",    // Amperios (Corriente)
+  19: "A",    // Amperios (Corriente #2)
+  20: "",     // Sin unidad específica (Iteraciones)
+  21: "°",    // Grados (Latitud GPS)
+  22: "°",    // Grados (Longitud GPS)
+  23: "m",    // Metros (Altitud GPS)
+  24: "",     // Sin unidad específica (HDOP GPS)
+  25: "m",    // Metros (Nivel de Fluido)
+  26: "Índice UV",  // Índice UV (Radiación UV)
+  27: "µg/m³",      // Microgramos por metro cúbico (Partículas 1)
+  28: "µg/m³",      // Microgramos por metro cúbico (Partículas 2.5)
+  29: "µg/m³",      // Microgramos por metro cúbico (Partículas 10)
+  30: "W",    // Vatios (Potencia)
+  31: "W",    // Vatios (Potencia #2)
+  32: "Wh",   // Vatios-hora (Energía)
+  33: "Wh",   // Vatios-hora (Energía #2)
+  34: "kg",   // Kilogramos (Peso)
+  35: "kg"    // Kilogramos (Peso #2)
+  
+  
+};
+const obtenerUnidad = (tipo) => {
+  // Si el tipo existe devuelve la unidad, sino, devuelve una cadena vacía.
+  return unidadesMedida[tipo] || "";
+};
 
 Chart.elements.Rectangle.prototype.draw = function () {
   var ctx = this._chart.ctx;
@@ -334,6 +420,9 @@ let chartExample1 = {
         {
           label: "Performance",
           data: nodoDataValues,
+          borderColor: 'rgba(54, 150, 235, 1)',
+          fill: true,
+          backgroundColor: 'rgba(54, 150, 235, 0.3)',
         },
       ],
     };
@@ -345,6 +434,9 @@ let chartExample1 = {
         {
           label: "Performance",
           data: nodoDataValues,
+          borderColor: 'rgba(54, 150, 235, 1)',
+          fill: true,
+          backgroundColor: 'rgba(54, 150, 235, 0.3)',
         },
       ],
     };
@@ -383,6 +475,7 @@ let chartExample2 = {
         },
       },
     },
+    
   },
   data: (nodoDataValues) => {
     return {
@@ -391,7 +484,10 @@ let chartExample2 = {
         {
           label: "Sales",
         data: nodoDataValues,
-        maxBarThickness: 20 ,
+        maxBarThickness: 25 ,
+        backgroundColor: 'rgba(54, 150, 235, 0.5)',
+        borderColor: 'rgba(54, 150, 235, 1)',
+        borderWidth: 1.5,
       },
     ],
     };
@@ -399,27 +495,32 @@ let chartExample2 = {
 };
 
 let compuesto = {
-  data: {
+  data: (nodoDataValues, tipo, nodoDataValues1, tipo1, nodoDataValues2, tipo2) => {
+    return{
     labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
     datasets: [
       {
-        label: 'Temperatura',
-        data: [20, 40, 30, 35, 25, 45, 30],
+        label: obtenerNombreTipo(tipo),
+        unidad: obtenerUnidad(tipo),
+        data:nodoDataValues,
         backgroundColor: 'rgba(54, 150, 235, 0.5)',
-        borderWidth: 0.5,
-        maxBarThickness: 30,
+        borderWidth: 1,
+        borderColor: 'rgba(54, 150, 235, 0.8)',
+        maxBarThickness: 25,
       },
       {
-        label: 'Humedad',
-        data: [30, 50, 40, 38, 40, 50, 20],
+        label: obtenerNombreTipo(tipo1),
+        unidad: obtenerUnidad(tipo1),
+        data: nodoDataValues1,
         type: 'line',
         borderColor: 'rgba(50, 50, 200, 1)',
         fill: false,
         lineTension: 0,
       },
       {
-        label: 'Presion',
-        data: [5, 15, 10, 12, 10, 20, 10],
+        label: obtenerNombreTipo(tipo2),
+        unidad: obtenerUnidad(tipo2),
+        data: nodoDataValues2,
         type: 'line',
         borderColor: 'rgba(255, 50, 132, 1)',
         fill: true,
@@ -427,6 +528,7 @@ let compuesto = {
         lineTension: 0,
       },
     ],
+    };
   },
 
   options: {
@@ -444,7 +546,7 @@ let compuesto = {
       callbacks: {
         label: (tooltipItem, data) => {
           let dataset = data.datasets[tooltipItem.datasetIndex];
-          return `${dataset.label}: ${tooltipItem.yLabel}`;
+          return `${dataset.label}: ${parseFloat(tooltipItem.yLabel).toFixed(2)} ${dataset.unidad}`;
         },
       },
     },

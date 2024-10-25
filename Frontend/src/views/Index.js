@@ -277,14 +277,14 @@ const Index = (props) => {
           <Row>
             {/* GRAFICO LINEAL */}
             <Col className="mb-5 mb-xl-0" xl="8">
-              <Card className="bg-gradient-default shadow">
+              <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
                     <div className="col">
-                      <h6 className="text-uppercase text-light ls-1 mb-1">
+                      <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Red de Monitoreo - Cuenca Sagmata
                       </h6>
-                      <h2 className="text-white mb-0">Altura del Río</h2>
+                      <h2 className="text-Black mb-0">Altura del Río</h2>
                     </div>
                     <div className="col">
                       <Nav className="justify-content-end" pills>
@@ -386,7 +386,7 @@ const Index = (props) => {
                 </CardHeader>
                 <CardBody>
                   <div className="chart">
-                  <Bar data={compuesto.data} options={compuesto.options} />
+                  <Bar data={compuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={compuesto.options} />
                   </div>
                 </CardBody>
               </Card>
