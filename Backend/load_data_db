@@ -14,13 +14,13 @@ BaseModel.metadata.create_all(bind=engine)  # Crear las tablas en la base de dat
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # 3. Definir las fechas de inicio y fin
-fecha_inicio = datetime(2024, 10, 14, 0, 0)  # 14 de octubre de 2024
-fecha_fin = datetime.now()
+fecha_inicio = datetime(2024, 10, 17, 0, 0)  # 14 de octubre de 2024
+fecha_fin = datetime(2024, 11, 2, 0, 0)
 
 # 4. Función para generar datos aleatorios
 def generar_datos_aleatorios(nodo_id, fecha):
-    tipo_dato = TipoDato.temp_t  # Tipo constante como se solicitó
-    data = random.uniform(15.0, 25.0)  # Genera un número aleatorio entre 0 y 100
+    tipo_dato = TipoDato.altitude_t  # Tipo constante como se solicitó
+    data = random.uniform(0.0, 1.8)  # Genera un número aleatorio entre 0 y 100
     return Medicion(type=tipo_dato, data=str(round(data, 7)), time=fecha)
 
 # 5. Función para insertar datos en la base de datos
