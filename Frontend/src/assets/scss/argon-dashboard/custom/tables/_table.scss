@@ -2,7 +2,6 @@
 // Table
 //
 
-
 // General styles
 
 .table {
@@ -114,5 +113,32 @@
             padding-left: $card-spacer-x;
             padding-right: $card-spacer-x;
         }
+    }
+}
+
+
+$table-arrow-asc-color: #007bff; // Color para flecha ascendente
+$table-arrow-desc-color: #dc3545; // Color para flecha descendente
+
+// Arrow styles
+.arrow {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 5px; // Espacio entre el texto y la flecha
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    transition: transform 0.2s;
+
+    &.asc {
+        border-bottom: 7px solid $table-arrow-asc-color; // Color de la flecha ascendente
+    }
+
+    &.desc {
+        border-top: 7px solid $table-arrow-desc-color; // Color de la flecha descendente
+    }
+
+    &:hover {
+        transform: scale(1.1); // Efecto al pasar el mouse
     }
 }

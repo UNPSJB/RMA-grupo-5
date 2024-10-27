@@ -22,16 +22,17 @@ const Tables = () => {
   const [tipoIdSeleccionado, setTipoIdSeleccionado] = useState(null);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [cantidadExportar, setCantidadExportar] = useState(""); // Nueva variable para cantidad
+  const [cantidadExportar, setCantidadExportar] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15);
+  const [ordenamiento, setOrdenamiento] = useState("fecha"); // Nuevo estado para ordenamiento
+  const [ordenAscendente, setOrdenAscendente] = useState(true); // Estado para dirección de orden
 
   // Filtrar los datos por tipo y rango de fechas
   let filteredData;
   let sortedMedicionData;
-
   // Lógica de paginación
   let indexOfLastItem; 
   let indexOfFirstItem; 
@@ -201,6 +202,7 @@ const Tables = () => {
     getTipoDato();
   }, [tipoSeleccionado]);
 
+  // Filtrar datos según el criterio seleccionado
   const filtrar_datos = () => {
     // Filtrar los datos por tipo y rango de fechas
     filteredData = medicionData.filter((dato) => {
@@ -208,14 +210,26 @@ const Tables = () => {
       const dentroRango =
         (!fechaInicio || fechaMedicion >= new Date(fechaInicio)) &&
         (!fechaFin || fechaMedicion <= new Date(fechaFin));
-      if (tipoIdSeleccionado === null)
-        return dentroRango;
-      return dentroRango && dato.type === tipoIdSeleccionado;
+      return dentroRango && (tipoIdSeleccionado === null || dato.type === tipoIdSeleccionado);
     });
 
-    
-    // Ordenar mediciones de más reciente a más antiguo
-    sortedMedicionData = [...filteredData].sort((a, b) => new Date(b.time) - new Date(a.time));
+    // Ordenar según el criterio seleccionado y la dirección de orden
+    sortedMedicionData = [...filteredData].sort((a, b) => {
+      let comparison = 0;
+      switch (ordenamiento) {
+        case "tipo":
+          comparison = a.type - b.type; 
+          break;
+        case "data":
+          comparison = a.data - b.data; 
+          break;
+        case "fecha":
+        default:
+          comparison = new Date(a.time) - new Date(b.time); 
+          break;
+      }
+      return ordenAscendente ? comparison : -comparison; // Invertir el resultado si es descendente
+    });
 
     // Lógica de paginación
     indexOfLastItem = currentPage * itemsPerPage;
@@ -224,7 +238,6 @@ const Tables = () => {
     totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
   };
 
-  //useEffect(() => { filtrar_datos() })
   filtrar_datos();
 
   // Función para exportar todos los datos del nodo seleccionado
@@ -383,12 +396,27 @@ const Tables = () => {
                 </p>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
-                <thead className="thead-light">
+              <thead>
                   <tr>
                     <th scope="col">Nodo</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Data</th>
-                    <th scope="col">Fecha-Hora</th>
+                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+                      Tipo 
+                      {ordenamiento === "tipo" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                      Data 
+                      {ordenamiento === "data" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                      Fecha-Hora 
+                      {ordenamiento === "fecha" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -397,7 +425,7 @@ const Tables = () => {
                       <td>{medicion.nodo_numero}</td>
                       <td>{obtenerNombreTipo(medicion.type)}</td>
                       <td>
-                        {parseFloat(medicion.data).toFixed(2)}{" "}
+                        {parseFloat(medicion.data)}{" "}
                         {obtenerUnidad(medicion.type)} 
                       </td> 
                       <td>{new Date(medicion.time).toLocaleString()}</td>
