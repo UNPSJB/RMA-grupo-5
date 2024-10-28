@@ -314,6 +314,7 @@ const Tables = () => {
             >
               <option value="">Tipo de Dato</option>
               <option value="temp_t ">Temperatura</option>
+              {/*
               <option value="temp2_t">Temperatura #2</option>
               <option value="humidity_t">Humedad Relativa</option>
               <option value="pressure_t">Presión Atmosférica</option>
@@ -328,14 +329,18 @@ const Tables = () => {
               <option value="windhdg_t">Dirección del Viento</option>
               <option value="rainfall_t">Precipitación</option>
               <option value="motion_t">Movimiento</option>
-              <option value="voltage_t">Voltaje</option>
+              */}
+              <option value="voltage_t">Voltaje Batería</option>
+              {/*
               <option value="voltage2_t">Voltaje #2</option>
               <option value="current_t">Corriente</option>
               <option value="current2_t">Corriente #2</option>
               <option value="it_t">Iteraciones</option>
               <option value="latitude_t">Latitud GPS</option>
               <option value="longitude_t">Longitud GPS</option>
-              <option value="altitude_t">Altitud GPS</option>
+              */}
+              <option value="altitude_t">Altura del Agua</option>
+              {/*
               <option value="hdop_t">HDOP GPS (Horizontal Dilution of Precision)</option>
               <option value="level_t">Nivel de Fluido</option>
               <option value="uv_t">Radiación UV</option>
@@ -348,6 +353,7 @@ const Tables = () => {
               <option value="energy2_t">Energía #2</option>
               <option value="weight_t">Peso</option>
               <option value="weight2_t">Peso #2</option>
+              */}
             </select>
           </Col>
         </Row>
@@ -432,7 +438,7 @@ const Tables = () => {
                       <td>{medicion.nodo_numero}</td>
                       <td>{obtenerNombreTipo(medicion.type)}</td>
                       <td>
-                        {parseFloat(medicion.data)}{" "}
+                        {parseFloat(medicion.data).toFixed(2)}{" "}
                         {obtenerUnidad(medicion.type)} 
                       </td> 
                       <td>

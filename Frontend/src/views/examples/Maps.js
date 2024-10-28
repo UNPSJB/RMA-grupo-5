@@ -29,6 +29,7 @@ const MapWrapper = () => {
       />
       <Marker position={position}>
         <Popup>
+          Nodo 1<br />
           Ubicación: 43°35'00.0"S 66°00'00.0"W <br /> Patagonia Argentina.
         </Popup>
       </Marker>
@@ -42,11 +43,17 @@ const Maps = () => {
       
       <Header />
 
-      <Container className="mt--7" fluid>
+      <Container className="mt--9" fluid>
+        
         <Row>
           <Col lg="12">
+            
             <Card className="shadow border-0" style={{ padding: "20px", borderRadius: "10px", border: "2px solid #ccc" }}>
-
+              <Container>
+                <h3 lg="12" class="row justify-content-md-center">Cuenca Sagmata - Nodos Activos</h3>
+              </Container>
+              
+              {/*
               <div style={{ textAlign: "center", marginBottom: "40px" }}>
                 <img
                   src={require("../../assets/img/maps/Cuenca-Sagmata-zona-de-estudio.jpg")}
@@ -54,7 +61,7 @@ const Maps = () => {
                   style={{ maxWidth: "80%", height: "auto", borderRadius: "10px", border: "2px solid #ccc" }} // Imagen más grande y con borde
                 />
               </div>
-
+              */}
               <MapWrapper />
             </Card>
           </Col>
