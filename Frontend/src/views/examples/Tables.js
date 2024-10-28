@@ -279,8 +279,8 @@ const Tables = () => {
   return (
     <>
       <Header />
-      <Container className="mt--7" fluid>
-      <Row className="mb-3">
+      <Container className="mt--9" fluid>
+      <Row className="mt-5 mb-3">
           <Col xl="2">
             <select
               value={nodoSeleccionado}
