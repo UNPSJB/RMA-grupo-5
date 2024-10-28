@@ -204,13 +204,21 @@ const Tables = () => {
 
   // Filtrar datos según el criterio seleccionado
   const filtrar_datos = () => {
+    const fechaInicioDate = fechaInicio ? new Date(`${fechaInicio}T00:00:00`) : null; // Inicio del día
+    const fechaFinDate = fechaFin ? new Date(`${fechaFin}T23:59:59`) : null; // Fin del día
+  
     // Filtrar los datos por tipo y rango de fechas
     filteredData = medicionData.filter((dato) => {
       const fechaMedicion = new Date(dato.time);
-      const dentroRango =
-        (!fechaInicio || fechaMedicion >= new Date(fechaInicio)) &&
-        (!fechaFin || fechaMedicion <= new Date(fechaFin));
-      return dentroRango && (tipoIdSeleccionado === null || dato.type === tipoIdSeleccionado);
+  
+      const dentroRango = 
+        (fechaInicioDate ? fechaMedicion >= fechaInicioDate : true) && 
+        (fechaFinDate ? fechaMedicion <= fechaFinDate : true);
+  
+      // Filtrar también por tipo si es necesario
+      const tipoValido = (tipoIdSeleccionado === null || dato.type === tipoIdSeleccionado);
+      
+      return dentroRango && tipoValido;
     });
 
     // Ordenar según el criterio seleccionado y la dirección de orden
@@ -395,7 +403,7 @@ const Tables = () => {
                 </p>
               </CardHeader>
               <Table className="align-items-center table-flush" responsive>
-              <thead>
+                <thead>
                   <tr>
                     <th scope="col">Nodo</th>
                     <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
@@ -427,12 +435,20 @@ const Tables = () => {
                         {parseFloat(medicion.data)}{" "}
                         {obtenerUnidad(medicion.type)} 
                       </td> 
-                      <td>{new Date(medicion.time).toLocaleString()}</td>
-                      </tr>
+                      <td>
+                        {new Date(medicion.time).toLocaleString('es-AR', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: false 
+                        })}
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </Table>
-
               {/* Paginación */}
               <div className="py-3">
                 <Pagination className="pagination justify-content-end mb-0">
