@@ -280,8 +280,8 @@ const Tables = () => {
     <>
       <Header />
       <Container className="mt--7" fluid>
-        <Row className="mb-3">
-        <Col xl="2">
+      <Row className="mb-3">
+          <Col xl="2">
             <select
               value={nodoSeleccionado}
               onChange={(e) => {
@@ -342,7 +342,9 @@ const Tables = () => {
               <option value="weight2_t">Peso #2</option>
             </select>
           </Col>
-
+        </Row>
+        
+        <Row className="mb-3">
           <Col xl="2">
             <input
               type="date"
@@ -359,7 +361,6 @@ const Tables = () => {
               onChange={(e) => setFechaFin(e.target.value)}
             />
           </Col>
-
           {/* Campo para seleccionar la cantidad de datos a exportar */}
           <Col xl="2">
             <input
@@ -370,14 +371,12 @@ const Tables = () => {
               onChange={(e) => setCantidadExportar(e.target.value)}
             />
           </Col>
-
           {/* Botón para exportar cantidad seleccionada */}
           <Col xl="2">
             <Button color="primary" onClick={exportSelectedToExcel}>
               Exportar Cantidad
             </Button>
           </Col>
-
           {/* Botón para exportar todos los datos */}
           <Col xl="2">
             <Button color="primary" onClick={exportAllToExcel}>
