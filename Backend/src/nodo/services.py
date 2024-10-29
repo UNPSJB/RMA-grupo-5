@@ -96,9 +96,7 @@ def obtener_nodo(db: Session, numero_nodo: int) -> Nodo:
 
 def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.NodoUpdate) -> Nodo:
     db_nodo = obtener_nodo(db, numero_nodo)
-    
-    if nodo_actualizado.numero is not None:
-        db_nodo.numero = nodo_actualizado.numero
+
     if nodo_actualizado.nombre is not None:
         db_nodo.nombre = nodo_actualizado.nombre
     if nodo_actualizado.ubicacion_x is not None:
@@ -111,6 +109,7 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
     db.commit()
     db.refresh(db_nodo)
     return db_nodo
+
 
 def listar_nodos(db: Session) -> List[Nodo]:
     # Obtener todos los nodos de la base de datos

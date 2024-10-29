@@ -69,7 +69,7 @@ const Admin = (props) => {
 
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
           <Route path="/registrar_nodo" element={<RegistrarNodo />} />
-          <Route path="/modificar_nodo/:nodoId" element={<ModificarNodo />} />
+          <Route path="/modificar_nodo/:id" element={<ModificarNodo />} />
         </Routes>
         <Container fluid>
           <AdminFooter />

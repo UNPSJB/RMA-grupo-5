@@ -34,23 +34,27 @@ const ModificarNodo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
+  
+    console.log("Valores antes de enviar:", { nodo, ubicacionX, ubicacionY });
+    
     // Validar que los valores sean correctos y que sean enteros
     if (
-      !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(parseFloat(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(parseFloat(ubicacionY))
+      !nodo || isNaN(nodo) || !Number.isInteger(Number(nodo)) ||
+      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(Number(ubicacionX)) ||
+      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(Number(ubicacionY))
     ) {
       alert("Ingresa valores enteros válidos para el nodo y las ubicaciones");
       return;
     }
-
+  
     const nodoActualizado = {
-      numero: parseFloat(nodo),
+      numero: Number(nodo),
       nombre: String(nombre),
-      ubicacion_x: parseFloat(ubicacionX),
-      ubicacion_y: parseFloat(ubicacionY),
+      ubicacion_x: Number(ubicacionX),
+      ubicacion_y: Number(ubicacionY),
     };
+
+    console.log("Datos a enviar:", nodoActualizado);
 
     // Realiza una solicitud PUT para modificar el nodo existente
     axios.put(`http://localhost:8000/actualizar_nodo/${id}`, nodoActualizado)

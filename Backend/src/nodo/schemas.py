@@ -54,7 +54,10 @@ class NodoCreate(NodoBase):
     is_activo: bool = True 
 
 class NodoUpdate(NodoBase):
-    pass
+    nombre: Optional[str] = None
+    ubicacion_x: Optional[float] = None
+    ubicacion_y: Optional[float] = None
+    is_activo: Optional[bool] = None
 
 class Nodo(NodoBase):
     numero: int
