@@ -1,7 +1,8 @@
 import Index from "views/Index.js";
 import Maps from "views/examples/Maps.js";
 import Tables from "views/examples/Tables.js";
-import Registrar_nodo from "views/examples/Registrar_nodo.js";
+import GestionNodo from "views/examples/Gestion_nodo.js";
+import ModificarNodo from "views/examples/ModificarNodo.js";
 
 var routes = [
   
@@ -12,12 +13,20 @@ var routes = [
     component: <Index />,
     layout: "/admin",
   },
-  
+
   {
-    path: "/registrar_nodo",
-    name: "Registrar nodo",
+    path: "/GestionNodo",
+    name: "Gestion nodo",
     icon: "ni ni-tv-2 text-primary",
-    component: <Registrar_nodo />,
+    component: <GestionNodo />,
+    layout: "/admin",
+  },
+
+  {
+    path: "/ModificarNodo",
+    name: "Modificar Nodo",
+    icon: "ni ni-tv-2 text-primary",
+    component: <ModificarNodo />,
     layout: "/admin",
   },
 

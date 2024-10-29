@@ -1,14 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 import Header from "components/Headers/Header.js";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const RegistrarNodo = () => {
+const ModificarNodo = () => {
   const [nodo, setNodo] = useState('');
   const [nombre, setNombre] = useState('');
   const [ubicacionX, setUbicacionX] = useState('');
   const [ubicacionY, setUbicacionY] = useState('');
   const navigate = useNavigate();
+  const { id } = useParams(); // Obtiene el ID del nodo de la URL
+
+  // Cargar los datos del nodo existente al montar el componente
+  useEffect(() => {
+    const fetchNodo = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8000/obtener_nodo/${id}`);
+        const { numero, nombre, ubicacion_x, ubicacion_y } = response.data;
+        setNodo(numero);
+        setNombre(nombre);
+        setUbicacionX(ubicacion_x);
+        setUbicacionY(ubicacion_y);
+      } catch (error) {
+        console.error("Error al obtener el nodo:", error);
+        alert("Error al cargar los datos del nodo");
+      }
+    };
+
+    if (id) {
+      fetchNodo();
+    }
+  }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,33 +45,29 @@ const RegistrarNodo = () => {
       return;
     }
 
-    const nuevoNodo = {
+    const nodoActualizado = {
       numero: parseInt(nodo),
       nombre: String(nombre),
       ubicacion_x: parseInt(ubicacionX),
       ubicacion_y: parseInt(ubicacionY),
     };
 
-    axios.post('http://localhost:8000/crear_nodo', nuevoNodo)
+    // Realiza una solicitud PUT para modificar el nodo existente
+    axios.put(`http://localhost:8000/modificar_nodo/${id}`, nodoActualizado)
       .then(response => {
-        console.log("Nodo registrado:", response.data);
-        alert("Nodo registrado exitosamente");
+        console.log("Nodo modificado:", response.data);
+        alert("Nodo modificado exitosamente");
 
-        // Reiniciar los campos después de un registro exitoso
-        setNodo('');
-        setNombre('');
-        setUbicacionX('');
-        setUbicacionY('');
-        
         // Redirigir a la página de gestión de nodos
         navigate("/admin/GestionNodo");
       })
       .catch(error => {
-        console.error("Hubo un error registrando el nodo:", error.response?.data || error);
-        alert("Error al registrar el nodo");
+        console.error("Hubo un error modificando el nodo:", error.response?.data || error);
+        alert("Error al modificar el nodo");
       });
   }; 
 
+  // Estilos para el formulario
   const formStyle = {
     maxWidth: "500px",
     margin: "0 auto",
@@ -95,7 +113,7 @@ const RegistrarNodo = () => {
 
       <div style={cardStyle}>
         <div style={formStyle}>
-          <h2 style={{ textAlign: "center", color: "#333" }}>Registrar Nodo</h2>
+          <h2 style={{ textAlign: "center", color: "#333" }}>Modificar Nodo</h2>
           <form onSubmit={handleSubmit}>
             <div>
               <label style={labelStyle}>Número de Nodo:</label>
@@ -109,7 +127,7 @@ const RegistrarNodo = () => {
             </div>
 
             <div>
-              <label style={labelStyle}> Alias </label>
+              <label style={labelStyle}>Alias:</label>
               <input
                 type="text"
                 style={inputStyle}
@@ -119,7 +137,7 @@ const RegistrarNodo = () => {
             </div>
 
             <div>
-              <label style={labelStyle}> Longitud (eje x)</label>
+              <label style={labelStyle}>Longitud (eje x):</label>
               <input
                 type="text"
                 style={inputStyle}
@@ -130,7 +148,7 @@ const RegistrarNodo = () => {
             </div>
 
             <div>
-              <label style={labelStyle}>Latitud (eje y)</label>
+              <label style={labelStyle}>Latitud (eje y):</label>
               <input
                 type="text"
                 style={inputStyle}
@@ -141,7 +159,7 @@ const RegistrarNodo = () => {
             </div>
             
             <button type="submit" style={buttonStyle}>
-              Guardar
+              Guardar Cambios
             </button>
           </form>
         </div>
@@ -150,5 +168,4 @@ const RegistrarNodo = () => {
   );
 };
 
-export default RegistrarNodo;
-
+export default ModificarNodo;

@@ -3,12 +3,13 @@ import { useLocation, Route, Routes, Navigate } from "react-router-dom";
 // reactstrap components
 import { Container } from "reactstrap";
 // core components
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
+//import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import Header from "components/Headers/Header";
+//import Header from "components/Headers/Header";
 
 import routes from "routes.js";
+import RegistrarNodo from "views/examples/Registrar_nodo";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -32,6 +33,7 @@ const Admin = (props) => {
     });
   };
 
+  /*
   const getBrandText = (path) => {
     for (let i = 0; i < routes.length; i++) {
       if (
@@ -43,7 +45,7 @@ const Admin = (props) => {
     }
     return "Brand";
   };
-
+*/
   return (
     <>
       <Sidebar
@@ -65,7 +67,9 @@ const Admin = (props) => {
         */}
         <Routes>
           {getRoutes(routes)}
+
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
+          <Route path="/registrar_nodo" element={<RegistrarNodo />} />
         </Routes>
         <Container fluid>
           <AdminFooter />
