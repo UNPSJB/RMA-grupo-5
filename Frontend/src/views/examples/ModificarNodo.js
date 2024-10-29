@@ -123,6 +123,7 @@ const ModificarNodo = () => {
               <label style={labelStyle}>Número de Nodo:</label>
               <input
                 type="text"
+                disabled='true'
                 style={inputStyle}
                 value={nodo}
                 onChange={(e) => setNodo(e.target.value)}

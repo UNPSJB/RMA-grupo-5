@@ -112,8 +112,8 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
 
 
 def listar_nodos(db: Session) -> List[Nodo]:
-    # Obtener todos los nodos de la base de datos
-    nodos = db.query(Nodo).all()
+    # Obtener todos los nodos de la base de datos y ordenarlos por el estado `activo` (activos primero)
+    nodos = db.query(Nodo).order_by(Nodo.is_activo.desc()).all()
     return nodos
 
 def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:

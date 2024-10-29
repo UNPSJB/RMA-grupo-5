@@ -29,6 +29,21 @@ const GestionNodo = () => {
     navigate("/admin/registrar_nodo");
   };
 
+  const toggleEstado = async (numeroNodo) => {
+    try {
+      const response = await axios.put(`http://localhost:8000/toggle_estado/${numeroNodo}`);
+      if (response.status === 200) {
+        setNodos((prevNodos) =>
+          prevNodos.map((nodo) =>
+            nodo.numero === numeroNodo ? { ...nodo, is_activo: !nodo.is_activo } : nodo
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error al cambiar el estado del nodo:", error);
+    }
+  };
+  
   const tableStyle = {
     width: "100%",
     borderCollapse: "collapse",
@@ -72,7 +87,9 @@ const GestionNodo = () => {
   return (
     <>
       <Header />
-
+      <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <div style={{ padding: "20px", marginTop: "20px" }}>
         <h2 style={{ textAlign: "center", color: "#333" }}>Lista de Nodos Registrados</h2>
         
@@ -92,26 +109,40 @@ const GestionNodo = () => {
             </tr>
           </thead>
           
-        <tbody>
-          {nodos.map((nodo) => (
-            <tr key={nodo.numero}>
-              <td style={tdStyle}>{nodo.numero}</td>
-              <td style={tdStyle}>{nodo.nombre}</td>
-              <td style={tdStyle}>{nodo.ubicacion_x}</td>
-              <td style={tdStyle}>{nodo.ubicacion_y}</td>
+          <tbody>
+            {nodos.map((nodo) => (
+              <tr key={nodo.numero}>
+                <td style={tdStyle}>{nodo.numero}</td>
+                <td style={tdStyle}>{nodo.nombre}</td>
+                <td style={tdStyle}>{nodo.ubicacion_x}</td>
+                <td style={tdStyle}>{nodo.ubicacion_y}</td>
+                <td style={tdStyle}>
+                  <button 
+                    style={editButtonStyle} 
+                    onClick={() => handleEdit(nodo.numero)} 
+                  >
+                    Modificar
+                  </button>
+                </td>
+                
               <td style={tdStyle}>
-                <button 
-                  style={editButtonStyle} 
-                  onClick={() => handleEdit(nodo.numero)} 
-                >
-                  Modificar
-                </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                  <span className={nodo.is_activo ? "text-success" : "text-danger"}>
+                    {nodo.is_activo ? "Activo" : "Inactivo"}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleEstado(nodo.numero)}  // Llamada a la función para alternar el estado
+                    style={{ background: "none", border: "none", padding: 0, cursor: "pointer" }}
+                  >
+                    <i className={`bi ${nodo.is_activo ? "bi-x-circle text-danger" : "bi-check-circle text-success"}`}></i>
+                  </button>
+                </div>
               </td>
-              <td style={tdStyle}>{nodo.is_activo ? "Activo" : "Inactivo"}</td> {/* Muestra el estado en texto */}
-            </tr>
-          ))}
-        </tbody>
 
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </>

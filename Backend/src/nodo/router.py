@@ -65,6 +65,14 @@ def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
 def read_ultimo_nodo(db: Session = Depends(get_db)):
     return services.leer_ultimo_nodo(db)
 
+@router.put("/toggle_estado/{numero_nodo}", response_model=schemas.Nodo)
+def toggle_estado_nodo(numero_nodo: int, db: Session = Depends(get_db)):
+    nodo = services.obtener_nodo(db, numero_nodo)
+    nodo.is_activo = not nodo.is_activo  # Cambia el estado
+    db.commit()
+    db.refresh(nodo)
+    return nodo
+
 @router.get("/tipo_dato/{nombre}")
 def get_tipo_dato(nombre: str, db: Session = Depends(get_db)):
     tipo_dato = getattr(models.TipoDato, nombre)
