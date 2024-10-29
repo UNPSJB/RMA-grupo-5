@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios"; 
 import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
+import "../../assets/css/RegistrarNodo.css"
 
 const RegistrarNodo = () => {
   const [nodo, setNodo] = useState('');
@@ -50,58 +51,19 @@ const RegistrarNodo = () => {
       });
   }; 
 
-  const formStyle = {
-    maxWidth: "500px",
-    margin: "0 auto",
-    padding: "30px",
-    borderRadius: "8px",
-    boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
-    backgroundColor: "#f1f1f9",
-  };
-
-  const inputStyle = {
-    width: "100%",
-    padding: "10px",
-    margin: "8px 0",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-    boxSizing: "border-box",
-  };
-
-  const buttonStyle = {
-    width: "100%",
-    backgroundColor: "#4CAF50",
-    color: "white",
-    padding: "10px",
-    borderRadius: "4px",
-    border: "none",
-    cursor: "pointer",
-  };
-
-  const labelStyle = {
-    marginBottom: "1px",
-    display: "block",
-    color: "#333",
-  };
-
-  const cardStyle = {
-    padding: "20px",
-    marginTop: "20px",
-  };
-
   return (
     <>
       <Header />
 
-      <div style={cardStyle}>
-        <div style={formStyle}>
-          <h2 style={{ textAlign: "center", color: "#333" }}>Registrar Nodo</h2>
+      <div className="card-style">
+        <div className="form-container">
+          <h2 className="form-title">Registrar Nodo</h2>
           <form onSubmit={handleSubmit}>
             <div>
-              <label style={labelStyle}>Número de Nodo:</label>
+              <label className="label-style">Número de Nodo:</label>
               <input
                 type="text"
-                style={inputStyle}
+                className="input-style"
                 value={nodo}
                 onChange={(e) => setNodo(e.target.value)}
                 required
@@ -109,20 +71,20 @@ const RegistrarNodo = () => {
             </div>
 
             <div>
-              <label style={labelStyle}> Alias </label>
+              <label className="label-style"> Alias </label>
               <input
                 type="text"
-                style={inputStyle}
+                className="input-style"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
               />
             </div>
 
             <div>
-              <label style={labelStyle}> Longitud (eje x)</label>
+              <label className="label-style"> Longitud (eje x)</label>
               <input
                 type="text"
-                style={inputStyle}
+                className="input-style"
                 value={ubicacionX}
                 onChange={(e) => setUbicacionX(e.target.value)}
                 required
@@ -130,17 +92,17 @@ const RegistrarNodo = () => {
             </div>
 
             <div>
-              <label style={labelStyle}>Latitud (eje y)</label>
+              <label className="label-style">Latitud (eje y)</label>
               <input
                 type="text"
-                style={inputStyle}
+                className="input-style"
                 value={ubicacionY}
                 onChange={(e) => setUbicacionY(e.target.value)}
                 required
               />
             </div>
             
-            <button type="submit" style={buttonStyle}>
+            <button type="submit" className="button-style">
               Guardar
             </button>
           </form>
