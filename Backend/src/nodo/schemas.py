@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List, Optional
 from datetime import datetime
 from src.nodo.models import TipoDato
 
@@ -31,17 +31,27 @@ class Medicion(MedicionBase):
 # Clase Nodo
 class NodoBase(BaseModel):
     numero: int
+    nombre: Optional [str] = None
     ubicacion_x: float 
     ubicacion_y: float 
+    is_activo: bool = True 
 
     class Config:
         from_attributes = True
+        
+    def estado(self):
+        return ('<span class="text-success badge badge-success text-white"> Activo </span>'
+                if self.is_activo
+                else
+                '<span class="text-success badge badge-danger text-white"> Inactivo </span>')
 
 # Clases de creación y actualización de Nodo
 class NodoCreate(NodoBase):
     numero: int
+    nombre: str
     ubicacion_x: float 
     ubicacion_y: float 
+    is_activo: bool = True 
 
 class NodoUpdate(NodoBase):
     pass

@@ -1,7 +1,7 @@
-from typing import List, Optional
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime, timezone, time
+from typing import List
+from sqlalchemy import Boolean, Column, Integer, String, Float, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import relationship
+from datetime import datetime, timezone
 from src.db_models import BaseModel
 from enum import IntEnum
 
@@ -47,14 +47,18 @@ class TipoDato(IntEnum):
     weight2_t = 35    # Peso #2
 
 
-# Modelo base para nodos
+#Modelo base para nodos
 class Nodo(BaseModel):
     __tablename__ = 'nodos'
 
-    numero = Column(Integer, primary_key=True, index=True) 
+    numero = Column(Integer, primary_key=True, index=True)
+    nombre = Column(String) 
     ubicacion_x = Column(Float)
     ubicacion_y = Column(Float)
+    is_activo = Column(Boolean, default=True)
     mediciones = relationship("Medicion", back_populates="nodo")
+
+    
 
 # Modelo base para mediciones
 class Medicion(BaseModel):

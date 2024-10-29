@@ -59,12 +59,21 @@ def eliminar_medicion(db: Session, medicion_id: int) -> Medicion:
     db.commit()
     return db_medicion
 
+def leer_ultima_medicion(db: Session) -> Medicion:
+    db_medicion = db.query(Medicion).order_by(Medicion.time.desc()).first()
+    if db_medicion is None:
+        raise exceptions.MedicionNoEncontrada()
+    return db_medicion
+
 #/--- Metodos de clase Nodo ---/
+
 def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     db_nodo = Nodo(
         numero = nodo.numero,
+        nombre = nodo.nombre,
         ubicacion_x = nodo.ubicacion_x,
         ubicacion_y = nodo.ubicacion_y,
+        is_activo=nodo.is_activo
     )
     # Buscar si el nodo ya existe segun el numero
     nodo = db.query(Nodo).filter(Nodo.numero == db_nodo.numero).first()
@@ -90,10 +99,14 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
     
     if nodo_actualizado.numero is not None:
         db_nodo.numero = nodo_actualizado.numero
+    if nodo_actualizado.nombre is not None:
+        db_nodo.nombre = nodo_actualizado.nombre
     if nodo_actualizado.ubicacion_x is not None:
         db_nodo.ubicacion_x = nodo_actualizado.ubicacion_x
     if nodo_actualizado.ubicacion_y is not None:
         db_nodo.ubicacion_y = nodo_actualizado.ubicacion_y
+    if nodo_actualizado.is_activo is not None:
+        db_nodo.is_activo = nodo_actualizado.is_activo  # Cambiar el estado
 
     db.commit()
     db.refresh(db_nodo)
@@ -118,8 +131,3 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     return nodo
 
 
-def leer_ultima_medicion(db: Session) -> Medicion:
-    db_medicion = db.query(Medicion).order_by(Medicion.time.desc()).first()
-    if db_medicion is None:
-        raise exceptions.MedicionNoEncontrada()
-    return db_medicion
