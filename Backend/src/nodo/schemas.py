@@ -9,6 +9,7 @@ class MedicionBase(BaseModel):
     data: str
     time: datetime 
     nodo_numero: int
+    es_erroneo: bool
 
     class Config:
         arbitrary_types_allowed = True  # Permitir tipos arbitrarios como Nodo
@@ -20,6 +21,7 @@ class MedicionCreate(MedicionBase):
     data: str 
     time: datetime 
     nodo_numero: int
+    es_erroneo: bool
 
 class MedicionUpdate(MedicionBase):
     pass
