@@ -2,7 +2,7 @@ import Index from "views/Index.js";
 import Maps from "views/examples/Maps.js";
 import Tables from "views/examples/Tables.js";
 import GestionNodo from "views/examples/Gestion_nodo.js";
-import ModificarNodo from "views/examples/ModificarNodo.js";
+//import ModificarNodo from "views/examples/ModificarNodo.js";
 
 var routes = [
   
@@ -22,6 +22,7 @@ var routes = [
     layout: "/admin",
   },
 
+  /*
   {
     path: "/ModificarNodo",
     name: "Modificar Nodo",
@@ -29,7 +30,7 @@ var routes = [
     component: <ModificarNodo />,
     layout: "/admin",
   },
-
+  */
   {
     path: "/tables",
     name: "Tablas",

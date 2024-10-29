@@ -129,5 +129,3 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     db.delete(nodo)
     db.commit()
     return nodo
-
-

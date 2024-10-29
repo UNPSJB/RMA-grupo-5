@@ -22,7 +22,7 @@ const GestionNodo = () => {
   }, []);
 
   const handleEdit = (nodoId) => {
-    alert(`Modificar nodo con ID: ${nodoId}`);
+    navigate(`/admin/modificar_nodo/${nodoId}`);
   };
 
   const handleAddNodo = () => {
@@ -102,7 +102,7 @@ const GestionNodo = () => {
               <td style={tdStyle}>
                 <button 
                   style={editButtonStyle} 
-                  onClick={() => handleEdit(nodo.numero)} // Cambia 'nodo.id' por 'nodo.numero'
+                  onClick={() => handleEdit(nodo.numero)} 
                 >
                   Modificar
                 </button>

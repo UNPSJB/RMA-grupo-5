@@ -72,6 +72,3 @@ class Medicion(BaseModel):
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     nodo_numero = Column(Integer, ForeignKey('nodos.numero'), nullable=True)  # Clave foránea
     nodo = relationship("Nodo", back_populates="mediciones")  # Relación con la tabla Nodo
-
-
-

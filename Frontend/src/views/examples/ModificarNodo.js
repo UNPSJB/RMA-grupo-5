@@ -46,14 +46,14 @@ const ModificarNodo = () => {
     }
 
     const nodoActualizado = {
-      numero: parseInt(nodo),
+      numero: parseFloat(nodo),
       nombre: String(nombre),
-      ubicacion_x: parseInt(ubicacionX),
-      ubicacion_y: parseInt(ubicacionY),
+      ubicacion_x: parseFloat(ubicacionX),
+      ubicacion_y: parseFloat(ubicacionY),
     };
 
     // Realiza una solicitud PUT para modificar el nodo existente
-    axios.put(`http://localhost:8000/modificar_nodo/${id}`, nodoActualizado)
+    axios.put(`http://localhost:8000/actualizar_nodo/${id}`, nodoActualizado)
       .then(response => {
         console.log("Nodo modificado:", response.data);
         alert("Nodo modificado exitosamente");
@@ -159,7 +159,7 @@ const ModificarNodo = () => {
             </div>
             
             <button type="submit" style={buttonStyle}>
-              Guardar Cambios
+              Guardar cambios
             </button>
           </form>
         </div>

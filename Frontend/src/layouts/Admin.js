@@ -1,15 +1,14 @@
 import React from "react";
 import { useLocation, Route, Routes, Navigate } from "react-router-dom";
-// reactstrap components
 import { Container } from "reactstrap";
-// core components
-//import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-//import Header from "components/Headers/Header";
-
 import routes from "routes.js";
 import RegistrarNodo from "views/examples/Registrar_nodo";
+import ModificarNodo from "views/examples/ModificarNodo";
+// reactstrap components
+// core components
+//import AdminNavbar from "components/Navbars/AdminNavbar.js";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -70,6 +69,7 @@ const Admin = (props) => {
 
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
           <Route path="/registrar_nodo" element={<RegistrarNodo />} />
+          <Route path="/modificar_nodo/:nodoId" element={<ModificarNodo />} />
         </Routes>
         <Container fluid>
           <AdminFooter />
