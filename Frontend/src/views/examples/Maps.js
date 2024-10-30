@@ -16,6 +16,7 @@ L.Icon.Default.mergeOptions({
 
 const MapWrapper = () => {
   const position = [-43.583333, -66.000000]; 
+  const position2 = [-43.683333, -66.10000]; 
 
   return (
     <MapContainer
@@ -29,8 +30,18 @@ const MapWrapper = () => {
       />
       <Marker position={position}>
         <Popup>
-          Nodo 1<br />
-          Ubicación: 43°35'00.0"S 66°00'00.0"W <br /> Patagonia Argentina.
+          Nodo 1 - "Canal norte"<br />
+          Latitud: {parseFloat(position[0]).toFixed(6)} <br/>
+          Longitud: {parseFloat(position[1]).toFixed(6)} <br />
+          Patagonia Argentina.
+        </Popup>
+      </Marker>
+      <Marker position={position2}>
+        <Popup>
+          Nodo 2 - "Desemboque oeste"<br />
+          Latitud: {parseFloat(position2[0]).toFixed(6)} <br/>
+          Longitud: {parseFloat(position2[1]).toFixed(6)} <br />
+          Patagonia Argentina.
         </Popup>
       </Marker>
     </MapContainer>
