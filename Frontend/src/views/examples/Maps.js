@@ -18,11 +18,20 @@ const MapWrapper = () => {
   const position = [-43.583333, -66.000000]; 
   const position2 = [-43.683333, -66.10000]; 
 
+  const bounds = [
+    [-45.0, -67.5], // Esquina suroeste de los límites
+    [-42.0, -64.0]  // Esquina noreste de los límites
+  ];
+
   return (
     <MapContainer
       center={position}
       zoom={8}
-      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }} 
+      minZoom={8}  // Zoom mínimo permitido
+      maxZoom={14} // Zoom máximo permitido
+      maxBounds={bounds} // Establecer los límites de desplazamiento
+      maxBoundsViscosity={1.0} // Mantiene al usuario dentro de los límites
+      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
