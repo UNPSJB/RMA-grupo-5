@@ -45,7 +45,7 @@ const TablesError = () => {
     const getNodos = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8000/obtener_nodos");
+        const response = await fetch("http://localhost:8000/obtener_nodos_activos");
         if (!response.ok) {
           throw new Error("Error al hacer el fetch de nodos");
         }
@@ -74,7 +74,7 @@ const TablesError = () => {
         try {
           const response = await fetch(`http://localhost:8000/leer_mediciones_erroneas_nodo/${nodoSeleccionado}`);
           if (!response.ok) {
-            throw new Error("Error al hacer el fetch de mediciones");
+            throw new Error("Error al hacer el fetch de mediciones incorrectas");
           }
           const data = await response.json();
           setMedicionData(data);
