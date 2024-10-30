@@ -45,7 +45,8 @@ class TipoDato(IntEnum):
     energy2_t = 33    # Energía #2
     weight_t = 34     # Peso
     weight2_t = 35    # Peso #2
-
+    
+    UNKNOWN = -1  # Valor para tipos de datos desconocidos o erróneos
 
 #Modelo base para nodos
 class Nodo(BaseModel):

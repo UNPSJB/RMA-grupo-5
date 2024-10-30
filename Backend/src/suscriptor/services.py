@@ -11,7 +11,12 @@ def medicion_es_correcta(data: str, type_dt: TipoDato, time_dt: datetime) -> boo
         data_float = float(data)
     except ValueError:
         return True  # Si no es convertible, es un error
-    
+
+    # Verifica si el tipo de dato es válido
+    tipos_validos = {tipo.name for tipo in TipoDato}  # Obtiene todos los tipos válidos
+    if type_dt.name not in tipos_validos:
+        return True  # Si el tipo no es válido, marcar como erróneo
+
     # Definir los tipos de datos que no deben ser negativos
     tipos_con_negativo_no_permitido = {
         TipoDato.light_t, TipoDato.oxygen_t, TipoDato.rainfall_t, TipoDato.level_t,
@@ -74,25 +79,35 @@ def procesar_mensaje(mensaje: str, db: Session) -> None:
     mensaje_dict = json.loads(mensaje)
 
     # Comprobar si el nodo existe; si no, se ignora la medición
-    nodo_numero = mensaje_dict['id'] 
+    nodo_numero = mensaje_dict['id']
     try:
-        obtener_nodo(db, nodo_numero) 
-    except:
-        return
+        obtener_nodo(db, nodo_numero)
+    except Exception as e:
+        return  # Se puede agregar un log para el error si es necesario
     
     time_dt = datetime.fromisoformat(mensaje_dict['time'])
-    type_dt = TipoDato[mensaje_dict['type']] 
+    tipo_str = mensaje_dict['type']  # Almacena el tipo de dato como una cadena
     valor_data = mensaje_dict['data']
-    es_erroneo = medicion_es_correcta(valor_data, type_dt, time_dt) # Se valida la medición
+    
+    # Verifica si el tipo de dato es válido
+    es_erroneo = False
+    try:
+        type_dt = TipoDato[tipo_str]  # Intenta convertir a TipoDato
+    except KeyError:
+        es_erroneo = True  # Si el tipo no está en la enumeración, marcar como erróneo
+        type_dt = TipoDato.UNKNOWN  # Asigna un valor para tipos desconocidos
+    
+    # Validar la medición
+    if not es_erroneo:
+        es_erroneo = medicion_es_correcta(valor_data, type_dt, time_dt)
 
-    medicion = MedicionCreate(      
-        type=type_dt,
-        data=valor_data, 
+    medicion = MedicionCreate(
+        type=type_dt,  # Se usa UNKNOWN si el tipo es erróneo
+        data=valor_data,
         time=time_dt,
         nodo_numero=nodo_numero,
         es_erroneo=es_erroneo
     )
     
-    crear_medicion(db, medicion) 
-
+    crear_medicion(db, medicion)
 
