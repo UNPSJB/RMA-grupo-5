@@ -18,6 +18,7 @@ def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
         data=medicion.data,
         time=medicion.time,
         nodo_numero=medicion.nodo_numero,
+        es_erroneo=medicion.es_erroneo,
     )
     db.add(db_medicion)
     db.commit()
