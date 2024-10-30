@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -15,44 +15,57 @@ L.Icon.Default.mergeOptions({
 });
 
 const MapWrapper = () => {
-  const position = [-43.583333, -66.000000]; 
-  const position2 = [-43.683333, -66.10000]; 
+  const [nodos, setNodos] = useState([]);
 
+  const position = [-43.583333, -66.000000];
   const bounds = [
     [-45.0, -67.5], // Esquina suroeste de los límites
-    [-42.0, -64.0]  // Esquina noreste de los límites
+    [-42.0, -64.0], // Esquina noreste de los límites
   ];
+
+  useEffect(() => {
+    const fetchNodos = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/obtener_nodos_activos");
+        const data = await response.json();
+        const nodosActivos = data;
+        setNodos(nodosActivos);
+      } catch (error) {
+        console.error("Error al obtener los nodos:", error);
+      }
+    };
+
+    fetchNodos();
+  }, []);
 
   return (
     <MapContainer
       center={position}
       zoom={8}
-      minZoom={8}  // Zoom mínimo permitido
-      maxZoom={14} // Zoom máximo permitido
-      maxBounds={bounds} // Establecer los límites de desplazamiento
-      maxBoundsViscosity={1.0} // Mantiene al usuario dentro de los límites
+      minZoom={8}
+      maxZoom={14}
+      maxBounds={bounds}
+      maxBoundsViscosity={1.0}
       style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position}>
-        <Popup>
-          Nodo 1 - "Canal norte"<br />
-          Latitud: {parseFloat(position[0]).toFixed(6)} <br/>
-          Longitud: {parseFloat(position[1]).toFixed(6)} <br />
-          Patagonia Argentina.
-        </Popup>
-      </Marker>
-      <Marker position={position2}>
-        <Popup>
-          Nodo 2 - "Desemboque oeste"<br />
-          Latitud: {parseFloat(position2[0]).toFixed(6)} <br/>
-          Longitud: {parseFloat(position2[1]).toFixed(6)} <br />
-          Patagonia Argentina.
-        </Popup>
-      </Marker>
+
+      {nodos.map((nodo) => (
+        <Marker
+          key={nodo.numero}
+          position={[nodo.ubicacion_x, nodo.ubicacion_y]}
+        >
+          <Popup>
+            Nodo {nodo.numero} - "{nodo.nombre}"<br />
+            Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
+            Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
+            Chubut
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 };
@@ -60,28 +73,14 @@ const MapWrapper = () => {
 const Maps = () => {
   return (
     <>
-      
       <Header />
-
       <Container className="mt--9" fluid>
-        
         <Row>
           <Col lg="12">
-            
             <Card className="shadow border-0" style={{ padding: "20px", borderRadius: "10px", border: "2px solid #ccc" }}>
               <Container>
-                <h3 lg="12" class="row justify-content-md-center">Cuenca Sagmata - Nodos Activos</h3>
+                <h3 className="row justify-content-md-center">Cuenca Sagmata - Nodos Activos</h3>
               </Container>
-              
-              {/*
-              <div style={{ textAlign: "center", marginBottom: "40px" }}>
-                <img
-                  src={require("../../assets/img/maps/Cuenca-Sagmata-zona-de-estudio.jpg")}
-                  alt="Curva Hidrograma"
-                  style={{ maxWidth: "80%", height: "auto", borderRadius: "10px", border: "2px solid #ccc" }} // Imagen más grande y con borde
-                />
-              </div>
-              */}
               <MapWrapper />
             </Card>
           </Col>
