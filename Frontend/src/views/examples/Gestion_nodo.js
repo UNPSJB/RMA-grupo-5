@@ -7,11 +7,17 @@ const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
   const navigate = useNavigate();
 
-  // Función para obtener los nodos desde el backend
+  // Función para obtener todos los nodos (activos e inactivos) desde el backend
   const fetchNodos = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/obtener_nodos");
-      setNodos(response.data); 
+      const [activosResponse, inactivosResponse] = await Promise.all([
+        axios.get("http://localhost:8000/obtener_nodos_activos"),
+        axios.get("http://localhost:8000/obtener_nodos_inactivos"),
+      ]);
+
+      // Combinar los nodos activos e inactivos en una sola lista
+      const nodos = [...activosResponse.data, ...inactivosResponse.data];
+      setNodos(nodos);
     } catch (error) {
       console.error("Error al obtener los nodos:", error);
     }
