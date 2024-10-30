@@ -375,7 +375,7 @@ function parseOptions(parent, options) {
 }
 
 
-let chartExample1 = {
+let graficoLineal = {
   options: {
     scales: {
       yAxes: [
@@ -414,8 +414,18 @@ let chartExample1 = {
   },
   // nodoDataValues son los parametros recibidos desde "views/index"
   data1: (nodoDataValues) => {
+    // Get current time
+    const ahora = new Date();
+    const labels = [];
+  
+    // Loop to create labels for each even hour, going back 24 hours
+    for (let i = 12; i >= 0; i--) { // 12 intervals for 24 hours, each 2 hours apart
+      const hora = new Date(ahora.getTime() - i * 2 * 60 * 60 * 1000);
+      labels.push(hora.getHours() + ":00");
+    }
+  
     return {
-      labels: ["12 am", "2 am", "4 am", "6 am", "8 am", "10 am", "12 am", "2 pm", "4 pm","6 pm", "8 pm", "10 pm", "12 pm"],
+      labels: labels,
       datasets: [
         {
           label: "Performance",
@@ -426,10 +436,21 @@ let chartExample1 = {
         },
       ],
     };
-  },
+  },  
   data2: (nodoDataValues) => {
+    const hoy = new Date();
+    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    const labels = [];
+  
+    // Generate labels for the last 7 days, starting from today and moving backwards
+    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
+      const dia = new Date(hoy);
+      dia.setDate(hoy.getDate() - i);
+      labels.push(diasSemana[dia.getDay()]);
+    }
+  
     return {
-      labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
+      labels: labels,
       datasets: [
         {
           label: "Performance",
@@ -441,10 +462,11 @@ let chartExample1 = {
       ],
     };
   },
+  
 };
 
 
-let chartExample2 = {
+let graficoBarras = {
   options: {
     scales: {
       yAxes: [
@@ -478,8 +500,18 @@ let chartExample2 = {
     
   },
   data: (nodoDataValues) => {
+    const hoy = new Date();
+    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    const labels = [];
+  
+    // Generate labels for the last 7 days, starting from today and moving backwards
+    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
+      const dia = new Date(hoy);
+      dia.setDate(hoy.getDate() - i);
+      labels.push(diasSemana[dia.getDay()]);
+    }
     return {
-      labels: ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
+      labels:labels,
       datasets: [
         {
           label: "Sales",
@@ -494,7 +526,7 @@ let chartExample2 = {
   },
 };
 
-let compuesto = {
+let graficoCompuesto = {
   data: (nodoDataValues, tipo, nodoDataValues1, tipo1, nodoDataValues2, tipo2) => {
     return{
     labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
@@ -560,7 +592,7 @@ let compuesto = {
 module.exports = {
   chartOptions, // used inside src/views/Index.js
   parseOptions, // used inside src/views/Index.js
-  chartExample1, // used inside src/views/Index.js
-  chartExample2, // used inside src/views/Index.js
-  compuesto, //grafico compuesto
+  graficoLineal, // used inside src/views/Index.js
+  graficoBarras, // used inside src/views/Index.js
+  graficoCompuesto, //grafico compuesto
 };
