@@ -33,12 +33,24 @@ def leer_medicion(db: Session, medicion_id: int) -> Medicion:
         raise exceptions.MedicionNoEncontrada() 
     return db_medicion
 
-def leer_mediciones_nodo(db: Session, numero_nodo: int) -> List[Medicion]:
+def leer_mediciones_correctas_nodo(db: Session, numero_nodo: int) -> List[Medicion]:
     db_nodo = obtener_nodo(db, numero_nodo)
-    if db_nodo is None:
-        raise exceptions.NodoNoEncontrado()
-    return db.query(Medicion).filter(Medicion.nodo_numero == numero_nodo).all()
     
+    # Si el nodo esta activo, devuelve solo mediciones correctas
+    if db_nodo.is_activo:
+        return db.query(Medicion).filter(Medicion.nodo_numero == numero_nodo, Medicion.es_erroneo == False).all()
+    
+    return []
+
+def leer_mediciones_erroneas_nodo(db: Session, numero_nodo: int) -> List[Medicion]:
+    db_nodo = obtener_nodo(db, numero_nodo)
+
+    # Si el nodo esta activo, devuelve solo mediciones correctas
+    if db_nodo.is_activo:
+        return db.query(Medicion).filter(Medicion.nodo_numero == numero_nodo, Medicion.es_erroneo == True).all()
+    
+    return []
+
 def modificar_medicion(
     db: Session, medicion_id: int, nodo: schemas.MedicionUpdate
 ) -> Medicion:
@@ -111,9 +123,14 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
     return db_nodo
 
 
-def listar_nodos(db: Session) -> List[Nodo]:
-    # Obtener todos los nodos de la base de datos y ordenarlos por el estado `activo` (activos primero)
-    nodos = db.query(Nodo).order_by(Nodo.is_activo.desc()).all()
+def listar_nodos_activos(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos activos
+    nodos = db.query(Nodo).filter(Nodo.is_activo == True).all()
+    return nodos
+
+def listar_nodos_inactivos(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos inactivos
+    nodos = db.query(Nodo).filter(Nodo.is_activo == False).all()
     return nodos
 
 def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
