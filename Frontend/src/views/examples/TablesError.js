@@ -137,7 +137,7 @@ const TablesError = () => {
   };
 
   const nombreTipo = {
-    
+    "-1": "Desconocido",
     1: "Temperatura",
     2: "Temperatura",       
     3: "Humedad",        
