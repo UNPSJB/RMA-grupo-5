@@ -21,7 +21,7 @@ class MedicionCreate(MedicionBase):
     data: str 
     time: datetime 
     nodo_numero: int
-    es_erroneo: bool
+    es_erroneo: bool = False
 
 class MedicionUpdate(MedicionBase):
     pass
