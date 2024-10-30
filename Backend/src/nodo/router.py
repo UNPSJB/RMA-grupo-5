@@ -27,7 +27,7 @@ def read_ultimo_nodo(db: Session = Depends(get_db)):
 def read_mediciones_nodo(numero_nodo: int, db: Session = Depends(get_db)):
     return services.leer_mediciones_correctas_nodo(db, numero_nodo)
 
-@router.get("/leer_mediciones_incorrectas_nodo/{numero_nodo}", response_model=List[schemas.Medicion])
+@router.get("/leer_mediciones_erroneas_nodo/{numero_nodo}", response_model=List[schemas.Medicion])
 def read_mediciones_nodo(numero_nodo: int, db: Session = Depends(get_db)):
     return services.leer_mediciones_erroneas_nodo(db, numero_nodo)
 
