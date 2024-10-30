@@ -1,6 +1,8 @@
 import Index from "views/Index.js";
 import Maps from "views/examples/Maps.js";
 import Tables from "views/examples/Tables.js";
+import TablesError from "views/examples/TablesError.js";
+
 import GestionNodo from "views/examples/Gestion_nodo.js";
 //import ModificarNodo from "views/examples/ModificarNodo.js";
 
@@ -36,6 +38,13 @@ var routes = [
     name: "Tablas",
     icon: "ni ni-bullet-list-67 text-red",
     component: <Tables />,
+    layout: "/admin",
+  },
+  {
+    path: "/tables-error",
+    name: "Tablas con errores",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: <TablesError />,
     layout: "/admin",
   },
   {
