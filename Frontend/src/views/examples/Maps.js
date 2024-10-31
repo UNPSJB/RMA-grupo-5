@@ -57,22 +57,25 @@ const MapWrapper = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
   
-        {nodos.map((nodo) => (
-          <Marker
-            key={nodo.numero}
-            position={[nodo.ubicacion_x, nodo.ubicacion_y]}
-            eventHandlers={{
-              click: () => navigate("/admin/tables"),
-            }}
-          >
-            <Popup>
-              Nodo {nodo.numero} - "{nodo.nombre}"<br />
-              Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
-              Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
-              Chubut
-            </Popup>
-          </Marker>
-        ))}
+      {nodos.map((nodo) => (
+        <Marker
+          key={nodo.numero}
+          position={[nodo.ubicacion_x, nodo.ubicacion_y]}
+        >
+          <Popup>
+            Nodo {nodo.numero} - "{nodo.nombre}"<br />
+            Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
+            Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
+            Chubut<br />
+            <button type="submit" className="button-style"
+              onClick={() => navigate("/admin/tables")}
+            >
+              Ver Detalle
+            </button>
+            
+          </Popup>
+        </Marker>
+      ))}
       </MapContainer>
   );
 };
