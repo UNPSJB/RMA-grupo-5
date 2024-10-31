@@ -12,6 +12,10 @@ import {
   Container,
   Row,
   Col,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
 } from "reactstrap";
 
 // core components
@@ -34,6 +38,13 @@ const Index = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nodoSeleccionado, setNodoSeleccionado] = useState(0); // Nodo seleccionado por defecto en 0
+  const [modal, setModal] = useState(false);
+  const [expandedChart, setExpandedChart] = useState(null); 
+
+  const toggleModal = (chart) => {
+    setExpandedChart(chart);
+    setModal(!modal);
+  };
 
   // Obtener todos los nodos para el desplegable
   useEffect(() => {
@@ -234,7 +245,11 @@ const Index = (props) => {
   const valoresNodosDiario = medicionesDiarias ? mapearDatos(medicionesDiarias) : [];
   const valoresNodosSemanal = medicionesSemanales ? mapearDatos(medicionesSemanales) : [];
   const valoresNodosTemp = medicionesSemanalesTemp ? mapearDatos(medicionesSemanalesTemp) : [];
-
+  const chartData = {
+    diario: graficoLineal.data1(valoresNodosDiario),
+    semanal: graficoLineal.data2(valoresNodosSemanal),
+    temperatura: graficoBarras.data(valoresNodosTemp),
+  };
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -298,6 +313,16 @@ const Index = (props) => {
                             <span className="d-md-none">S</span>
                           </NavLink>
                         </NavItem>
+                        <NavItem>
+                          <Button
+                            className={classnames("py-2 px-3")}
+                            size="sm"
+                            color="secondary"
+                            onClick={() => toggleModal("line")}
+                          >
+                            ⤢ Expandir
+                          </Button>
+                        </NavItem>
                       </Nav>
                     </div>
                   </Row>
@@ -324,6 +349,14 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Temperatura de la Zona (Promedio)</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("bar")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
@@ -349,6 +382,14 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Presión Atmosférica</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("rad")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
@@ -371,6 +412,14 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0"> Comparación de Datos</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("comp")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
@@ -391,6 +440,14 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Radiación UV</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("pol")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
@@ -404,6 +461,19 @@ const Index = (props) => {
             </Col>
             
           </Row>
+          {/* Modal para mostrar gráfico expandido */}
+          <Modal isOpen={modal} toggle={() => toggleModal(null)} size="xl">
+            <ModalHeader toggle={() => toggleModal(null)}>Gráfico Expandido</ModalHeader>
+            <ModalBody>
+            <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
+              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diario" : "semanal"]} options={graficoLineal.options} />}
+              {expandedChart === "bar" && <Bar data={chartData.temperatura} options={graficoBarras.options} />}
+              {expandedChart === "comp" && <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />}
+              {expandedChart === "rad" && <Radar data={chartData.temperatura} />}
+              {expandedChart === "pol" && <Polar data={chartData.temperatura} />}
+            </div>
+            </ModalBody>
+          </Modal>
           {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE*/}
           {/*<Row className="mt-5">
             <Col>

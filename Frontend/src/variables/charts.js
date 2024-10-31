@@ -422,8 +422,9 @@ let graficoLineal = {
     for (let i = 12; i >= 0; i--) { // 12 intervals for 24 hours, each 2 hours apart
       const hora = new Date(ahora.getTime() - i * 2 * 60 * 60 * 1000);
       labels.push(hora.getHours() + ":00");
+      
     }
-  
+    labels[12] = "Hora Actual";
     return {
       labels: labels,
       datasets: [
@@ -448,7 +449,7 @@ let graficoLineal = {
       dia.setDate(hoy.getDate() - i);
       labels.push(diasSemana[dia.getDay()]);
     }
-  
+    labels[6] = "Hoy";
     return {
       labels: labels,
       datasets: [
@@ -510,13 +511,14 @@ let graficoBarras = {
       dia.setDate(hoy.getDate() - i);
       labels.push(diasSemana[dia.getDay()]);
     }
+    labels[6] = "Hoy";
     return {
       labels:labels,
       datasets: [
         {
           label: "Sales",
         data: nodoDataValues,
-        maxBarThickness: 25 ,
+        maxBarThickness: 35,
         backgroundColor: 'rgba(54, 150, 235, 0.5)',
         borderColor: 'rgba(54, 150, 235, 1)',
         borderWidth: 1.5,
@@ -528,8 +530,19 @@ let graficoBarras = {
 
 let graficoCompuesto = {
   data: (nodoDataValues, tipo, nodoDataValues1, tipo1, nodoDataValues2, tipo2) => {
+    const hoy = new Date();
+    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    const labels = [];
+  
+    // Generate labels for the last 7 days, starting from today and moving backwards
+    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
+      const dia = new Date(hoy);
+      dia.setDate(hoy.getDate() - i);
+      labels.push(diasSemana[dia.getDay()]);
+    }
+    labels[6] = "Hoy";
     return{
-    labels: ['Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab', 'Dom'],
+    labels: labels,
     datasets: [
       {
         label: obtenerNombreTipo(tipo),
@@ -538,7 +551,7 @@ let graficoCompuesto = {
         backgroundColor: 'rgba(54, 150, 235, 0.5)',
         borderWidth: 1,
         borderColor: 'rgba(54, 150, 235, 0.8)',
-        maxBarThickness: 25,
+        maxBarThickness: 35,
       },
       {
         label: obtenerNombreTipo(tipo1),
