@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Card, Container, Row, Col } from "reactstrap";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
 import Header from "components/Headers/Header.js";
 
@@ -14,8 +15,10 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+
 const MapWrapper = () => {
   const [nodos, setNodos] = useState([]);
+  const navigate = useNavigate(); // Inicializa useNavigate
 
   const position = [-43.583333, -66.000000];
   const bounds = [
@@ -38,35 +41,39 @@ const MapWrapper = () => {
     fetchNodos();
   }, []);
 
-  return (
-    <MapContainer
-      center={position}
-      zoom={8}
-      minZoom={8}
-      maxZoom={14}
-      maxBounds={bounds}
-      maxBoundsViscosity={1.0}
-      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
 
-      {nodos.map((nodo) => (
-        <Marker
-          key={nodo.numero}
-          position={[nodo.ubicacion_x, nodo.ubicacion_y]}
-        >
-          <Popup>
-            Nodo {nodo.numero} - "{nodo.nombre}"<br />
-            Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
-            Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
-            Chubut
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
+    return (
+      <MapContainer
+        center={position}
+        zoom={8}
+        minZoom={8}
+        maxZoom={14}
+        maxBounds={bounds}
+        maxBoundsViscosity={1.0}
+        style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+  
+        {nodos.map((nodo) => (
+          <Marker
+            key={nodo.numero}
+            position={[nodo.ubicacion_x, nodo.ubicacion_y]}
+            eventHandlers={{
+              click: () => navigate("/admin/tables"),
+            }}
+          >
+            <Popup>
+              Nodo {nodo.numero} - "{nodo.nombre}"<br />
+              Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
+              Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
+              Chubut
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
   );
 };
 
