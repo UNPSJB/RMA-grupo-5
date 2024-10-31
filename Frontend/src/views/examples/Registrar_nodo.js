@@ -17,18 +17,18 @@ const RegistrarNodo = () => {
     // Validar que los valores sean correctos y que sean enteros
     if (
       !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(parseFloat(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(parseFloat(ubicacionY))
+      !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) ||
+      !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY))
     ) {
-      alert("Ingresa valores enteros válidos para el nodo y las ubicaciones");
+      alert("Ingresa un valor entero para el nodo y coordenadas en formato decimal");
       return;
     }
 
     const nuevoNodo = {
       numero: parseInt(nodo),
       nombre: String(nombre),
-      ubicacion_x: parseInt(ubicacionX),
-      ubicacion_y: parseInt(ubicacionY),
+      ubicacion_x: parseFloat(ubicacionX),
+      ubicacion_y: parseFloat(ubicacionY),
     };
 
     axios.post('http://localhost:8000/crear_nodo', nuevoNodo)
