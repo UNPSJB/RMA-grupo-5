@@ -4,7 +4,7 @@ import { Container } from "reactstrap";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
-import RegistrarNodo from "views/examples/Registrar_nodo";
+import RegistrarNodo from "views/examples/RegistrarNodo";
 import ModificarNodo from "views/examples/ModificarNodo";
 // reactstrap components
 // core components
