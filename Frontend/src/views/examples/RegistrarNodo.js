@@ -42,6 +42,7 @@ const RegistrarNodo = () => {
         setUbicacionX('');
         setUbicacionY('');
         
+        console.log("Redirigiendo a /admin/GestionNodo");
         // Redirigir a la página de gestión de nodos
         navigate("/admin/GestionNodo");
       })

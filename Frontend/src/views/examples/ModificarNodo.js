@@ -62,9 +62,11 @@ const ModificarNodo = () => {
       .then(response => {
         console.log("Nodo modificado:", response.data);
         alert("Nodo modificado exitosamente");
-
+        console.log("Redirigiendo a /admin/GestionNodo");
         // Redirigir a la página de gestión de nodos
+        
         navigate("/admin/GestionNodo");
+        
       })
       .catch(error => {
         console.error("Hubo un error modificando el nodo:", error.response?.data || error);
