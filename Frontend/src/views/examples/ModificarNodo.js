@@ -40,11 +40,11 @@ const ModificarNodo = () => {
     
     // Validar que los valores sean correctos y que sean enteros
     if (
-      !nodo || isNaN(nodo) || !Number.isInteger(Number(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(Number(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(Number(ubicacionY))
+      !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) ||
+      !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) ||
+      !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY))
     ) {
-      alert("Ingresa valores enteros válidos para el nodo y las ubicaciones");
+      alert("Ingresa un valor entero para el nodo y coordenadas en formato decimal");
       return;
     }
   
