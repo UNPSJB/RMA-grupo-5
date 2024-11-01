@@ -2,13 +2,30 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Card, Container, Row, Col } from "reactstrap";
+import { Card, Container, Row, Col, Button } from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
 import Header from "components/Headers/Header.js";
 
 // Eliminar el icono por defecto
 delete L.Icon.Default.prototype._getIconUrl;
+
+
+const ImageExpandButton = ({ showImage }) => {
+  return (
+    <div>
+      {showImage && (
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <img 
+            src={require("../../assets/img/maps/Cuenca-Sagmata-zona-de-estudio.jpg")}
+            alt="Imagen expandida" 
+            style={{ width: '80%', borderRadius: '10px', border: '2px solid #ccc' }}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
 const MapWrapper = () => {
   const [nodos, setNodos] = useState([]);
@@ -97,6 +114,10 @@ const MapWrapper = () => {
 };
 
 const Maps = () => {
+  const [showImage, setShowImage] = useState(false);
+  const toggleImage = () => {
+    setShowImage(!showImage);
+  };
   return (
     <>
       <Header />
@@ -108,9 +129,20 @@ const Maps = () => {
               style={{ padding: "20px", borderRadius: "10px", border: "2px solid #ccc" }}
             >
               <Container>
-                <h3 className="row justify-content-md-center">Cuenca Sagmata - Nodos Activos</h3>
+                <h3 className="row justify-content-md-center">
+                  Cuenca Sagmata - Nodos Activos
+                </h3>
               </Container>
               <MapWrapper />
+              <h3>
+                <br></br>
+                <div className="d-flex justify-content-center">
+                  <Button size="sm" color="secondary" onClick={toggleImage}>
+                    Mostrar Mapa de la Cuenca
+                  </Button>
+                </div>
+                <ImageExpandButton showImage={showImage} />
+              </h3>
             </Card>
           </Col>
         </Row>
