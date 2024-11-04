@@ -40,13 +40,14 @@ const ModificarNodo = () => {
     
     // Validar que los valores sean correctos y que sean enteros
     if (
-      !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY))
+      (nodo === null || nodo === undefined || isNaN(nodo) || !Number.isInteger(parseFloat(nodo))) ||
+      (ubicacionX === null || ubicacionX === undefined || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX))) ||
+      (ubicacionY === null || ubicacionY === undefined || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)))
     ) {
       alert("Ingresa un valor entero para el nodo y coordenadas en formato decimal");
       return;
     }
+    
   
     const nodoActualizado = {
       numero: Number(nodo),
