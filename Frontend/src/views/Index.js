@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import classnames from "classnames";
 import Chart from "chart.js";
 import { Line, Bar, Radar, Polar} from "react-chartjs-2";
+import html2canvas from "html2canvas";
 import {
   Card,
   CardHeader,
@@ -44,6 +45,16 @@ const Index = (props) => {
   const toggleModal = (chart) => {
     setExpandedChart(chart);
     setModal(!modal);
+  };
+
+  const exportChartAsImage = () => {
+    const chartElement = document.querySelector(".chart"); // Seleccionar el elemento del gráfico
+    html2canvas(chartElement).then(canvas => {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "grafico.png";
+      link.click();
+    });
   };
 
   // Obtener todos los nodos para el desplegable
@@ -263,6 +274,7 @@ const Index = (props) => {
     <>
       <Header />
       <Container className="mt--9" fluid>
+        
         <Row className="mt-5 mb-3">
           <Col xl="2">
             <select
@@ -278,6 +290,7 @@ const Index = (props) => {
             </select>
           </Col>
         </Row>
+
           <Row>
             {/* GRAFICO LINEAL */}
             <Col className="mb-5 mb-xl-0" xl="8">
@@ -290,18 +303,20 @@ const Index = (props) => {
                       </h6>
                       <h2 className="text-Black mb-0">Altura del Canal</h2>
                     </div>
+
                     <div className="col">
-                      <Nav className="justify-content-end" pills>
+                      <Nav className="justify-content-end d-flex" pills>
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 1 })}
                             href="#pablo"
                             onClick={(e) => toggleNavs(e, 1)}
                           >
-                            <span className="d-none d-md-block">Diario</span>
+                            <span className="d-none d-md-block">Diario</span> 
                             <span className="d-md-none">D</span>
                           </NavLink>
                         </NavItem>
+
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 2 })}
@@ -313,9 +328,22 @@ const Index = (props) => {
                             <span className="d-md-none">S</span>
                           </NavLink>
                         </NavItem>
+
+                        <NavItem>
+                        <Button
+                            className="py-2 px-3"
+                            size="sm"
+                            color="warning"
+                            onClick={exportChartAsImage} // Llamada a la función exportar
+                          >
+                            <span className="d-none d-md-block">Exportar jpg</span>
+                            <span className="d-md-none">E</span>
+                          </Button>
+                        </NavItem>
+
                         <NavItem>
                           <Button
-                            className={classnames("py-2 px-3")}
+                            className="py-2 px-3"
                             size="sm"
                             color="secondary"
                             onClick={() => toggleModal("line")}
@@ -327,6 +355,7 @@ const Index = (props) => {
                     </div>
                   </Row>
                 </CardHeader>
+                
                 <CardBody>
                   <div className="chart">
                     <Line
@@ -338,6 +367,7 @@ const Index = (props) => {
                 </CardBody>
               </Card>
             </Col>
+
             {/* GRAFICO BARRAS */}
             <Col xl="4">
               <Card className="shadow">
@@ -370,6 +400,7 @@ const Index = (props) => {
               </Card>
             </Col>
           </Row>
+
           <Row className="mt-4 mb-2">
             {/* GRAFICO RADAR */}
             <Col xl="4">

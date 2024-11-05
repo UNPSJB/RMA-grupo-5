@@ -15,15 +15,15 @@ const RegistrarNodo = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validar que los valores sean correctos
-    if (
-      !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9]/.test(nodo) ||
-      !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.]/.test(ubicacionX) ||
-      !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.]/.test(ubicacionY)
-    ) {
-      message.error("Ingresa un valor válido (solo números)");
-      return;
-    }
+  // Validar que los valores sean correctos
+  if (
+    !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9-]/.test(nodo) ||
+    !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX) ||
+    !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY)
+  ) {
+    message.error("Ingresa un valor válido (solo números, incluyendo negativos)");
+    return;
+  }
     
 
     const nuevoNodo = {
