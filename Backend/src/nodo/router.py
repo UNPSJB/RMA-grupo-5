@@ -88,7 +88,6 @@ def get_tipo_dato(nombre: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Tipo de dato no encontrado")
     return {"tipo": tipo_dato.value}
 
-<<<<<<< Updated upstream
 
 @router.post("/importar_datos_json")
 async def importar_datos_json(file: UploadFile = File(...), db: Session = Depends(get_db)):
@@ -107,7 +106,6 @@ async def importar_datos_csv(file: UploadFile = File(...), db: Session = Depends
     mediciones = services.importar_datos_csv(db, data)
 
     return {"message": f"{len(mediciones)} mediciones importadas correctamente"}
-=======
 #/--- Rutas de clase Registro ---/
 @router.post("/crear_usuario", response_model=schemas.Registro)
 def crear_usuario(registro: schemas.RegistroCreate, db: Session = Depends(get_db)):
@@ -118,4 +116,3 @@ def iniciar_sesion(registro: schemas.RegistroBase, db: Session = Depends(get_db)
     return services.iniciar_sesion(registro, db)
 
 
->>>>>>> Stashed changes

@@ -154,7 +154,6 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     db.commit()
     return nodo
 
-<<<<<<< Updated upstream
 def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
     mediciones_importadas = []
     
@@ -191,7 +190,6 @@ def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
             continue
 
     return mediciones_importadas
-=======
 #/--- Metodos de clase Registro ---/
 def crear_usuario(db: Session, registro: schemas.RegistroCreate):
    
@@ -225,4 +223,3 @@ def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
 
     # Si el usuario y la contraseña son correctos, devolver un mensaje de éxito
     return db_usuario
->>>>>>> Stashed changes
