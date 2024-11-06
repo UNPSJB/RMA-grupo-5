@@ -1,65 +1,102 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
-from src.nodo.models import TipoDato
+
+# Clase base para EstadoNodo
+class EstadoNodoBase(BaseModel):
+    nombre: str
+
+    class Config:
+        from_attributes = True
+
+class EstadoNodoCreate(EstadoNodoBase):
+    nombre: str 
+
+class EstadoNodoUpdate(EstadoNodoBase):
+    nombre: Optional[str] = None
+
+# Clase para representar un EstadoNodo
+class EstadoNodo(EstadoNodoBase):
+    id: int
+    nombre: str
+
+# Clase base para TipoDato
+class TipoDatoBase(BaseModel):
+    nombre: str 
+    unidad: str
+    rango_minimo: float
+    rango_maximo: float
+
+    class Config:
+        from_attributes = True
+
+class TipoDatoCreate(TipoDatoBase):
+    nombre: str 
+    unidad: str
+    rango_minimo: Optional[float] = None
+    rango_maximo: Optional[float] = None
+
+class TipoDatoUpdate(TipoDatoBase):
+    pass
+
+# Clase para representar un TipoDato
+class TipoDato(TipoDatoBase):
+    id: int
 
 # Clase base Medicion
 class MedicionBase(BaseModel):
-    type: TipoDato 
     data: str
-    time: datetime 
+    time: datetime
     nodo_numero: int
     es_erroneo: bool
 
     class Config:
-        arbitrary_types_allowed = True  # Permitir tipos arbitrarios como Nodo
         from_attributes = True
 
 # Clases de creación y actualización de Medicion
 class MedicionCreate(MedicionBase):
-    type: TipoDato
-    data: str 
-    time: datetime 
+    tipo_dato_nombre: str
+    data: str
+    time: datetime
     nodo_numero: int
-    es_erroneo: bool = False
+    es_erroneo: bool
 
 class MedicionUpdate(MedicionBase):
     pass
 
+# Clase para representar una Medicion completa
 class Medicion(MedicionBase):
     id: int
+    tipo_dato_id: int
+    data: str
+    time: datetime
     nodo_numero: int
+    es_erroneo: bool
 
-# Clase Nodo
+# Clase base Nodo
 class NodoBase(BaseModel):
     numero: int
-    nombre: Optional [str] = None
-    ubicacion_x: float 
-    ubicacion_y: float 
-    is_activo: bool = True 
-
+    nombre: Optional[str] = None
+    longitud: float
+    latitud: float
     class Config:
         from_attributes = True
-        
-    def estado(self):
-        return ('<span class="text-success badge badge-success text-white"> Activo </span>'
-                if self.is_activo
-                else
-                '<span class="text-success badge badge-danger text-white"> Inactivo </span>')
 
 # Clases de creación y actualización de Nodo
 class NodoCreate(NodoBase):
     numero: int
     nombre: str
-    ubicacion_x: float 
-    ubicacion_y: float 
-    is_activo: bool = True 
+    longitud: float
+    latitud: float
+    estado_nodo_nombre: str
 
 class NodoUpdate(NodoBase):
     nombre: Optional[str] = None
-    ubicacion_x: Optional[float] = None
-    ubicacion_y: Optional[float] = None
-    is_activo: Optional[bool] = None
+    longitud: Optional[float] = None
+    latitud: Optional[float] = None
+    estado_nodo_nombre: Optional[str] = None
 
+# Clase para representar un Nodo completo
 class Nodo(NodoBase):
     numero: int
+    estado_nodo_id: int

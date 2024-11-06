@@ -1,19 +1,19 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from src.config_db import get_db
-from src.nodo import models, schemas, services
+from src.nodo import schemas, services
 
 router = APIRouter()
 
 #/--- Rutas de clase Medicion ---/
 @router.post("/crear_medicion", response_model=schemas.Medicion)
-def create_medicion(nodo: schemas.MedicionCreate, db: Session = Depends(get_db)):
-    return services.crear_medicion(db, nodo)
+def create_medicion(medicion: schemas.MedicionCreate, db: Session = Depends(get_db)):
+    return services.crear_medicion(db, medicion)
 
 @router.get("/leer_mediciones", response_model=list[schemas.Medicion])
 def read_mediciones(db: Session = Depends(get_db)):
-    return services.listar_mediciones(db) 
+    return services.leer_mediciones(db) 
 
 @router.get("/leer_medicion/{medicion_id}", response_model=schemas.Medicion)
 def read_medicion(medicion_id: int, db: Session = Depends(get_db)):
@@ -46,41 +46,74 @@ def delete_nodo(medicion_id: int, db: Session = Depends(get_db)):
 def create_nodo(nodo: schemas.NodoCreate, db: Session = Depends(get_db)):
     return services.crear_nodo(db, nodo)
 
-@router.get("/obtener_nodo/{numero_nodo}", response_model=schemas.Nodo)
-def obtener_nodo(numero_nodo: int, db: Session = Depends(get_db)):
-    return services.obtener_nodo(db, numero_nodo)
+@router.get("/leer_nodo/{numero_nodo}", response_model=schemas.Nodo)
+def leer_nodo(numero_nodo: int, db: Session = Depends(get_db)):
+    return services.leer_nodo(db, numero_nodo)
 
-@router.get("/obtener_nodos_activos/", response_model=List[schemas.Nodo])
-def obtener_nodos(db: Session = Depends(get_db)):
-    nodos = services.listar_nodos_activos(db)
+@router.get("/leer_nodos/", response_model=List[schemas.Nodo])
+def leer_nodos(db: Session = Depends(get_db)):
+    nodos = services.leer_nodos(db)
     return nodos
 
-@router.get("/obtener_nodos_inactivos/", response_model=List[schemas.Nodo])
-def obtener_nodos(db: Session = Depends(get_db)):
-    nodos = services.listar_nodos_inactivos(db)
+@router.get("/leer_nodos_por_estado/{estado_nodo_id}", response_model=List[schemas.Nodo])
+def leer_nodos(estado_nodo_id: int, db: Session = Depends(get_db)):
+    nodos = services.leer_nodos_por_estado(db, estado_nodo_id)
     return nodos
 
-@router.put("/actualizar_nodo/{numero_nodo}", response_model=schemas.Nodo)
-def update_nodo(
-    numero_nodo: int, nodo: schemas.NodoUpdate, db: Session = Depends(get_db)
-):
+@router.put("/modificar_nodo/{numero_nodo}", response_model=schemas.Nodo)
+def update_nodo(numero_nodo: int, nodo: schemas.NodoUpdate, db: Session = Depends(get_db)):
     return services.modificar_nodo(db, numero_nodo, nodo)  
-
-@router.put("/toggle_estado/{numero_nodo}", response_model=schemas.Nodo)
-def toggle_estado_nodo(numero_nodo: int, db: Session = Depends(get_db)):
-    nodo = services.obtener_nodo(db, numero_nodo)
-    nodo.is_activo = not nodo.is_activo  # Cambia el estado
-    db.commit()
-    db.refresh(nodo)
-    return nodo
 
 @router.delete("/eliminar_nodo/{nodo_id}", response_model=schemas.Nodo)
 def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
     return services.eliminar_nodo(db, nodo_id)
 
-@router.get("/tipo_dato/{nombre}")
-def get_tipo_dato(nombre: str, db: Session = Depends(get_db)):
-    tipo_dato = getattr(models.TipoDato, nombre)
-    if not tipo_dato:
-        raise HTTPException(status_code=404, detail="Tipo de dato no encontrado")
-    return {"tipo": tipo_dato.value}
+
+
+#/--- Rutas de clase TipoDato ---/
+@router.post("/crear_tipo_dato", response_model=schemas.TipoDato)
+def create_tipo_dato(tipo_dato: schemas.TipoDatoCreate, db: Session = Depends(get_db)):
+    return services.crear_tipo_dato(db, tipo_dato)
+
+@router.get("/leer_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
+def read_tipo_dato(nombre_tipo: str, db: Session = Depends(get_db)):
+    return services.leer_tipo_dato(db, nombre_tipo)
+
+@router.get("/leer_tipos_datos/", response_model=List[schemas.TipoDato])
+def read_tipos_datos(db: Session = Depends(get_db)):
+    tipos = services.leer_tipos_datos(db)
+    return tipos
+
+@router.put("/modificar_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
+def update_tipo_dato(nombre_tipo: str, nodo: schemas.TipoDatoUpdate, db: Session = Depends(get_db)):
+    return services.modificar_tipo_dato(db, nombre_tipo, nodo)  
+
+@router.delete("/eliminar_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
+def delete_tipo_dato(nombre_tipo: str, db: Session = Depends(get_db)):
+    return services.eliminar_tipo_dato(db, nombre_tipo)
+
+#/--- Rutas de clase Estado Nodo ---/
+@router.post("/crear_estado_nodo", response_model=schemas.EstadoNodo)
+def create_estado_nodo(estado: schemas.EstadoNodoCreate, db: Session = Depends(get_db)):
+    return services.crear_estado_nodo(db, estado)
+
+@router.get("/leer_estados_nodo", response_model=list[schemas.EstadoNodo])
+def read_estados_nodo(db: Session = Depends(get_db)):
+    return services.leer_estados_nodo(db) 
+
+@router.get("/leer_estado_nodo/{estado_nombre}", response_model=schemas.EstadoNodo)
+def read_estado_nodo(estado_nombre: str, db: Session = Depends(get_db)):
+    return services.leer_estado_nodo(db, estado_nombre)
+
+
+@router.put("/modificar_estado_nodo/{estado_nombre}", response_model=schemas.EstadoNodo)
+def update_estado_nodo(
+    estado_nombre: str, estado: schemas.EstadoNodoUpdate, db: Session = Depends(get_db)
+):
+    return services.modificar_estado_nodo(db, estado_nombre, estado)
+
+@router.delete("/eliminar_estado_nodo/{estado_nombre}", response_model=schemas.EstadoNodo)
+def delete_nodo(estado_nombre: str, db: Session = Depends(get_db)):
+    return services.eliminar_estado_nodo(db, estado_nombre)
+
+
