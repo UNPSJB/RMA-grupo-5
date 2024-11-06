@@ -1,126 +1,88 @@
-// reactstrap components
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  FormGroup,
-  Form,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
-  Row,
-  Col,
-} from "reactstrap";
+import React, { useState } from "react";
+import axios from "axios"; 
+import Header from "components/Headers/Header.js";
+import { useNavigate } from "react-router-dom";
+import "../../assets/css/login.css";
+import { message } from "antd";
 
-const Login = () => {
+const IniciarSesion = () => {
+  const [nombreUsuario, setNombreUsuario] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validación simple para los campos de usuario y contraseña
+    if (!nombreUsuario || !contrasena) {
+      message.error("Por favor, complete todos los campos.");
+      return;
+    }
+
+    const datosUsuario = {
+      usuario: nombreUsuario,
+      contrasenia: contrasena,
+    };
+
+    axios.post('http://localhost:8000/iniciar_sesion', datosUsuario)
+      .then(response => {
+        message.success("Inicio de sesión exitoso");
+
+        // Reiniciar los campos después de un inicio de sesión exitoso
+        setNombreUsuario('');
+        setContrasena('');
+        
+        // Redirigir a la página principal o de administración
+        navigate("/admin/home");
+      })
+      .catch(error => {
+        if (error.response && error.response.data) {
+          message.error(error.response.data.detail || "Error en el inicio de sesión");
+        } else {
+          message.error("Error en el inicio de sesión, verifique sus datos");
+        }
+      });
+  }; 
+
   return (
     <>
-      <Col lg="5" md="7">
-        <Card className="bg-secondary shadow border-0">
-          <CardHeader className="bg-transparent pb-5">
-            <div className="text-muted text-center mt-2 mb-3">
-              <small>Inicia sesión con</small>
-            </div>
-            <div className="btn-wrapper text-center">
+      <Header />
 
-              <Button
-                className="btn-neutral btn-icon"
-                color="default"
-                href="#pablo"
-                onClick={(e) => e.preventDefault()}
-              >
-                <span className="btn-inner--icon">
-                  <img
-                    alt="..."
-                    src={
-                      require("../../assets/img/icons/common/google.svg")
-                        .default
-                    }
-                  />
-                </span>
-                <span className="btn-inner--text">Google</span>
-              </Button>
+      <div className="card-style">
+        <div className="form-container">
+          <h2 className="form-title">Iniciar Sesión</h2>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label className="label-style">Nombre de Usuario:</label>
+              <input
+                type="text"
+                className="input-style"
+                value={nombreUsuario}
+                onChange={(e) => setNombreUsuario(e.target.value)}
+                required
+              />
             </div>
-          </CardHeader>
-          <CardBody className="px-lg-5 py-lg-5">
-            <div className="text-center text-muted mb-4">
-              <small>O con sus datos</small>
+
+            <div>
+              <label className="label-style">Contraseña:</label>
+              <input
+                type="password"
+                className="input-style"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                required
+              />
             </div>
-            <Form role="form">
-              <FormGroup className="mb-3">
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-email-83" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    autoComplete="new-email"
-                  />
-                </InputGroup>
-              </FormGroup>
-              <FormGroup>
-                <InputGroup className="input-group-alternative">
-                  <InputGroupAddon addonType="prepend">
-                    <InputGroupText>
-                      <i className="ni ni-lock-circle-open" />
-                    </InputGroupText>
-                  </InputGroupAddon>
-                  <Input
-                    placeholder="Password"
-                    type="password"
-                    autoComplete="new-password"
-                  />
-                </InputGroup>
-              </FormGroup>
-              <div className="custom-control custom-control-alternative custom-checkbox">
-                <input
-                  className="custom-control-input"
-                  id=" customCheckLogin"
-                  type="checkbox"
-                />
-                <label
-                  className="custom-control-label"
-                  htmlFor=" customCheckLogin"
-                >
-                  <span className="text-muted">Recordar cuenta</span>
-                </label>
-              </div>
-              <div className="text-center">
-                <Button className="my-4" color="primary" type="button">
-                  Iniciar Sesión
-                </Button>
-              </div>
-            </Form>
-          </CardBody>
-        </Card>
-        <Row className="mt-3">
-          <Col xs="6">
-            <a
-              className="text-light"
-              href="#pablo"
-              onClick={(e) => e.preventDefault()}
-            >
-              <small>Olvidaste la contraseña?</small>
-            </a>
-          </Col>
-          <Col className="text-right" xs="6">
-            <a
-              className="text-light"
-              href="#pablo"
-              onClick={(e) => e.preventDefault()}
-            >
-              <small>Crear nueva cuenta</small>
-            </a>
-          </Col>
-        </Row>
-      </Col>
+            
+            <button type="submit" className="button-style">
+              Iniciar Sesión
+            </button>
+          </form>
+        </div>
+      </div>
     </>
   );
 };
 
-export default Login;
+export default IniciarSesion;
+

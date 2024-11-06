@@ -74,3 +74,10 @@ class Medicion(BaseModel):
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     nodo_numero = Column(Integer, ForeignKey('nodos.numero'), nullable=True)  # Clave foránea
     nodo = relationship("Nodo", back_populates="mediciones")  # Relación con la tabla Nodo
+
+
+class Registro(BaseModel):
+    __tablename__ = 'registros'
+
+    usuario = Column(String(10), primary_key=True)
+    contrasenia = Column(String(8), nullable=False)
