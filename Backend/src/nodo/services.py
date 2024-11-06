@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from src.nodo.models import Medicion, Nodo
 from src.nodo import schemas
 from src.nodo import exceptions
+import json
+from datetime import datetime
+
 
 #/--- Metodos de clase Medicion ---/
 
@@ -146,3 +149,40 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     db.delete(nodo)
     db.commit()
     return nodo
+
+def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
+    mediciones_importadas = []
+    
+    for item in data:
+        medicion = schemas.MedicionCreate(
+            type=item['type'],
+            data=item['data'],
+            time=item['time'],
+            nodo_numero=int(item['nodo_numero']),
+            es_erroneo=bool(item['es_erroneo'])
+        )
+        try:
+            medicion_creada = crear_medicion(db, medicion)
+            mediciones_importadas.append(medicion_creada)
+        except exceptions.NodoNoEncontrado:
+            continue
+    return mediciones_importadas
+
+def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
+    mediciones_importadas = []
+
+    for item in data:
+        medicion = schemas.MedicionCreate(
+            type=int(item['type']), 
+            data=item['data'],
+            time=item['time'],
+            nodo_numero=int(item['nodo_numero']),
+            es_erroneo=bool(item['es_erroneo'])
+        )
+        try:
+            medicion_creada = crear_medicion(db, medicion) 
+            mediciones_importadas.append(medicion_creada)
+        except exceptions.NodoNoEncontrado:
+            continue
+
+    return mediciones_importadas

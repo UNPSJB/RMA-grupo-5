@@ -1,8 +1,11 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from src.config_db import get_db
 from src.nodo import models, schemas, services
+import json, csv
+from io import StringIO
+
 
 router = APIRouter()
 
@@ -84,3 +87,22 @@ def get_tipo_dato(nombre: str, db: Session = Depends(get_db)):
     if not tipo_dato:
         raise HTTPException(status_code=404, detail="Tipo de dato no encontrado")
     return {"tipo": tipo_dato.value}
+
+
+@router.post("/importar_datos_json")
+async def importar_datos_json(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    contents = await file.read()
+    data = json.loads(contents)
+    mediciones = services.importar_datos_json(db, data)
+    
+    return {"message": f"{len(mediciones)} mediciones importadas correctamente"}
+
+@router.post("/importar_datos_csv")
+async def importar_datos_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    contents = await file.read()
+    decoded_content = contents.decode("utf-8")
+    csv_reader = csv.DictReader(StringIO(decoded_content))
+    data = [row for row in csv_reader]
+    mediciones = services.importar_datos_csv(db, data)
+
+    return {"message": f"{len(mediciones)} mediciones importadas correctamente"}
