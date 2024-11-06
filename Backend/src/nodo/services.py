@@ -3,12 +3,9 @@ from sqlalchemy.orm import Session
 from src.nodo.models import Medicion, Nodo, Registro
 from src.nodo import schemas
 from src.nodo import exceptions
-<<<<<<< Updated upstream
 import json
 from datetime import datetime
-=======
 from fastapi import HTTPException
->>>>>>> Stashed changes
 
 
 #/--- Metodos de clase Medicion ---/
