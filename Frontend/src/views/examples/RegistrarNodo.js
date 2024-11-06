@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/RegistrarNodo.css"
+import { message } from "antd";
 
 const RegistrarNodo = () => {
   const [nodo, setNodo] = useState('');
@@ -14,27 +15,27 @@ const RegistrarNodo = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validar que los valores sean correctos y que sean enteros
-    if (
-      !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(parseFloat(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(parseFloat(ubicacionY))
-    ) {
-      alert("Ingresa valores enteros válidos para el nodo y las ubicaciones");
-      return;
-    }
+  // Validar que los valores sean correctos
+  if (
+    !nodo || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9-]/.test(nodo) ||
+    !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX) ||
+    !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY)
+  ) {
+    message.error("Ingresa un valor válido (solo números, incluyendo negativos)");
+    return;
+  }
+    
 
     const nuevoNodo = {
       numero: parseInt(nodo),
       nombre: String(nombre),
-      ubicacion_x: parseInt(ubicacionX),
-      ubicacion_y: parseInt(ubicacionY),
+      ubicacion_x: parseFloat(ubicacionX),
+      ubicacion_y: parseFloat(ubicacionY),
     };
 
     axios.post('http://localhost:8000/crear_nodo', nuevoNodo)
       .then(response => {
-        console.log("Nodo registrado:", response.data);
-        alert("Nodo registrado exitosamente");
+      message.success("Nodo registrado exitosamente"); 
 
         // Reiniciar los campos después de un registro exitoso
         setNodo('');
@@ -46,8 +47,7 @@ const RegistrarNodo = () => {
         navigate("/admin/GestionNodo");
       })
       .catch(error => {
-        console.error("Hubo un error registrando el nodo:", error.response?.data || error);
-        alert("Error al registrar el nodo");
+        message.error("Error al registrar el nodo, intente nuevamente"); 
       });
   }; 
 

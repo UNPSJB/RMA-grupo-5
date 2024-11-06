@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "components/Headers/Header.js";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../assets/css/ModificarNodo.css";
+import { message } from "antd";
 
 const ModificarNodo = () => {
   const [nodo, setNodo] = useState('');
@@ -23,8 +24,7 @@ const ModificarNodo = () => {
         setUbicacionX(ubicacion_x);
         setUbicacionY(ubicacion_y);
       } catch (error) {
-        console.error("Error al obtener el nodo:", error);
-        alert("Error al cargar los datos del nodo");
+        message.error("Error al cargar los datos"); 
       }
     };
 
@@ -35,19 +35,17 @@ const ModificarNodo = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    console.log("Valores antes de enviar:", { nodo, ubicacionX, ubicacionY });
+   // Validar que los valores sean correctos
+
+  if (
+    (nodo === null || nodo === undefined || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9-]/.test(nodo)) ||
+    (ubicacionX === null || ubicacionX === undefined || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX)) ||
+    (ubicacionY === null || ubicacionY === undefined || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY))
+  ) {
+    message.error("Ingresa un valor válido (solo números, incluyendo negativos)");
+    return;
+  }
     
-    // Validar que los valores sean correctos y que sean enteros
-    if (
-      !nodo || isNaN(nodo) || !Number.isInteger(Number(nodo)) ||
-      !ubicacionX || isNaN(ubicacionX) || !Number.isInteger(Number(ubicacionX)) ||
-      !ubicacionY || isNaN(ubicacionY) || !Number.isInteger(Number(ubicacionY))
-    ) {
-      alert("Ingresa valores enteros válidos para el nodo y las ubicaciones");
-      return;
-    }
-  
     const nodoActualizado = {
       numero: Number(nodo),
       nombre: String(nombre),
@@ -55,20 +53,17 @@ const ModificarNodo = () => {
       ubicacion_y: Number(ubicacionY),
     };
 
-    console.log("Datos a enviar:", nodoActualizado);
-
     // Realiza una solicitud PUT para modificar el nodo existente
     axios.put(`http://localhost:8000/actualizar_nodo/${id}`, nodoActualizado)
       .then(response => {
-        console.log("Nodo modificado:", response.data);
-        alert("Nodo modificado exitosamente");
-
+        message.success("Nodo modificado exitosamente"); 
+        
         // Redirigir a la página de gestión de nodos
         navigate("/admin/GestionNodo");
+        
       })
       .catch(error => {
-        console.error("Hubo un error modificando el nodo:", error.response?.data || error);
-        alert("Error al modificar el nodo");
+        message.error("Error al modificar nodo, intente nuevamente");
       });
   }; 
 

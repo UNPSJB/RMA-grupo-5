@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import classnames from "classnames";
 import Chart from "chart.js";
 import { Line, Bar, Radar, Polar} from "react-chartjs-2";
+import html2canvas from "html2canvas";
 import {
   Card,
   CardHeader,
@@ -12,15 +13,19 @@ import {
   Container,
   Row,
   Col,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
 } from "reactstrap";
 
 // core components
 import {
   chartOptions,
   parseOptions,
-  chartExample1,
-  chartExample2,
-  compuesto,
+  graficoLineal,
+  graficoBarras,
+  graficoCompuesto,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
 
@@ -34,6 +39,23 @@ const Index = (props) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nodoSeleccionado, setNodoSeleccionado] = useState(0); // Nodo seleccionado por defecto en 0
+  const [modal, setModal] = useState(false);
+  const [expandedChart, setExpandedChart] = useState(null); 
+
+  const toggleModal = (chart) => {
+    setExpandedChart(chart);
+    setModal(!modal);
+  };
+
+  const exportChartAsImage = () => {
+    const chartElement = document.querySelector(".chart"); // Seleccionar el elemento del gráfico
+    html2canvas(chartElement).then(canvas => {
+      const link = document.createElement("a");
+      link.href = canvas.toDataURL("image/png");
+      link.download = "grafico.png";
+      link.click();
+    });
+  };
 
   // Obtener todos los nodos para el desplegable
   useEffect(() => {
@@ -61,27 +83,6 @@ const Index = (props) => {
     getNodos();
   }, []);
 
-  // Definir las horas objetivo (cada dos horas)
-  const obtenerHorasObjetivoHastaActual = () => {
-    const ahora = new Date();
-    const horasObjetivo = [
-      new Date().setHours(0, 0, 0, 0),
-      new Date().setHours(2, 0, 0, 0),
-      new Date().setHours(4, 0, 0, 0),
-      new Date().setHours(6, 0, 0, 0),
-      new Date().setHours(8, 0, 0, 0),
-      new Date().setHours(10, 0, 0, 0),
-      new Date().setHours(12, 0, 0, 0),
-      new Date().setHours(14, 0, 0, 0),
-      new Date().setHours(16, 0, 0, 0),
-      new Date().setHours(18, 0, 0, 0),
-      new Date().setHours(20, 0, 0, 0),
-      new Date().setHours(22, 0, 0, 0)
-    ];
-
-    // Filtrar horas que sean menores o iguales a la hora actual
-    return horasObjetivo.filter(hora => hora <= ahora.getTime());
-  };
 
   // Función para obtener la diferencia en minutos entre dos fechas
   const diferenciaEnMinutos = (fecha1, fecha2) => {
@@ -110,18 +111,20 @@ const Index = (props) => {
     return valorMasCercano;
   };
 
+  // Update the obtenerHorasObjetivoHastaActual function to get timestamps from now back to the last 24 hours
+  const obtenerHorasObjetivoUltimas24Horas = () => {
+    const ahora = new Date();
+    const horasObjetivo = [];
 
-  // Función para obtener la fecha actual (año, mes, día)
-  const esMismaFecha = (fechaMedicion) => {
-    const hoy = new Date();
-    const fecha = new Date(fechaMedicion);
-    return (
-      hoy.getFullYear() === fecha.getFullYear() &&
-      hoy.getMonth() === fecha.getMonth() &&
-      hoy.getDate() === fecha.getDate()
-    );
+    for (let i = 0; i <= 12; i++) { // 12 intervals for 24 hours, every 2 hours
+      const horaObjetivo = new Date(ahora.getTime() - i * 2 * 60 * 60 * 1000);
+      horasObjetivo.push(horaObjetivo.getTime());
+    }
+
+    return horasObjetivo;
   };
 
+  // Modify getMedicionesDiarias to use the updated function
   useEffect(() => {
     const getMedicionesDiarias = async () => {
       if (nodoSeleccionado !== null) {
@@ -134,16 +137,19 @@ const Index = (props) => {
 
           const data = await response.json();
 
-          // Filtrar mediciones del día actual, ademas del tipo, para evitar que busque mediciones cercanas
-          const medicionesHoy = data.filter((medicion) => esMismaFecha(medicion.time));
+          // Filter the last 24 hours' measurements
+          const hace24Horas = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+          const medicionesUltimas24Horas = data.filter((medicion) => new Date(medicion.time) >= hace24Horas);
 
-          // Obtener horas objetivo hasta la hora actual
-          const horasObjetivoHastaAhora = obtenerHorasObjetivoHastaActual();
+          // Get target times for the last 24 hours
+          const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
 
-          // Obtener el primer valor cercano a cada hora objetivo dentro de un rango
-          const medicionesFiltradas = horasObjetivoHastaAhora.map((horaObjetivo) => obtenerPrimerValorCercano(medicionesHoy, horaObjetivo, 60, 23));
+          // Get the closest measurement to each target time
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>
+            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23)
+          );
 
-          // Filtrar valores nulos (cuando no hay mediciones cercanas dentro del rango)
+          // Filter out null values when no measurement is close enough
           const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
 
           setMedicionesDiarias(medicionesValidas);
@@ -172,13 +178,15 @@ const Index = (props) => {
             const hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
 
-            const ultimoLunes = new Date(hoy);
-            ultimoLunes.setDate(hoy.getDate() - (hoy.getDay() === 0 ? 6 : hoy.getDay() - 1));
-            ultimoLunes.setHours(0, 0, 0, 0);
+            // Set the date to 7 days ago from today
+            const sieteDiasAtras = new Date(hoy);
+            sieteDiasAtras.setDate(hoy.getDate() - 6); // 6 days ago + today = 7 days
+            sieteDiasAtras.setHours(0, 0, 0, 0);
 
+            // Initialize object with last 7 days
             const medicionesPorDia = {};
-            const diasSemana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-            let diaActual = new Date(ultimoLunes);
+            const diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+            let diaActual = new Date(sieteDiasAtras);
 
             while (diaActual <= hoy) {
                 const nombreDia = diasSemana[diaActual.getDay()];
@@ -186,11 +194,12 @@ const Index = (props) => {
                 diaActual.setDate(diaActual.getDate() + 1);
             }
 
+            // Filter measurements for the last 7 days
             data.forEach((medicion) => {
                 const fechaMedicion = new Date(medicion.time);
                 fechaMedicion.setHours(0, 0, 0, 0);
 
-                if (fechaMedicion >= ultimoLunes && fechaMedicion <= hoy) {
+                if (fechaMedicion >= sieteDiasAtras && fechaMedicion <= hoy) {
                     const diaSemana = diasSemana[fechaMedicion.getDay()];
                     const valor = parseFloat(medicion.data);
 
@@ -200,13 +209,14 @@ const Index = (props) => {
                 }
             });
 
+            // Calculate the daily averages
             const promedios = Object.keys(medicionesPorDia).map((dia) => {
                 const mediciones = medicionesPorDia[dia];
                 const suma = mediciones.reduce((acc, medicion) => acc + parseFloat(medicion.data), 0);
                 const promedio = mediciones.length > 0 ? suma / mediciones.length : 0;
 
                 return {
-                    type: type, // Mantener el tipo
+                    type: type,
                     data: promedio.toString(),
                 };
             });
@@ -220,6 +230,7 @@ const Index = (props) => {
         }
       }
   };
+
 
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado, 23, setMedicionesSemanales, setLoading, setError);
@@ -245,7 +256,11 @@ const Index = (props) => {
   const valoresNodosDiario = medicionesDiarias ? mapearDatos(medicionesDiarias) : [];
   const valoresNodosSemanal = medicionesSemanales ? mapearDatos(medicionesSemanales) : [];
   const valoresNodosTemp = medicionesSemanalesTemp ? mapearDatos(medicionesSemanalesTemp) : [];
-
+  const chartData = {
+    diario: graficoLineal.data1(valoresNodosDiario),
+    semanal: graficoLineal.data2(valoresNodosSemanal),
+    temperatura: graficoBarras.data(valoresNodosTemp),
+  };
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
   }
@@ -259,6 +274,7 @@ const Index = (props) => {
     <>
       <Header />
       <Container className="mt--9" fluid>
+        
         <Row className="mt-5 mb-3">
           <Col xl="2">
             <select
@@ -274,6 +290,7 @@ const Index = (props) => {
             </select>
           </Col>
         </Row>
+
           <Row>
             {/* GRAFICO LINEAL */}
             <Col className="mb-5 mb-xl-0" xl="8">
@@ -284,20 +301,22 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Red de Monitoreo - Cuenca Sagmata
                       </h6>
-                      <h2 className="text-Black mb-0">Altura del Río</h2>
+                      <h2 className="text-Black mb-0">Altura del Canal</h2>
                     </div>
+
                     <div className="col">
-                      <Nav className="justify-content-end" pills>
+                      <Nav className="justify-content-end d-flex" pills>
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 1 })}
                             href="#pablo"
                             onClick={(e) => toggleNavs(e, 1)}
                           >
-                            <span className="d-none d-md-block">Diario</span>
+                            <span className="d-none d-md-block">Diario</span> 
                             <span className="d-md-none">D</span>
                           </NavLink>
                         </NavItem>
+
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 2 })}
@@ -309,21 +328,46 @@ const Index = (props) => {
                             <span className="d-md-none">S</span>
                           </NavLink>
                         </NavItem>
+
+                        <NavItem>
+                        <Button
+                            className="py-2 px-3"
+                            size="sm"
+                            color="warning"
+                            onClick={exportChartAsImage} // Llamada a la función exportar
+                          >
+                            <span className="d-none d-md-block">Exportar jpg</span>
+                            <span className="d-md-none">E</span>
+                          </Button>
+                        </NavItem>
+
+                        <NavItem>
+                          <Button
+                            className="py-2 px-3"
+                            size="sm"
+                            color="secondary"
+                            onClick={() => toggleModal("line")}
+                          >
+                            ⤢ Expandir
+                          </Button>
+                        </NavItem>
                       </Nav>
                     </div>
                   </Row>
                 </CardHeader>
+                
                 <CardBody>
                   <div className="chart">
                     <Line
-                      data={activeNav === 1 ? chartExample1.data1(valoresNodosDiario) : chartExample1.data2(valoresNodosSemanal)}
-                      options={chartExample1.options}
+                      data={activeNav === 1 ? graficoLineal.data1(valoresNodosDiario) : graficoLineal.data2(valoresNodosSemanal)}
+                      options={graficoLineal.options}
                       getDatasetAtEvent={(e) => console.log(e)}
                     />
                   </div>
                 </CardBody>
               </Card>
             </Col>
+
             {/* GRAFICO BARRAS */}
             <Col xl="4">
               <Card className="shadow">
@@ -333,21 +377,30 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0">Temperatura del Agua</h2>
+                      <h2 className="mb-0">Temperatura de la Zona (Promedio)</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("bar")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   <div className="chart">
                     <Bar
-                      data={chartExample2.data(valoresNodosTemp)}
-                      options={chartExample2.options}
+                      data={graficoBarras.data(valoresNodosTemp)}
+                      options={graficoBarras.options}
                     />
                   </div>
                 </CardBody>
               </Card>
             </Col>
           </Row>
+
           <Row className="mt-4 mb-2">
             {/* GRAFICO RADAR */}
             <Col xl="4">
@@ -358,14 +411,22 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0">Temperatura del Agua</h2>
+                      <h2 className="mb-0">Presión Atmosférica</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("rad")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   <div className="chart">
                     <Radar
-                      data={chartExample2.data(valoresNodosTemp)}
+                      data={graficoBarras.data(valoresNodosTemp)}
                     />
                   </div>
                 </CardBody>
@@ -380,13 +441,21 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0"> Ejemplo</h2>
+                      <h2 className="mb-0"> Comparación de Datos</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("comp")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   <div className="chart">
-                  <Bar data={compuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={compuesto.options} />
+                  <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />
                   </div>
                 </CardBody>
               </Card>
@@ -400,14 +469,22 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0">Temperatura del Agua</h2>
+                      <h2 className="mb-0">Radiación UV</h2>
                     </div>
+                    <Button
+                      className={classnames("py-2 px-3")}
+                      size="sm"
+                      color="secondary"
+                      onClick={() => toggleModal("pol")}
+                    >
+                      ⤢ Expandir
+                    </Button>
                   </Row>
                 </CardHeader>
                 <CardBody>
                   <div className="chart">
                     <Polar
-                      data={chartExample2.data(valoresNodosTemp)}
+                      data={graficoBarras.data(valoresNodosTemp)}
                     />
                   </div>
                 </CardBody>
@@ -415,6 +492,19 @@ const Index = (props) => {
             </Col>
             
           </Row>
+          {/* Modal para mostrar gráfico expandido */}
+          <Modal isOpen={modal} toggle={() => toggleModal(null)} size="xl">
+            <ModalHeader toggle={() => toggleModal(null)}>Gráfico Expandido</ModalHeader>
+            <ModalBody>
+            <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
+              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diario" : "semanal"]} options={graficoLineal.options} />}
+              {expandedChart === "bar" && <Bar data={chartData.temperatura} options={graficoBarras.options} />}
+              {expandedChart === "comp" && <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />}
+              {expandedChart === "rad" && <Radar data={chartData.temperatura} />}
+              {expandedChart === "pol" && <Polar data={chartData.temperatura} />}
+            </div>
+            </ModalBody>
+          </Modal>
           {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE*/}
           {/*<Row className="mt-5">
             <Col>

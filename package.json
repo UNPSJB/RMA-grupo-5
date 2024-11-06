@@ -1,8 +1,11 @@
 {
   "dependencies": {
+    "antd": "^5.21.6",
     "axios": "^1.7.7",
+    "html2canvas": "^1.4.1",
     "leaflet": "^1.9.4",
-    "react-leaflet": "^4.2.1"
+    "react-leaflet": "^4.2.1",
+    "react-router-dom": "^6.27.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11"

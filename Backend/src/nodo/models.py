@@ -45,7 +45,8 @@ class TipoDato(IntEnum):
     energy2_t = 33    # Energía #2
     weight_t = 34     # Peso
     weight2_t = 35    # Peso #2
-
+    
+    UNKNOWN = -1  # Valor para tipos de datos desconocidos o erróneos
 
 #Modelo base para nodos
 class Nodo(BaseModel):
@@ -68,7 +69,7 @@ class Medicion(BaseModel):
     type = Column(Enum(TipoDato), nullable=False)
     data = Column(String, nullable=False)
     time = Column(DateTime, nullable=False)
-    es_erroneo = Column(Boolean, default=False)
+    es_erroneo = Column(Boolean)
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     nodo_numero = Column(Integer, ForeignKey('nodos.numero'), nullable=True)  # Clave foránea
