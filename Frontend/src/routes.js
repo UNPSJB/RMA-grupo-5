@@ -4,6 +4,7 @@ import Tables from "views/examples/Tables.js";
 import TablesError from "views/examples/TablesError.js";
 import GestionNodo from "views/examples/GestionNodo.js";
 import Login from "views/examples/Login.js";
+import Register from "views/examples/Register";
 //import Icons from "views/examples/Icons.js";
 
 var routes = [
