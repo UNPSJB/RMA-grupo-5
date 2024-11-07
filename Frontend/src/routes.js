@@ -11,7 +11,7 @@ var routes = [
   {
     path: "/index",
     name: "Graficos",
-    icon: "ni ni-chart-bar-32",
+    icon: "ni ni-chart-bar-32 text-blue",
     component: <Index />,
     layout: "/admin",
   },
@@ -50,7 +50,7 @@ var routes = [
   {
     path: "/tables-error",
     name: "Tablas con errores",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-settings-gear-65 text-blue",
     component: <TablesError />,
     layout: "/admin",
   },

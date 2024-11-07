@@ -11,7 +11,7 @@ import {
   InputGroupAddon,
   InputGroupText,
   InputGroup,
-  Row,
+  //Row,
   Col,
 } from "reactstrap";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,7 @@ const Register = () => {
       };
       axios.post('http://localhost:8000/iniciar_sesion', datosUsuario)
         .then(response => {
-          message.success("Inicio de sesión exitoso");
+          //message.success("Inicio de sesión exitoso");
          
           setNombreUsuario('');
           setContrasena('');
@@ -81,6 +81,7 @@ const Register = () => {
                     type="text"
                     value={nombreUsuario}
                     onChange={(e) => setNombreUsuario(e.target.value)} 
+                    style={{ color: "black" }}
                   />
                 </InputGroup>
               </FormGroup>
@@ -96,7 +97,8 @@ const Register = () => {
                     type="password" 
                     autoComplete="new-password"
                     value={contrasena}
-                    onChange={(e) => setContrasena(e.target.value)} 
+                    onChange={(e) => setContrasena(e.target.value)}
+                    style={{ color: "black" }} 
                   />
                 </InputGroup>
               </FormGroup>
