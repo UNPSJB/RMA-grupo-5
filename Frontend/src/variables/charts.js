@@ -406,7 +406,7 @@ let graficoLineal = {
             content += label;
           }
 
-          content += "" + parseFloat(yLabel.toFixed(2)) + " Metros"; 
+          content += "" + parseFloat(yLabel.toFixed(5)) + " Metros"; 
           return content;
         },
       },
