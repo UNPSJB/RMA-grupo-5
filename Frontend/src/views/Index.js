@@ -338,15 +338,15 @@ const Index = (props) => {
 
 
                         <NavItem>
-                          <NavLink
+                          <Button
                             className="py-2 px-3"
-                            href="1"
+                            
                             size="sm"
                             onClick={() => exportChartAsImage("chart-line")}
                           >
                             <span className="d-none d-md-block">Exportar</span>
                             <span className="d-md-none">E</span>
-                          </NavLink>
+                          </Button>
                         </NavItem>
 
                         <NavItem>
@@ -392,7 +392,7 @@ const Index = (props) => {
                   <div className="button-column">
                     <Nav className="button-group-horizontal " pills >
                       <NavItem>
-                        <NavLink
+                        <Button
                           className="py-2 px-3"
                           size="sm"
                           href=""
@@ -400,7 +400,7 @@ const Index = (props) => {
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
-                        </NavLink>
+                        </Button>
                       </NavItem>
                       <NavItem>
                         <Button
@@ -445,7 +445,7 @@ const Index = (props) => {
                   
                     <Nav className="button-group-horizontal " pills >
                       <NavItem>  
-                        <NavLink
+                        <Button
                           className="py-2 px-3"
                           href=""
                           size="sm"
@@ -454,7 +454,7 @@ const Index = (props) => {
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
-                        </NavLink>
+                        </Button>
                       </NavItem>
                       <NavItem>
                         <Button
@@ -492,7 +492,7 @@ const Index = (props) => {
                     </div>
                     <Nav className="button-group-horizontal " pills >
                       <NavItem>  
-                        <NavLink
+                        <Button
                           className="py-2 px-3"
                           size="sm"
                           href=""
@@ -500,7 +500,7 @@ const Index = (props) => {
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
-                        </NavLink>
+                        </Button>
                       </NavItem>
                       <NavItem>  
                         <Button
@@ -535,15 +535,14 @@ const Index = (props) => {
                     </div>
                     <Nav className="button-group-horizontal " pills >
                       <NavItem>  
-                        <NavLink
+                        <Button
                           className="py-2 px-3"
                           size="sm"
-                          
                           onClick={() => exportChartAsImage("polar-graph")} 
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
-                        </NavLink>
+                        </Button>
                       </NavItem>
                       <NavItem>
                         <Button
