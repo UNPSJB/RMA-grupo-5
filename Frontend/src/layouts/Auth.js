@@ -72,7 +72,7 @@ const Auth = (props) => {
           <Row className="justify-content-center">
             <Routes>
               {getRoutes(routes)}
-              <Route path="*" element={<Navigate to="/auth/login" replace />} />
+              <Route path="*" element={<Navigate to="/auth/register" replace />} />
             </Routes>
           </Row>
         </Container>
@@ -83,3 +83,4 @@ const Auth = (props) => {
 };
 
 export default Auth;
+
