@@ -5,7 +5,7 @@ import { Button } from "reactstrap";
 
 export function CustomFileInput({ onChange, accept = "text/csv, application/json" }) {
     const styles = {dropZone: "", uploadedImage: ""}
-    const [setFile] = useState(null);
+    const [file, setFile] = useState(null);
     const fileInputRef = useRef(null);
 
     const handleImageUploadClick = () => {
