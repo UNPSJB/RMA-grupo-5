@@ -311,8 +311,8 @@ const Index = (props) => {
                       <h2 className="text-Black mb-0">Altura del canal</h2>
                     </div>
 
-                    <div className="col">
-                      <Nav className="button-group-horizontal" pills>
+                    <div className="button-column">
+                      <Nav className="button-group-horizontal " pills >
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 1 })}
@@ -336,26 +336,27 @@ const Index = (props) => {
                           </NavLink>
                         </NavItem>
 
-                        <NavItem>
-                          <Button
-                            className="py-2 px-3"
-                            size="sm"
-                            color="secondary"
-                            onClick={() => toggleModal("line")}
-                          >
-                            Expandir
-                          </Button>
-                        </NavItem>
 
                         <NavItem>
-                          <Button
+                          <NavLink
                             className="py-2 px-3"
+                            href="1"
                             size="sm"
-                            color="warning"
                             onClick={() => exportChartAsImage("chart-line")}
                           >
                             <span className="d-none d-md-block">Exportar</span>
                             <span className="d-md-none">E</span>
+                          </NavLink>
+                        </NavItem>
+
+                        <NavItem>
+                          <Button
+                            className={classnames("py-0 px-2", "large-text")}
+                            size="sm"
+                            color="white"
+                            onClick={() => toggleModal("line")}
+                          >
+                            ⤢
                           </Button>
                         </NavItem>
                       </Nav>
@@ -389,24 +390,29 @@ const Index = (props) => {
                   </div>
 
                   <div className="button-column">
-                    <Button
-                      className="py-2 px-3"
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("bar")}
-                    >
-                      <span className="d-none d-md-block">Expandir</span>
-                    </Button>
-
-                    <Button
-                      className="py-2 px-3"
-                      size="sm"
-                      color="warning"
-                      onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
-                    >
-                      <span className="d-none d-md-block">Exportar</span>
-                      <span className="d-md-none">E</span>
-                    </Button>
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>
+                        <NavLink
+                          className="py-2 px-3"
+                          size="sm"
+                          href=""
+                          onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("bar")}
+                        >
+                          <span className="d-none d-md-block">⤢</span>
+                        </Button>
+                      </NavItem>
+                    </Nav>
                   </div>
                 </Row>
                 
@@ -436,26 +442,31 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Presión atmosférica</h2>
                     </div>
-
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("rad")}
-                    >
-                      Expandir
-                    </Button>
-
-                    <Button
-                      className="py-2 px-3"
-                      size="sm"
-                      color="warning"
-                      onClick={() => exportChartAsImage("bar-graph")} 
-                    >
-                      <span className="d-none d-md-block">Exportar</span>
-                      <span className="d-md-none">E</span>
-                    </Button>
-
+                  
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <NavLink
+                          className="py-2 px-3"
+                          href=""
+                          size="sm"
+                          
+                          onClick={() => exportChartAsImage("bar-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("rad")}
+                        >
+                          <span className="d-none d-md-block">⤢</span>
+                        </Button>
+                      </NavItem>
+                    </Nav>
                   </Row>
                 </CardHeader>
                 <CardBody id='bar-graph'>
@@ -479,23 +490,28 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0"> Comparación de datos</h2>
                     </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("comp")}>
-                      Expandir
-                    </Button>
-
-                    <Button
-                      className="py-2 px-3"
-                      size="sm"
-                      color="warning"
-                      onClick={() => exportChartAsImage("composite-graph")} 
-                    >
-                      <span className="d-none d-md-block">Exportar</span>
-                      <span className="d-md-none">E</span>
-                    </Button>
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <NavLink
+                          className="py-2 px-3"
+                          size="sm"
+                          href=""
+                          onClick={() => exportChartAsImage("composite-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>  
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("comp")}>
+                          ⤢
+                        </Button>
+                      </NavItem>
+                    </Nav>
                   </Row>
                 </CardHeader>
                 <CardBody id='composite-graph'>
@@ -517,25 +533,29 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Radiación UV</h2>
                     </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("pol")}
-                    >
-                      Expandir
-                    </Button>
-
-                    <Button
-                      className="py-2 px-3"
-                      size="sm"
-                      color="warning"
-                      onClick={() => exportChartAsImage("polar-graph")} 
-                    >
-                      <span className="d-none d-md-block">Exportar</span>
-                      <span className="d-md-none">E</span>
-                    </Button>
-
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <NavLink
+                          className="py-2 px-3"
+                          size="sm"
+                          
+                          onClick={() => exportChartAsImage("polar-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("pol")}
+                        >
+                          ⤢
+                        </Button>
+                      </NavItem>  
+                    </Nav>
                   </Row>
                 </CardHeader>
 
