@@ -3,7 +3,7 @@ import Maps from "views/examples/Maps.js";
 import Tables from "views/examples/Tables.js";
 import TablesError from "views/examples/TablesError.js";
 import GestionNodo from "views/examples/GestionNodo.js";
-import Login from "views/examples/Login.js";
+import Register from "views/examples/Register.js";
 //import Icons from "views/examples/Icons.js";
 
 var routes = [
@@ -24,14 +24,13 @@ var routes = [
     layout: "/admin",
   },
 
-  
   {
-    path: "/Login",
-    name: "Login",
-    icon: "ni ni-tv-2 text-primary",
-    component: <Login />,
-    layout: "/admin",
+    path: "/register",
+    component: <Register />,
+    layout: "/auth",
+    showInMenu: false, 
   },
+
 /*
   {
     path: "/Icons",

@@ -68,7 +68,8 @@ const Admin = (props) => {
         <Routes>
           {getRoutes(routes)}
 
-          <Route path="*" element={<Navigate to="/admin/index" replace />} />
+          {/*<Route path="*" element={<Navigate to="/admin/index" replace />} /> */}
+          <Route path="*" element={<Navigate to="/auth/register" replace />} />
           <Route path="/registrar_nodo" element={<RegistrarNodo />} />
           <Route path="/modificar_nodo/:id" element={<ModificarNodo />} />
           <Route path="/GestionNodo" element={<GestionNodo />} />

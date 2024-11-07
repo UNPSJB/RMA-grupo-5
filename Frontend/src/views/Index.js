@@ -4,6 +4,7 @@ import Chart from "chart.js";
 import { Line, Bar, Radar, Polar} from "react-chartjs-2";
 import html2canvas from "html2canvas";
 import "../assets/css/index.css";
+
 import {
   Card,
   CardHeader,
