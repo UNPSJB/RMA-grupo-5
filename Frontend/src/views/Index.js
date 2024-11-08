@@ -35,12 +35,20 @@ import Header from "components/Headers/Header.js";
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
   const [nodos, setNodos] = useState([]);
+
   const [medicionesDiarias, setMedicionesDiarias] = useState(null);
+  const [medicionesDiarias2, setMedicionesDiarias2] = useState(null);
+
   const [medicionesSemanales, setMedicionesSemanales] = useState(null);
+  const [medicionesSemanales2, setMedicionesSemanales2] = useState(null);
+
   const [medicionesSemanalesTemp, setMedicionesSemanalesTemp] = useState(null);
+  const [medicionesSemanalesTemp2, setMedicionesSemanalesTemp2] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [nodoSeleccionado, setNodoSeleccionado] = useState(0); // Nodo seleccionado por defecto en 0
+  const [nodoSeleccionado2, setNodoSeleccionado2] = useState(0); // Nodo seleccionado por defecto en 0
   const [modal, setModal] = useState(false);
   const [expandedChart, setExpandedChart] = useState(null); 
 
@@ -133,7 +141,7 @@ const Index = (props) => {
 
 
   useEffect(() => {
-    const getMedicionesDiarias = async () => {
+    const getMedicionesDiarias = async (nodoSeleccionado, setMediciones) => {
       if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
@@ -154,7 +162,7 @@ const Index = (props) => {
 
           const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
 
-          setMedicionesDiarias(medicionesValidas);
+          setMediciones(medicionesValidas);
         } catch (error) {
           console.error("Error cargando los datos", error);
           setError(error);
@@ -163,9 +171,50 @@ const Index = (props) => {
         }
       }
     };
-
-    getMedicionesDiarias();
+    
+    getMedicionesDiarias(nodoSeleccionado, setMedicionesDiarias);
   }, [nodoSeleccionado]);
+
+  useEffect(() => {
+    const getMedicionesDiarias = async (nodoSeleccionado, setMediciones) => {
+      if (nodoSeleccionado !== null) {
+        setLoading(true);
+        try {
+          const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          if (!response.ok) {
+            throw new Error("Error al obtener las mediciones diarias");
+          }
+
+          const data = await response.json();
+
+          // Filter the last 24 hours' measurements
+          const hace24Horas = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+          const medicionesUltimas24Horas = data.filter((medicion) => new Date(medicion.time) >= hace24Horas);
+
+          // Get target times for the last 24 hours
+          const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
+
+          // Get the closest measurement to each target time
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>
+            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23)
+          );
+
+          // Filter out null values when no measurement is close enough
+          const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
+
+          setMediciones(medicionesValidas);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    getMedicionesDiarias(nodoSeleccionado2, setMedicionesDiarias2);
+  }, [nodoSeleccionado2]);
+  
 
   const obtenerMedicionesSemanales = async (nodoSeleccionado, type, setMediciones, setLoading, setError) => { 
     if (nodoSeleccionado !== null) {
@@ -238,6 +287,12 @@ const Index = (props) => {
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado, 1, setMedicionesSemanalesTemp, setLoading, setError);
   }, [nodoSeleccionado]);
+  useEffect(() => {
+    obtenerMedicionesSemanales(nodoSeleccionado2, 23, setMedicionesSemanales2, setLoading, setError);
+  }, [nodoSeleccionado2]);
+  useEffect(() => {
+    obtenerMedicionesSemanales(nodoSeleccionado2, 1, setMedicionesSemanalesTemp2, setLoading, setError);
+  }, [nodoSeleccionado2]);
 
   // Manejo de carga y errores
   if (loading) return <p>Cargando...</p>;
@@ -254,14 +309,22 @@ const Index = (props) => {
 
   // Filtrar los valores diarios y semanales
   const valoresNodosDiario = medicionesDiarias ? mapearDatos(medicionesDiarias) : [];
-  const valoresNodosSemanal = medicionesSemanales ? mapearDatos(medicionesSemanales) : [];
-  const valoresNodosTemp = medicionesSemanalesTemp ? mapearDatos(medicionesSemanalesTemp) : [];
+  const valoresNodosDiario2 = medicionesDiarias2 ? mapearDatos(medicionesDiarias2) : [];
 
+  const valoresNodosSemanal = medicionesSemanales ? mapearDatos(medicionesSemanales) : [];
+  const valoresNodosSemanal2 = medicionesSemanales2 ? mapearDatos(medicionesSemanales2) : [];
+
+  const valoresNodosTemp = medicionesSemanalesTemp ? mapearDatos(medicionesSemanalesTemp) : [];
+  const valoresNodosTemp2 = medicionesSemanalesTemp2 ? mapearDatos(medicionesSemanalesTemp2) : [];
+
+  // seteo los valores que despues voy a usar en los graficos
   const chartData = {
-    diario: graficoLineal.data1(valoresNodosDiario),
-    semanal: graficoLineal.data2(valoresNodosSemanal),
-    temperatura: graficoBarras.data(valoresNodosTemp),
+    diarioAlt: graficoLineal.data1(valoresNodosDiario, nodoSeleccionado, valoresNodosDiario2,  nodoSeleccionado2),
+    semanalAlt: graficoLineal.data2(valoresNodosSemanal, nodoSeleccionado, valoresNodosSemanal2, nodoSeleccionado2),
+    semanalTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
   };
+
+
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -282,6 +345,19 @@ const Index = (props) => {
             <select
               value={nodoSeleccionado}
               onChange={(e) => setNodoSeleccionado(parseInt(e.target.value))}
+              className="form-control"
+            >
+              {nodos.map((nodo, index) => (
+                <option key={index} value={nodo.numero}>
+                  Nodo {nodo.numero}
+                </option>
+              ))}
+            </select>
+          </Col>
+          <Col xl="2">
+            <select
+              value={nodoSeleccionado2}
+              onChange={(e) => setNodoSeleccionado2(parseInt(e.target.value))}
               className="form-control"
             >
               {nodos.map((nodo, index) => (
@@ -363,7 +439,7 @@ const Index = (props) => {
                 <CardBody id='chart-line'>
                   <div className="chart" >
                     <Line
-                      data={activeNav === 1 ? graficoLineal.data1(valoresNodosDiario) : graficoLineal.data2(valoresNodosSemanal)}
+                      data={activeNav === 1 ? chartData.diarioAlt : chartData.semanalAlt}
                       options={graficoLineal.options}
                       getDatasetAtEvent={(e) => console.log(e)}
                       />
@@ -416,7 +492,7 @@ const Index = (props) => {
                 <CardBody id="chart-bar">
                   <div className="chart">
                     <Bar
-                      data={graficoBarras.data(valoresNodosTemp)}
+                      data={chartData.semanalTemp}
                       options={graficoBarras.options}
                     />
                   </div>
@@ -468,7 +544,7 @@ const Index = (props) => {
                 <CardBody id='bar-graph'>
                   <div className="chart">
                     <Radar
-                      data={graficoBarras.data(valoresNodosTemp)}
+                      data={chartData.semanalTemp}
                     />
                   </div>
                 </CardBody>
@@ -557,7 +633,7 @@ const Index = (props) => {
                 <CardBody id='polar-graph'>
                   <div className="chart">
                     <Polar
-                      data={graficoBarras.data(valoresNodosTemp)}
+                      data={chartData.semanalTemp}
                     />
                   </div>
                 </CardBody>
@@ -570,11 +646,11 @@ const Index = (props) => {
             <ModalHeader toggle={() => toggleModal(null)}>Gráfico Expandido</ModalHeader>
             <ModalBody>
             <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
-              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diario" : "semanal"]} options={graficoLineal.options} />}
-              {expandedChart === "bar" && <Bar data={chartData.temperatura} options={graficoBarras.options} />}
+              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diarioAlt" : "semanalAlt"]} options={graficoLineal.options} />}
+              {expandedChart === "bar" && <Bar data={chartData.semanalTemp} options={graficoBarras.options} />}
               {expandedChart === "comp" && <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />}
-              {expandedChart === "rad" && <Radar data={chartData.temperatura} />}
-              {expandedChart === "pol" && <Polar data={chartData.temperatura} />}
+              {expandedChart === "rad" && <Radar data={chartData.semanalTemp} />}
+              {expandedChart === "pol" && <Polar data={chartData.semanalTemp} />}
             </div>
             </ModalBody>
           </Modal>

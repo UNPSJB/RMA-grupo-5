@@ -413,7 +413,7 @@ let graficoLineal = {
     },
   },
   // nodoDataValues son los parametros recibidos desde "views/index"
-  data1: (nodoDataValues) => {
+  data1: (nodoDataValues, nodoA, nodoDataValues2, nodoB) => {
     // Get current time
     const ahora = new Date();
     const labels = [];
@@ -429,16 +429,23 @@ let graficoLineal = {
       labels: labels,
       datasets: [
         {
-          label: "Performance",
+          label: "Nodo " + nodoA + " ",
           data: nodoDataValues,
+          borderColor: 'rgba(255, 50, 132, 1)',
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        },
+        {
+          label: "Nodo " + nodoB + " ",
+          data: nodoDataValues2,
           borderColor: 'rgba(54, 150, 235, 1)',
           fill: true,
-          backgroundColor: 'rgba(54, 150, 235, 0.3)',
+          backgroundColor: 'rgba(54, 150, 235, 0.2)',
         },
       ],
     };
   },  
-  data2: (nodoDataValues) => {
+  data2: (nodoDataValues, nodoA, nodoDataValues2, nodoB) => {
     const hoy = new Date();
     const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
     const labels = [];
@@ -454,11 +461,18 @@ let graficoLineal = {
       labels: labels,
       datasets: [
         {
-          label: "Performance",
+          label: "Nodo " + nodoA + " ",
           data: nodoDataValues,
+          borderColor: 'rgba(255, 50, 132, 1)',
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        },
+        {
+          label: "Nodo " + nodoB + " ",
+          data: nodoDataValues2,
           borderColor: 'rgba(54, 150, 235, 1)',
           fill: true,
-          backgroundColor: 'rgba(54, 150, 235, 0.3)',
+          backgroundColor: 'rgba(54, 150, 235, 0.2)',
         },
       ],
     };
@@ -500,7 +514,7 @@ let graficoBarras = {
     },
     
   },
-  data: (nodoDataValues) => {
+  data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
     const hoy = new Date();
     const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
     const labels = [];
@@ -516,10 +530,18 @@ let graficoBarras = {
       labels:labels,
       datasets: [
         {
-          label: "Sales",
-        data: nodoDataValues,
+        label: "Nodo " + nodoA + " ",
+        data: valoresTemperatura,
         maxBarThickness: 35,
-        backgroundColor: 'rgba(54, 150, 235, 0.5)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 50, 132, 1)',
+        borderWidth: 1.5,
+      },
+      {
+        label: "Nodo " + nodoB + " ",
+        data: valoresTemperatura2,
+        maxBarThickness: 35,
+        backgroundColor: 'rgba(54, 150, 235, 0.2)',
         borderColor: 'rgba(54, 150, 235, 1)',
         borderWidth: 1.5,
       },
