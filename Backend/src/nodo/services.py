@@ -1,9 +1,14 @@
 from typing import List
 from sqlalchemy.orm import Session
-from src.nodo.models import Medicion, Nodo, EstadoNodo, TipoDato
+from src.nodo import schemas
+from src.nodo import exceptions
+from src.nodo.models import Medicion, Nodo, Registro, TipoDato, EstadoNodo
 from src.nodo import schemas
 from src.nodo import exceptions
 import json
+from datetime import datetime
+from fastapi import HTTPException
+
 
 #/--- Métodos de clase Medicion ---/
 
@@ -161,7 +166,6 @@ def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
     db.commit()
     return nodo
 
-
 #/--- Métodos de clase TipoDato ---/
 def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
     tipo_existente = db.query(TipoDato).filter(TipoDato.nombre == tipoDato.nombre).first()
@@ -257,3 +261,72 @@ def eliminar_estado_nodo(db: Session, nombre: str) -> EstadoNodo:
     db.delete(db_estado_nodo)
     db.commit()
     return db_estado_nodo
+def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
+    mediciones_importadas = []
+    
+    for item in data:
+        medicion = schemas.MedicionCreate(
+            type=item['type'],
+            data=item['data'],
+            time=item['time'],
+            nodo_numero=int(item['nodo_numero']),
+            es_erroneo=bool(item['es_erroneo'])
+        )
+        try:
+            medicion_creada = crear_medicion(db, medicion)
+            mediciones_importadas.append(medicion_creada)
+        except exceptions.NodoNoEncontrado:
+            continue
+    return mediciones_importadas
+
+def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
+    mediciones_importadas = []
+
+    for item in data:
+        medicion = schemas.MedicionCreate(
+            type=int(item['type']), 
+            data=item['data'],
+            time=item['time'],
+            nodo_numero=int(item['nodo_numero']),
+            es_erroneo=bool(item['es_erroneo'])
+        )
+        try:
+            medicion_creada = crear_medicion(db, medicion) 
+            mediciones_importadas.append(medicion_creada)
+        except exceptions.NodoNoEncontrado:
+            continue
+
+    return mediciones_importadas
+#/--- Metodos de clase Registro ---/
+def crear_usuario(db: Session, registro: schemas.RegistroCreate):
+   
+    db_usuario_existente = db.query(Registro).filter(Registro.usuario == registro.usuario).first()
+    
+    if db_usuario_existente:
+        raise HTTPException(status_code=400, detail="El usuario ya está registrado")
+    
+    db_usuario = Registro(
+        usuario=registro.usuario,
+        contrasenia=registro.contrasenia
+    )
+    
+    db.add(db_usuario)
+    db.commit()
+    db.refresh(db_usuario)
+    
+    return db_usuario
+
+def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
+    # Buscar al usuario en la base de datos
+    db_usuario = db.query(Registro).filter(Registro.usuario == datos_usuario.usuario).first()
+
+    # Verificar si el usuario existe
+    if db_usuario is None:
+        raise HTTPException(status_code=400, detail="Usuario no encontrado")
+    
+    # Verificar si la contraseña es correcta
+    if db_usuario.contrasenia != datos_usuario.contrasenia:
+        raise HTTPException(status_code=400, detail="Contraseña incorrecta")
+
+    # Si el usuario y la contraseña son correctos, devolver un mensaje de éxito
+    return db_usuario

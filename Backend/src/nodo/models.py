@@ -57,3 +57,9 @@ class Medicion(BaseModel):
     tipo_dato = relationship("TipoDato", back_populates="mediciones")
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Registro(BaseModel):
+    __tablename__ = 'registros'
+
+    usuario = Column(String(10), primary_key=True)
+    contrasenia = Column(String(8), nullable=False)

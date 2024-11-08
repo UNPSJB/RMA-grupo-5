@@ -21,7 +21,7 @@ const RegistrarNodo = () => {
     !ubicacionX || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX) ||
     !ubicacionY || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY)
   ) {
-    message.error("Ingresa un valor válido (solo números, incluyendo negativos)");
+    message.error("Ingresa un valor válido (solo números)");
     return;
   }
     

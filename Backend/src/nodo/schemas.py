@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, constr
 from typing import List, Optional
 from datetime import datetime
 
@@ -100,3 +100,23 @@ class NodoUpdate(NodoBase):
 class Nodo(NodoBase):
     numero: int
     estado_nodo_id: int
+
+# Clase base para Registro
+class RegistroBase(BaseModel):
+    usuario: str 
+    contrasenia: str
+
+# Clase para crear un nuevo registro (sign up)
+class RegistroCreate(RegistroBase):
+    pass
+
+# Clase para actualizar un registro existente (update)
+class RegistroUpdate(BaseModel):
+    contrasenia: Optional[str] 
+
+# Clase para representar un registro completo (leer o mostrar datos)
+class Registro(RegistroBase):
+    contrasenia: str
+
+    class Config:
+       from_attributes = True

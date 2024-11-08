@@ -1,0 +1,22 @@
+
+/* GRAFICO LINEAL */
+.button-group-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem; /* Ajusta el espacio entre botones */
+
+}
+
+/*GRAFICO BARRAS*/
+.button-column {
+    display: flex;
+    flex-direction: row; 
+    gap: 0.1rem; 
+    justify-content: flex-start; 
+}
+
+
+.large-text {
+    font-size: 1.40rem; 
+    color: #5a3be6;
+  }

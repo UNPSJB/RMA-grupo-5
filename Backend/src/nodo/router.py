@@ -2,7 +2,10 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from sqlalchemy.orm import Session
 from src.config_db import get_db
-from src.nodo import schemas, services
+from src.nodo import models, schemas, services
+import json, csv
+from io import StringIO
+
 
 router = APIRouter()
 
@@ -69,7 +72,6 @@ def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
     return services.eliminar_nodo(db, nodo_id)
 
 
-
 #/--- Rutas de clase TipoDato ---/
 @router.post("/crear_tipo_dato", response_model=schemas.TipoDato)
 def create_tipo_dato(tipo_dato: schemas.TipoDatoCreate, db: Session = Depends(get_db)):
@@ -115,5 +117,31 @@ def update_estado_nodo(
 @router.delete("/eliminar_estado_nodo/{estado_nombre}", response_model=schemas.EstadoNodo)
 def delete_nodo(estado_nombre: str, db: Session = Depends(get_db)):
     return services.eliminar_estado_nodo(db, estado_nombre)
+
+@router.post("/importar_datos_json")
+async def importar_datos_json(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    contents = await file.read()
+    data = json.loads(contents)
+    mediciones = services.importar_datos_json(db, data)
+    
+    return {"message": f"{len(mediciones)} mediciones importadas correctamente"}
+
+@router.post("/importar_datos_csv")
+async def importar_datos_csv(file: UploadFile = File(...), db: Session = Depends(get_db)):
+    contents = await file.read()
+    decoded_content = contents.decode("utf-8")
+    csv_reader = csv.DictReader(StringIO(decoded_content))
+    data = [row for row in csv_reader]
+    mediciones = services.importar_datos_csv(db, data)
+
+    return {"message": f"{len(mediciones)} mediciones importadas correctamente"}
+#/--- Rutas de clase Registro ---/
+@router.post("/crear_usuario", response_model=schemas.Registro)
+def crear_usuario(registro: schemas.RegistroCreate, db: Session = Depends(get_db)):
+    return services.crear_usuario(db, registro)
+
+@router.post("/iniciar_sesion", response_model=schemas.Registro)
+def iniciar_sesion(registro: schemas.RegistroBase, db: Session = Depends(get_db)):
+    return services.iniciar_sesion(registro, db)
 
 

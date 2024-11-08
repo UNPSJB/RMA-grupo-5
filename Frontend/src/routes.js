@@ -2,16 +2,16 @@ import Index from "views/Index.js";
 import Maps from "views/examples/Maps.js";
 import Tables from "views/examples/Tables.js";
 import TablesError from "views/examples/TablesError.js";
-
 import GestionNodo from "views/examples/GestionNodo.js";
-//import ModificarNodo from "views/examples/ModificarNodo.js";
+import Register from "views/examples/Register.js";
+//import Icons from "views/examples/Icons.js";
 
 var routes = [
   
   {
     path: "/index",
     name: "Graficos",
-    icon: "ni ni-tv-2 text-primary",
+    icon: "ni ni-chart-bar-32 text-blue",
     component: <Index />,
     layout: "/admin",
   },
@@ -24,12 +24,19 @@ var routes = [
     layout: "/admin",
   },
 
-  /*
   {
-    path: "/ModificarNodo",
-    name: "Modificar Nodo",
+    path: "/register",
+    component: <Register />,
+    layout: "/auth",
+    showInMenu: false, 
+  },
+
+/*
+  {
+    path: "/Icons",
+    name: "Icons",
     icon: "ni ni-tv-2 text-primary",
-    component: <ModificarNodo />,
+    component: <Icons />,
     layout: "/admin",
   },
   */
@@ -43,7 +50,7 @@ var routes = [
   {
     path: "/tables-error",
     name: "Tablas con errores",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-settings-gear-65 text-blue",
     component: <TablesError />,
     layout: "/admin",
   },

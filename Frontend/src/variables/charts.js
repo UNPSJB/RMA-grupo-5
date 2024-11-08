@@ -1,5 +1,5 @@
 const Chart = require("chart.js");
-const { info } = require("sass");
+//const { info } = require("sass");
 
 //
 // Chart extension for making the bars rounded

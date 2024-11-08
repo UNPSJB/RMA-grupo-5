@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import React, {  } from "react";
+//import axios from "axios";
+//import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 import './Header.css';
 
 const Header = () => {

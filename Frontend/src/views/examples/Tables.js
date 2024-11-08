@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Card,
+  Label,
+  FormText,
+  Input,
+  Form,
+  FormGroup,
   CardHeader,
   Table,
   Container,
@@ -13,6 +18,7 @@ import {
 } from "reactstrap";
 import * as XLSX from "xlsx"; // Importar la librería XLSX
 import Header from "components/Headers/Header.js";
+import { CustomFileInput } from "components/Buttons/CustomFileInput";
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
@@ -247,6 +253,33 @@ const Tables = () => {
   };
 
   filtrar_datos();
+ 
+  async function importData(e) {
+    const files = Array.from(e.target.files);
+    console.log("files:", files[0]);
+  
+    try {
+      const formData = new FormData();
+      formData.append('file', files[0]);
+  
+      const requestOptions = {
+        method: 'POST',
+        body: formData
+      };
+  
+      const response = await fetch(`http://localhost:8000/importar_datos_csv`, requestOptions);
+      if (!response.ok) {
+        throw new Error("Error al hacer el fetch de importar datos");
+      }
+  
+      const data = await response.json();
+      console.log("Data importada:", data);
+    } catch (error) {
+      console.error("Error importando los datos", error);
+      setError(error);
+    }
+  }
+  
 
   // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
@@ -396,6 +429,9 @@ const Tables = () => {
             <Button color="primary" onClick={exportAllToExcel}>
               Exportar Todo
             </Button>
+          </Col>
+          <Col xl="2">
+            <CustomFileInput onChange={importData} />
           </Col>
         </Row>
 

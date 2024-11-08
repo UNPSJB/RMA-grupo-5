@@ -3,6 +3,8 @@ import classnames from "classnames";
 import Chart from "chart.js";
 import { Line, Bar, Radar, Polar} from "react-chartjs-2";
 import html2canvas from "html2canvas";
+import "../assets/css/index.css";
+
 import {
   Card,
   CardHeader,
@@ -47,14 +49,19 @@ const Index = (props) => {
     setModal(!modal);
   };
 
-  const exportChartAsImage = () => {
-    const chartElement = document.querySelector(".chart"); // Seleccionar el elemento del gráfico
-    html2canvas(chartElement).then(canvas => {
-      const link = document.createElement("a");
-      link.href = canvas.toDataURL("image/png");
-      link.download = "grafico.png";
-      link.click();
-    });
+  //funcion para exportar graficos en JPEG
+  const exportChartAsImage = (chartClass) => {
+    const chartElement = document.querySelector(`#${chartClass}`); 
+    if (chartElement) {
+      html2canvas(chartElement).then((canvas) => {
+        const link = document.createElement("a");
+        link.href = canvas.toDataURL("image/jpeg");
+        link.download = `${chartClass}.jpg`; 
+        link.click();
+      });
+    } else {
+      console.error("No se encontró el gráfico para exportar.");
+    }
   };
 
   // Obtener todos los nodos para el desplegable
@@ -287,6 +294,7 @@ const Index = (props) => {
         </Row>
 
           <Row>
+
             {/* GRAFICO LINEAL */}
             <Col className="mb-5 mb-xl-0" xl="8">
               <Card className="shadow">
@@ -296,11 +304,11 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Red de Monitoreo - Cuenca Sagmata
                       </h6>
-                      <h2 className="text-Black mb-0">Altura del Canal</h2>
+                      <h2 className="text-Black mb-0">Altura del canal</h2>
                     </div>
 
-                    <div className="col">
-                      <Nav className="justify-content-end d-flex" pills>
+                    <div className="button-column">
+                      <Nav className="button-group-horizontal " pills >
                         <NavItem>
                           <NavLink
                             className={classnames("py-2 px-3", { active: activeNav === 1 })}
@@ -324,26 +332,27 @@ const Index = (props) => {
                           </NavLink>
                         </NavItem>
 
+
                         <NavItem>
-                        <Button
+                          <Button
                             className="py-2 px-3"
+                            
                             size="sm"
-                            color="warning"
-                            onClick={exportChartAsImage} // Llamada a la función exportar
+                            onClick={() => exportChartAsImage("chart-line")}
                           >
-                            <span className="d-none d-md-block">Exportar jpg</span>
+                            <span className="d-none d-md-block">Exportar</span>
                             <span className="d-md-none">E</span>
                           </Button>
                         </NavItem>
 
                         <NavItem>
                           <Button
-                            className="py-2 px-3"
+                            className={classnames("py-0 px-2", "large-text")}
                             size="sm"
-                            color="secondary"
+                            color="white"
                             onClick={() => toggleModal("line")}
                           >
-                            ⤢ Expandir
+                            ⤢
                           </Button>
                         </NavItem>
                       </Nav>
@@ -351,15 +360,16 @@ const Index = (props) => {
                   </Row>
                 </CardHeader>
                 
-                <CardBody>
-                  <div className="chart">
+                <CardBody id='chart-line'>
+                  <div className="chart" >
                     <Line
                       data={activeNav === 1 ? graficoLineal.data1(valoresNodosDiario) : graficoLineal.data2(valoresNodosSemanal)}
                       options={graficoLineal.options}
                       getDatasetAtEvent={(e) => console.log(e)}
-                    />
+                      />
                   </div>
                 </CardBody>
+                
               </Card>
             </Col>
 
@@ -367,24 +377,43 @@ const Index = (props) => {
             <Col xl="4">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Medición semanal
-                      </h6>
-                      <h2 className="mb-0">Temperatura de la Zona (Promedio)</h2>
-                    </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("bar")}
-                    >
-                      ⤢ Expandir
-                    </Button>
-                  </Row>
+                <Row className="align-items-center">
+                  <div className="col">
+                    <h6 className="text-uppercase text-muted ls-1 mb-1">
+                      Medición semanal (PROMEDIO)
+                    </h6>
+                    <h2 className="mb-0">Temperatura de la zona </h2>
+                  </div>
+
+                  <div className="button-column">
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>
+                        <Button
+                          className="py-2 px-3"
+                          size="sm"
+                          href=""
+                          onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </Button>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("bar")}
+                        >
+                          <span className="d-none d-md-block">⤢</span>
+                        </Button>
+                      </NavItem>
+                    </Nav>
+                  </div>
+                </Row>
+                
                 </CardHeader>
-                <CardBody>
+                <CardBody id="chart-bar">
                   <div className="chart">
                     <Bar
                       data={graficoBarras.data(valoresNodosTemp)}
@@ -397,6 +426,7 @@ const Index = (props) => {
           </Row>
 
           <Row className="mt-4 mb-2">
+
             {/* GRAFICO RADAR */}
             <Col xl="4">
               <Card className="shadow">
@@ -406,19 +436,36 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0">Presión Atmosférica</h2>
+                      <h2 className="mb-0">Presión atmosférica</h2>
                     </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("rad")}
-                    >
-                      ⤢ Expandir
-                    </Button>
+                  
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <Button
+                          className="py-2 px-3"
+                          href=""
+                          size="sm"
+                          
+                          onClick={() => exportChartAsImage("bar-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </Button>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("rad")}
+                        >
+                          <span className="d-none d-md-block">⤢</span>
+                        </Button>
+                      </NavItem>
+                    </Nav>
                   </Row>
                 </CardHeader>
-                <CardBody>
+                <CardBody id='bar-graph'>
                   <div className="chart">
                     <Radar
                       data={graficoBarras.data(valoresNodosTemp)}
@@ -427,6 +474,7 @@ const Index = (props) => {
                 </CardBody>
               </Card>
             </Col>
+
             {/* GRAFICO COMPUESTO */}
             <Col xl="4">
               <Card className="shadow">
@@ -436,25 +484,40 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Medición semanal
                       </h6>
-                      <h2 className="mb-0"> Comparación de Datos</h2>
+                      <h2 className="mb-0"> Comparación de datos</h2>
                     </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("comp")}
-                    >
-                      ⤢ Expandir
-                    </Button>
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <Button
+                          className="py-2 px-3"
+                          size="sm"
+                          href=""
+                          onClick={() => exportChartAsImage("composite-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </Button>
+                      </NavItem>
+                      <NavItem>  
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("comp")}>
+                          ⤢
+                        </Button>
+                      </NavItem>
+                    </Nav>
                   </Row>
                 </CardHeader>
-                <CardBody>
+                <CardBody id='composite-graph'>
                   <div className="chart">
                   <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />
                   </div>
                 </CardBody>
               </Card>
             </Col>
+
           {/* GRAFICO POLAR */}
             <Col xl="4">
               <Card className="shadow">
@@ -466,17 +529,32 @@ const Index = (props) => {
                       </h6>
                       <h2 className="mb-0">Radiación UV</h2>
                     </div>
-                    <Button
-                      className={classnames("py-2 px-3")}
-                      size="sm"
-                      color="secondary"
-                      onClick={() => toggleModal("pol")}
-                    >
-                      ⤢ Expandir
-                    </Button>
+                    <Nav className="button-group-horizontal " pills >
+                      <NavItem>  
+                        <Button
+                          className="py-2 px-3"
+                          size="sm"
+                          onClick={() => exportChartAsImage("polar-graph")} 
+                        >
+                          <span className="d-none d-md-block">Exportar</span>
+                          <span className="d-md-none">E</span>
+                        </Button>
+                      </NavItem>
+                      <NavItem>
+                        <Button
+                          className={classnames("py-0 px-2", "large-text")}
+                          size="sm"
+                          color="white"
+                          onClick={() => toggleModal("pol")}
+                        >
+                          ⤢
+                        </Button>
+                      </NavItem>  
+                    </Nav>
                   </Row>
                 </CardHeader>
-                <CardBody>
+
+                <CardBody id='polar-graph'>
                   <div className="chart">
                     <Polar
                       data={graficoBarras.data(valoresNodosTemp)}
