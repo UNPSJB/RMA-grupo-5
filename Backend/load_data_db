@@ -19,11 +19,11 @@ fecha_fin = datetime(2024, 11, 7, 0, 0)
 
 # 4. Función para generar datos aleatorios
 def generar_datos_aleatorios(nodo_id, fecha, session):
-    tipo_dato = session.query(TipoDato).filter(TipoDato.nombre == "TEMP_T").first()  # Asegúrate de que este tipo de dato exista
+    tipo_dato = session.query(TipoDato).filter(TipoDato.nombre == "ALTITUDE_T").first()  # Asegúrate de que este tipo de dato exista
     if not tipo_dato:
         raise ValueError("Tipo de dato no encontrado en la base de datos.")
     
-    data = random.uniform(-20.0, 30.0)  # Genera un número aleatorio entre 0 y 1.8
+    data = random.uniform(0.0, 1.8)  # Genera un número aleatorio entre 0 y 1.8
     return Medicion(
         tipo_dato_id=tipo_dato.id,  # Asignar el id del tipo de dato
         data=str(round(data, 7)),  # Guardar el dato con precisión de 7 decimales

@@ -1,15 +1,20 @@
-import React, {  } from "react";
-//import axios from "axios";
-//import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import React from "react";
 import './Header.css';
 
-const Header = () => {
+const Header = ({ title, subtitle }) => {
     return (
         <>
             <div className="header bg-gradient-info pb-7 pt-7">
+                <h1 className="header-title" style={{ color: 'white' }}>
+                    {title}
+                </h1>
+                <p className="header-subtitle" style={{ color: 'white' }}>
+                    {subtitle}
+                </p>
             </div>
         </>
     );
 };
 
 export default Header;
+

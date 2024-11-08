@@ -1,3 +1,26 @@
+.header {
+    text-align: center;
+    padding-top: 50px; /* Ajusta el espaciado superior */
+    padding-bottom: 30px; /* Ajusta el espaciado inferior */
+}
+
+.header-title {
+    font-size: 3rem; /* Tamaño más grande para el título */
+    font-weight: 700; /* Estilo en negrita */
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Agrega sombra al texto */
+    margin-bottom: 10px; /* Espacio debajo del título */
+    letter-spacing: 1px; /* Espaciado entre las letras */
+}
+
+.header-subtitle {
+    font-size: 1.4rem; /* Aumenta el tamaño del subtítulo */
+    font-weight: 400; /* Peso normal */
+    color: rgba(255, 255, 255, 0.8); /* Blanco con opacidad */
+    margin-top: 5px; /* Ajusta el espacio superior */
+    letter-spacing: 0.5px; /* Espaciado entre letras */
+}
+
 .equal-card {
     height: 100%;  /* Asegura que todas las tarjetas tengan la misma altura */
 }
@@ -22,3 +45,13 @@
     max-width: 11%;
     height: 145px; /* Cambia 200px por la altura que desees */
   }
+
+  .header-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.header-subtitle {
+    font-size: 1.2rem;
+    margin-top: 10px;
+}

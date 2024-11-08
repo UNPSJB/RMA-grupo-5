@@ -4,6 +4,7 @@ import { Container } from "reactstrap";
 import AdminFooter from "components/Footers/AdminFooter.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
+import RegistarTipoDato from "views/examples/RegistrarTipoDato";
 import RegistrarNodo from "views/examples/RegistrarNodo";
 import ModificarNodo from "views/examples/ModificarNodo";
 import GestionNodo from "views/examples/GestionNodo";
@@ -70,6 +71,7 @@ const Admin = (props) => {
 
           {/*<Route path="*" element={<Navigate to="/admin/index" replace />} /> */}
           <Route path="*" element={<Navigate to="/auth/register" replace />} />
+          <Route path="/registrar_tipo_dato" element={<RegistrarNodo />} />
           <Route path="/registrar_nodo" element={<RegistrarNodo />} />
           <Route path="/modificar_nodo/:id" element={<ModificarNodo />} />
           <Route path="/GestionNodo" element={<GestionNodo />} />

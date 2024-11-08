@@ -4,6 +4,7 @@ import Tables from "views/examples/Tables.js";
 import TablesError from "views/examples/TablesError.js";
 import GestionNodo from "views/examples/GestionNodo.js";
 import Register from "views/examples/Register.js";
+import ConfiguracionSistema from "views/examples/ConfiguracionSistema";
 //import Icons from "views/examples/Icons.js";
 
 var routes = [
@@ -52,6 +53,13 @@ var routes = [
     name: "Tablas con errores",
     icon: "ni ni-settings-gear-65 text-blue",
     component: <TablesError />,
+    layout: "/admin",
+  },
+  {
+    path: "/configuracion-sistema",
+    name: "Configuracion del Sistema",
+    icon: "ni ni-settings-gear-65 text-blue",
+    component: <ConfiguracionSistema />,
     layout: "/admin",
   },
   {
