@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polygon, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Card, Container, Row, Col, Button } from "reactstrap";
@@ -173,7 +173,7 @@ const MapWrapper = () => {
   return (
     <MapContainer
       center={position}
-      zoom={10}
+      zoom={11}
       minZoom={8}
       maxZoom={14}
       maxBounds={bounds}
@@ -195,7 +195,11 @@ const MapWrapper = () => {
         //dashArray="5,10" // Estilo de línea discontinua
         lineCap="round" // Forma de los extremos de la línea
         lineJoin="round" // Unión de las líneas
-      />
+      
+      >
+
+      </Polygon>
+      
 
       {/* Configuracion del icono para que muestre el nro de nodo*/}
       {nodos.map((nodo) => {
@@ -226,9 +230,13 @@ const MapWrapper = () => {
             icon={customIcon}
           >
             <Popup>
-                Nodo {nodo.numero} - "{nodo.nombre}"<br />
-                Latitud: {parseFloat(nodo.latitud).toFixed(6)} <br />
-                Longitud: {parseFloat(nodo.longitud).toFixed(6)} <br />
+                <div style={{ textAlign: "center" }}>
+                <b>Nodo {nodo.numero}</b> <br />
+                "{nodo.nombre}" <br />
+                </div>
+                
+                <b>Latitud:</b> {parseFloat(nodo.latitud).toFixed(4)} <br />
+                <b>Longitud:</b> {parseFloat(nodo.longitud).toFixed(4)} <br />
                 <br />
                 <button
                   type="submit" className="button-style"
