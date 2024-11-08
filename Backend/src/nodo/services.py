@@ -187,32 +187,26 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
 def leer_tipos_datos(db: Session) -> List[TipoDato]:
     return db.query(TipoDato).all()
 
-def leer_tipo_dato(db: Session, tipo_nombre: str) -> TipoDato:
-    db_tipo_dato = db.query(TipoDato).filter(TipoDato.nombre == tipo_nombre).first()
+def leer_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
+    db_tipo_dato = db.query(TipoDato).filter(TipoDato.id == id_tipo).first()
     if db_tipo_dato is None:
         raise exceptions.TipoDatoNoEncontrado() 
     return db_tipo_dato
 
 def modificar_tipo_dato(
-    db: Session, nombre: str, tipo_dato_actualizado: schemas.TipoDatoUpdate) -> TipoDato:
-    db_tipo_dato = leer_tipo_dato(db, nombre)
-    if db_tipo_dato is None:
-        raise exceptions.TipoDatoNoEncontrado()
-    
-    if tipo_dato_actualizado.nombre is not None:
-        db_tipo_dato = db.query(TipoDato).filter(TipoDato.nombre == tipo_dato_actualizado.nombre).first()
-        db_tipo_dato.nombre = tipo_dato_actualizado.nombre
-    if tipo_dato_actualizado.unidad is not None:
-        db_tipo_dato.unidad = tipo_dato_actualizado.unidad
+    db: Session, id_tipo: int, tipo_dato_actualizado: schemas.TipoDatoUpdate) -> TipoDato:
+    db_tipo_dato = leer_tipo_dato(db, id_tipo)
+
+    db_tipo_dato.nombre = tipo_dato_actualizado.nombre
+    db_tipo_dato.unidad = tipo_dato_actualizado.unidad
+    db_tipo_dato.rango_minimo = tipo_dato_actualizado.rango_minimo
+    db_tipo_dato.rango_maximo = tipo_dato_actualizado.rango_maximo
     db.commit()
     db.refresh(db_tipo_dato)
     return db_tipo_dato
 
-def eliminar_tipo_dato(db: Session, nombre: str) -> TipoDato:
-    db_tipo_dato = leer_tipo_dato(db, nombre)
-
-    if db_tipo_dato is None:
-            raise exceptions.TipoDatoNoEncontrado()
+def eliminar_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
+    db_tipo_dato = leer_tipo_dato(db, id_tipo)
     db.delete(db_tipo_dato)
     db.commit()
     return db_tipo_dato

@@ -77,22 +77,22 @@ def delete_nodo(nodo_id: int, db: Session = Depends(get_db)):
 def create_tipo_dato(tipo_dato: schemas.TipoDatoCreate, db: Session = Depends(get_db)):
     return services.crear_tipo_dato(db, tipo_dato)
 
-@router.get("/leer_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
-def read_tipo_dato(nombre_tipo: str, db: Session = Depends(get_db)):
-    return services.leer_tipo_dato(db, nombre_tipo)
+@router.get("/leer_tipo_dato/{id_tipo}", response_model=schemas.TipoDato)
+def read_tipo_dato(id_tipo: int, db: Session = Depends(get_db)):
+    return services.leer_tipo_dato(db, id_tipo)
 
 @router.get("/leer_tipos_datos/", response_model=List[schemas.TipoDato])
 def read_tipos_datos(db: Session = Depends(get_db)):
     tipos = services.leer_tipos_datos(db)
     return tipos
 
-@router.put("/modificar_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
-def update_tipo_dato(nombre_tipo: str, nodo: schemas.TipoDatoUpdate, db: Session = Depends(get_db)):
-    return services.modificar_tipo_dato(db, nombre_tipo, nodo)  
+@router.put("/modificar_tipo_dato/{id_tipo}", response_model=schemas.TipoDato)
+def update_tipo_dato(id_tipo: int, tipo: schemas.TipoDatoUpdate, db: Session = Depends(get_db)):
+    return services.modificar_tipo_dato(db, id_tipo, tipo)  
 
-@router.delete("/eliminar_tipo_dato/{nombre_tipo}", response_model=schemas.TipoDato)
-def delete_tipo_dato(nombre_tipo: str, db: Session = Depends(get_db)):
-    return services.eliminar_tipo_dato(db, nombre_tipo)
+@router.delete("/eliminar_tipo_dato/{id_tipo}", response_model=schemas.TipoDato)
+def delete_tipo_dato(id_tipo: int, db: Session = Depends(get_db)):
+    return services.eliminar_tipo_dato(db, id_tipo)
 
 #/--- Rutas de clase Estado Nodo ---/
 @router.post("/crear_estado_nodo", response_model=schemas.EstadoNodo)
