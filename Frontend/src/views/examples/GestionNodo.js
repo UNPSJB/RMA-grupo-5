@@ -97,8 +97,8 @@ const GestionNodo = () => {
               <tr key={nodo.numero}>
                 <td>{nodo.numero}</td>
                 <td>{nodo.nombre}</td>
-                <td>{nodo.ubicacion_x}</td>
-                <td>{nodo.ubicacion_y}</td>
+                <td>{nodo.longitud}</td>
+                <td>{nodo.latitud}</td>
                 <td>
                   <button 
                     className="edit-button" 

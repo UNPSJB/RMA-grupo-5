@@ -4,7 +4,7 @@ import './Header.css';
 const Header = ({ title, subtitle }) => {
     return (
         <>
-            <div className="header bg-gradient-info pb-7 pt-7">
+            <div className="header bg-gradient-info pb-5 pt-7">
                 <h1 className="header-title" style={{ color: 'white' }}>
                     {title}
                 </h1>

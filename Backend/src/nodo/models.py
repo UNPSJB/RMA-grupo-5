@@ -35,8 +35,8 @@ class Nodo(BaseModel):
 
     numero = Column(Integer, primary_key=True, index=True)
     nombre = Column(String) 
-    longitud = Column(Float)
-    latitud = Column(Float)
+    longitud = Column(Float, nullable=False)    
+    latitud = Column(Float, nullable=False)    
     estado_nodo_id = Column(String, ForeignKey('estados_nodo.id'), nullable=False)
     estado = relationship("EstadoNodo", back_populates="nodos")
     mediciones = relationship("Medicion", back_populates="nodo")

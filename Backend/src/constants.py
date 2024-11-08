@@ -37,5 +37,6 @@ TIPOS_DE_DATOS_INICIALES = [
     {"nombre": "ENERGY_T", "unidad": "kWh", "rango_minimo": 0, "rango_maximo": 10000},       # Energy
     {"nombre": "ENERGY2_T", "unidad": "kWh", "rango_minimo": 0, "rango_maximo": 10000},      # Energy #2
     {"nombre": "WEIGHT_T", "unidad": "kg", "rango_minimo": 0, "rango_maximo": 1000},         # Weight
-    {"nombre": "WEIGHT2_T", "unidad": "kg", "rango_minimo": 0, "rango_maximo": 1000}         # Weight #2
+    {"nombre": "WEIGHT2_T", "unidad": "kg", "rango_minimo": 0, "rango_maximo": 1000},         # Weight #2
+    {"nombre": "DESCONOCIDO", "unidad": "kg", "rango_minimo": 0, "rango_maximo": 1000}       # Nro 36 en la BD
 ]

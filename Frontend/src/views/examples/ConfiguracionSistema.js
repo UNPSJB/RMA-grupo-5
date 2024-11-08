@@ -142,7 +142,7 @@ const ConfiguracionSistema = () => {
   return (
     <>
       <Header title="Tipos de Datos Registrados" />
-      <Container className="mt--8" fluid>
+      <Container className="mt--4" fluid>
         <div className="table-container">
           <Button variant="primary" className="add-button mb-2" onClick={handleCreate}>
             Registrar nuevo tipo de dato

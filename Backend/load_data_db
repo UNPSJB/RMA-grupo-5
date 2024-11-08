@@ -15,7 +15,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # 3. Definir las fechas de inicio y fin
 fecha_inicio = datetime(2024, 10, 4, 0, 0)  # 17 de octubre de 2024
-fecha_fin = datetime(2024, 11, 7, 0, 0)
+fecha_fin = datetime(2024, 11, 9, 0, 0)
 
 # 4. Función para generar datos aleatorios
 def generar_datos_aleatorios(nodo_id, fecha, session):
