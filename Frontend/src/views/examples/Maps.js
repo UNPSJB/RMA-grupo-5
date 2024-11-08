@@ -221,14 +221,14 @@ const MapWrapper = () => {
         return (
           <Marker
             key={nodo.numero}
-            position={[nodo.ubicacion_x, nodo.ubicacion_y]}
+            position={[nodo.longitud, nodo.latitud]}
             // Agregar el icono nuevo
             icon={customIcon}
           >
             <Popup>
                 Nodo {nodo.numero} - "{nodo.nombre}"<br />
-                Latitud: {parseFloat(nodo.ubicacion_x).toFixed(6)} <br />
-                Longitud: {parseFloat(nodo.ubicacion_y).toFixed(6)} <br />
+                Latitud: {parseFloat(nodo.latitud).toFixed(6)} <br />
+                Longitud: {parseFloat(nodo.longitud).toFixed(6)} <br />
                 <br />
                 <button
                   type="submit" className="button-style"
