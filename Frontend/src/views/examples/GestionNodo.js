@@ -2,19 +2,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
+import { Tooltip } from "reactstrap"; // Importa Tooltip
 import "../../assets/css/Gestion_Nodo.css";
 
 const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
+  const [tooltipOpen, setTooltipOpen] = useState(false); // Estado para el Tooltip
   const navigate = useNavigate();
 
   const fetchNodos = async () => {
     try {
-      const [activosResponse, inactivosResponse] = await Promise.all([
-        axios.get("http://localhost:8000/obtener_nodos_activos"),
-        axios.get("http://localhost:8000/obtener_nodos_inactivos"),
-      ]);
-      const nodos = [...activosResponse.data, ...inactivosResponse.data];
+      const response = await axios.get(`http://localhost:8000/leer_nodos`);
+      const nodos = response.data;
       setNodos(nodos);
     } catch (error) {
       console.error("Error al obtener los nodos:", error);
@@ -48,6 +47,9 @@ const GestionNodo = () => {
     }
   };
 
+  // Función para alternar el tooltip
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
   return (
     <>
       <Header />
@@ -55,7 +57,24 @@ const GestionNodo = () => {
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
       </header>
       <div className="table-container">
-        <h2 className="table-header">Lista de Nodos Registrados</h2>
+        <h2 className="table-header">
+          Lista de Nodos Registrados
+          <i
+            id="helpIcon" // ID para vincular el Tooltip
+            className="bi bi-question-circle ml-2 text-info"
+            style={{ cursor: "pointer" }}
+          ></i>
+          <Tooltip
+            placement="right" // Posición del Tooltip
+            isOpen={tooltipOpen}
+            target="helpIcon"
+            toggle={toggleTooltip}
+          >
+            El estado de los nodos es el siguiente:
+              - Activo/Inactivo: es automatico (falta implementar), segun si le llega datos las ultimas 24hs
+              - Mantenimiento: es manual, el usuario va a cambiarlo
+          </Tooltip>
+        </h2>
         
         <button className="add-button" onClick={handleAddNodo}>
           Registrar nuevo nodo
@@ -89,20 +108,19 @@ const GestionNodo = () => {
                   </button>
                 </td>
                 
-              <td>
-                <div className="status-indicator">
-                  <span className={nodo.is_activo ? "text-success" : "text-danger"}>
-                    {nodo.is_activo ? "Activo" : "Inactivo"}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => toggleEstado(nodo.numero)} 
-                  >
-                    <i className={`bi ${nodo.is_activo ? "bi-x-circle text-danger" : "bi-check-circle text-success"}`}></i>
-                  </button>
-                </div>
-              </td>
-
+                <td>
+                  <div className="status-indicator">
+                    <span className={nodo.is_activo ? "text-success" : "text-danger"}>
+                      {nodo.is_activo ? "Activo" : "Inactivo"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => toggleEstado(nodo.numero)} 
+                    >
+                      <i className={`bi ${nodo.is_activo ? "bi-x-circle text-danger" : "bi-check-circle text-success"}`}></i>
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

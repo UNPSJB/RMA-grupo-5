@@ -17,7 +17,7 @@ const ModificarNodo = () => {
   useEffect(() => {
     const fetchNodo = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/obtener_nodo/${id}`);
+        const response = await axios.get(`http://localhost:8000/leer_nodo/${id}`);
         const { numero, nombre, ubicacion_x, ubicacion_y } = response.data;
         setNodo(numero);
         setNombre(nombre);

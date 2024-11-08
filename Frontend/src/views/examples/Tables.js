@@ -51,7 +51,7 @@ const Tables = () => {
     const getNodos = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8000/obtener_nodos_activos");
+        const response = await fetch("http://localhost:8000/leer_nodos");
         if (!response.ok) {
           throw new Error("Error al hacer el fetch de nodos");
         }

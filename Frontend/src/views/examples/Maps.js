@@ -159,7 +159,7 @@ const MapWrapper = () => {
   useEffect(() => {
     const fetchNodos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/obtener_nodos_activos");
+        const response = await fetch("http://localhost:8000/leer_nodos");
         const data = await response.json();
         setNodos(data);
       } catch (error) {
