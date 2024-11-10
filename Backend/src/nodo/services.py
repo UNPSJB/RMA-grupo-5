@@ -135,11 +135,9 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
         db_nodo.longitud = nodo_actualizado.longitud
     if nodo_actualizado.latitud is not None:
         db_nodo.latitud = nodo_actualizado.latitud
-    if nodo_actualizado.estado_nodo_nombre is not None:
-        db_estado = leer_estado_nodo(db, nodo_actualizado.estado_nodo_nombre)
-        if db_estado is None:
-            raise exceptions.EstadoNodoNoEncontrado()
-
+    if nodo_actualizado.estado_nodo is not None:
+        db_nodo.estado_nodo_id = nodo_actualizado.estado_nodo
+        
     db.add(db_nodo)
     db.commit()
     db.refresh(db_nodo)

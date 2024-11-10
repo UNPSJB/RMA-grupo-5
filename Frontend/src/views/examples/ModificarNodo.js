@@ -10,19 +10,22 @@ const ModificarNodo = () => {
   const [nombre, setNombre] = useState('');
   const [ubicacionX, setUbicacionX] = useState('');
   const [ubicacionY, setUbicacionY] = useState('');
+  const [estado, setEstado] = useState('');
   const navigate = useNavigate();
   const { id } = useParams(); 
 
+  const [estados, setEstados] = useState([]);
   
   useEffect(() => {
     const fetchNodo = async () => {
       try {
         const response = await axios.get(`http://localhost:8000/leer_nodo/${id}`);
-        const { numero, nombre, ubicacion_x, ubicacion_y } = response.data;
+        const { numero, nombre, longitud, latitud, estado } = response.data;
         setNodo(numero);
         setNombre(nombre);
-        setUbicacionX(ubicacion_x);
-        setUbicacionY(ubicacion_y);
+        setUbicacionX(longitud);
+        setUbicacionY(latitud);
+        setEstado(estado);
       } catch (error) {
         message.error("Error al cargar los datos"); 
       }
@@ -33,28 +36,36 @@ const ModificarNodo = () => {
     }
   }, [id]);
 
+  useEffect(() => {
+    fetch("http://localhost:8000/leer_estados_nodo/")
+      .then((response) => response.json())
+      .then((estados) => setEstados(estados)) // Almacena los datos en el estado 'estados'
+      .catch((error) => console.error("Error al obtener los estados:", error));
+  }, [navigate]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
    // Validar que los valores sean correctos
 
-  if (
-    (nodo === null || nodo === undefined || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9-]/.test(nodo)) ||
-    (ubicacionX === null || ubicacionX === undefined || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX)) ||
-    (ubicacionY === null || ubicacionY === undefined || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY))
-  ) {
-    message.error("Ingresa un valor válido (solo números)");
-    return;
-  }
+    if (
+      (nodo === null || nodo === undefined || isNaN(nodo) || !Number.isInteger(parseFloat(nodo)) || /[^0-9-]/.test(nodo)) ||
+      (ubicacionX === null || ubicacionX === undefined || isNaN(ubicacionX) || isNaN(parseFloat(ubicacionX)) || /[^0-9.-]/.test(ubicacionX)) ||
+      (ubicacionY === null || ubicacionY === undefined || isNaN(ubicacionY) || isNaN(parseFloat(ubicacionY)) || /[^0-9.-]/.test(ubicacionY))
+    ) {
+      message.error("Ingresa un valor válido (solo números)");
+      return;
+    }
     
     const nodoActualizado = {
       numero: Number(nodo),
       nombre: String(nombre),
-      ubicacion_x: Number(ubicacionX),
-      ubicacion_y: Number(ubicacionY),
+      longitud: Number(ubicacionX),
+      latitud: Number(ubicacionY),
+      estado_nodo: Number(estado),
     };
 
     // Realiza una solicitud PUT para modificar el nodo existente
-    axios.put(`http://localhost:8000/actualizar_nodo/${id}`, nodoActualizado)
+    axios.put(`http://localhost:8000/modificar_nodo/${id}`, nodoActualizado)
       .then(response => {
         message.success("Nodo modificado exitosamente"); 
         
@@ -117,6 +128,23 @@ const ModificarNodo = () => {
                 onChange={(e) => setUbicacionY(e.target.value)}
                 required
               />
+            </div>
+
+            <div>
+              <label className="label-style">Estado:</label>
+              <select
+                className="input-style"
+                value={estado}
+                onChange={(e) => setEstado(e.target.value)}
+                required
+              >
+                <option value="">Seleccionar estado del Nodo</option>
+                {estados.map((estadoItem) => (
+                  <option key={estadoItem.id} value={estadoItem.id}>
+                    {estadoItem.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
             
             <button type="submit" className="button-style">

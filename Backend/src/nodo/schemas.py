@@ -94,7 +94,7 @@ class NodoUpdate(NodoBase):
     nombre: Optional[str] = None
     longitud: Optional[float] = None
     latitud: Optional[float] = None
-    estado_nodo_nombre: Optional[str] = None
+    estado_nodo: Optional[int] = None
 
 # Clase para representar un Nodo completo
 class Nodo(NodoBase):
