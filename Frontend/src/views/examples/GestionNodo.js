@@ -24,6 +24,23 @@ const GestionNodo = () => {
     fetchNodos();
   }, []);
 
+  
+  const [estados, setEstados] = useState([]);
+  const [nombreEstado, setNombreEstado] = useState("");
+  useEffect(() => {
+    const fetchEstados = async () => {
+      const response = await axios.get("http://localhost:8000/leer_estados_nodo/");
+      setEstados(response.data);
+    };
+
+    fetchEstados();
+  }, []);
+
+  const getEstadoNodo = (id) => {
+    const estado = estados.find(estado => estado.id === id);
+    return estado ? estado.nombre : "Estado desconocido";
+  }
+
   const handleEdit = (nodoId) => {
     navigate(`/admin/modificar_nodo/${nodoId}`);
   };
@@ -31,7 +48,7 @@ const GestionNodo = () => {
   const handleAddNodo = () => {
     navigate("/admin/registrar_nodo");
   };
-
+{/*
   const toggleEstado = async (numeroNodo) => {
     try {
       const response = await axios.put(`http://localhost:8000/toggle_estado/${numeroNodo}`);
@@ -46,7 +63,7 @@ const GestionNodo = () => {
       console.error("Error al cambiar el estado del nodo:", error);
     }
   };
-
+*/}
   // Función para alternar el tooltip
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
 
@@ -110,15 +127,17 @@ const GestionNodo = () => {
                 
                 <td>
                   <div className="status-indicator">
-                    <span className={nodo.is_activo ? "text-success" : "text-danger"}>
-                      {nodo.is_activo ? "Activo" : "Inactivo"}
+                    <span className={getEstadoNodo(nodo.estado_nodo_id) === "activo" ? "text-success" : "text-danger"}>
+                      {getEstadoNodo(nodo.estado_nodo_id)}
                     </span>
+                    {/*  
                     <button
                       type="button"
                       onClick={() => toggleEstado(nodo.numero)} 
                     >
                       <i className={`bi ${nodo.is_activo ? "bi-x-circle text-danger" : "bi-check-circle text-success"}`}></i>
                     </button>
+                    */}
                   </div>
                 </td>
               </tr>
