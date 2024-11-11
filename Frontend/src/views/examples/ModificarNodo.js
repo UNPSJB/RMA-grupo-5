@@ -10,7 +10,6 @@ const ModificarNodo = () => {
   const [nombre, setNombre] = useState('');
   const [ubicacionX, setUbicacionX] = useState('');
   const [ubicacionY, setUbicacionY] = useState('');
-  const [estado, setEstado] = useState('');
   const navigate = useNavigate();
   const { id } = useParams(); 
 
@@ -25,7 +24,6 @@ const ModificarNodo = () => {
         setNombre(nombre);
         setUbicacionX(longitud);
         setUbicacionY(latitud);
-        setEstado(estado);
       } catch (error) {
         message.error("Error al cargar los datos"); 
       }
@@ -35,13 +33,6 @@ const ModificarNodo = () => {
       fetchNodo();
     }
   }, [id]);
-
-  useEffect(() => {
-    fetch("http://localhost:8000/leer_estados_nodo/")
-      .then((response) => response.json())
-      .then((estados) => setEstados(estados)) // Almacena los datos en el estado 'estados'
-      .catch((error) => console.error("Error al obtener los estados:", error));
-  }, [navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -61,7 +52,6 @@ const ModificarNodo = () => {
       nombre: String(nombre),
       longitud: Number(ubicacionX),
       latitud: Number(ubicacionY),
-      estado_nodo: Number(estado),
     };
 
     // Realiza una solicitud PUT para modificar el nodo existente
@@ -128,23 +118,6 @@ const ModificarNodo = () => {
                 onChange={(e) => setUbicacionY(e.target.value)}
                 required
               />
-            </div>
-
-            <div>
-              <label className="label-style">Estado:</label>
-              <select
-                className="input-style"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
-                required
-              >
-                <option value="">Seleccionar estado del Nodo</option>
-                {estados.map((estadoItem) => (
-                  <option key={estadoItem.id} value={estadoItem.id}>
-                    {estadoItem.nombre}
-                  </option>
-                ))}
-              </select>
             </div>
             
             <button type="submit" className="button-style">

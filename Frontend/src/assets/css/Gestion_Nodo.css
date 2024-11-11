@@ -1,73 +1,116 @@
 /* GestionNodo.css */
 
 .table-container {
-    padding: 20px;
-    margin-top: 20px;
-  }
-  
-  .table-header {
-    text-align: center;
-    color: #333;
-  }
-  
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .table th,
-  .table td {
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .table th {
-    background-color: #f2f2f2;
-  }
-  
-  .add-button {
-    background-color: #5e72e4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    margin: 0 5px;
-  }
-  
-  .edit-button {
-    background-color: #5e72e4;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin: 0 5px;
-  }
+  padding: 20px;
+  margin-top: 20px;
+}
 
-  .delete-button {
-    background-color: #e45e5e;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
-    cursor: pointer;
-    margin: 0 5px;
-  }
-  
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .status-indicator button {
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-  }
-  
+.table-header {
+  text-align: center;
+  color: #333;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f2f2f2;
+}
+
+.add-button {
+  background-color: #5e72e4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  margin: 0 5px;
+}
+
+.edit-button {
+  background-color: #5e72e4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.delete-button {
+  background-color: #e45e5e;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  margin: 0 5px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-indicator button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Estilo para el Tooltip */
+.tooltip-inner {
+background-color: #f0f8ff;
+color: #333; 
+font-size: 14px; 
+padding: 10px; 
+border-radius: 5px; 
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+}
+
+/* Estilo para el estado "Activo" */
+.text-success {
+  font-weight: bold; 
+  color: green; 
+}
+
+/* Estilo para el estado "Inactivo" */
+.text-danger {
+  font-weight: bold;
+  color: red; 
+}
+
+/* Estilo para el estado "Mantenimiento" */
+.mantenimiento {
+  font-weight: bold;
+  color: orange; 
+}
+
+/* Personaliza los textos dentro del Tooltip según el estado */
+.tooltip-inner .activo {
+  color: green;
+  font-weight: bold;
+}
+
+.tooltip-inner .inactivo {
+  color: red; 
+  font-weight: bold; 
+}
+
+.tooltip-inner .mantenimiento {
+  color: orange;
+  font-weight: bold; 
+}

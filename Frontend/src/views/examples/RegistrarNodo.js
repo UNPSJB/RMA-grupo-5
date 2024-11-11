@@ -29,8 +29,9 @@ const RegistrarNodo = () => {
     const nuevoNodo = {
       numero: parseInt(nodo),
       nombre: String(nombre),
-      ubicacion_x: parseFloat(ubicacionX),
-      ubicacion_y: parseFloat(ubicacionY),
+      longitud: parseFloat(ubicacionX),
+      latitud: parseFloat(ubicacionY),
+      estado: 1
     };
 
     axios.post('http://localhost:8000/crear_nodo', nuevoNodo)
