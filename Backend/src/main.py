@@ -10,7 +10,7 @@ from src.config_db import engine, SessionLocal
 from src.db_models import BaseModel
 from src.nodo.router import router as example_router
 from src.nodo.schemas import TipoDatoCreate
-from src.nodo.services import crear_tipo_dato
+from src.nodo.services import crear_tipo_dato, verificar_mediciones_nodo
 from src.suscriptor.sub import Subscriptor
 from src.suscriptor.config import config
 from src.suscriptor.services import procesar_mensaje
@@ -56,6 +56,12 @@ def start_mqtt_thread():
     mqtt_thread.start()
     return mqtt_thread
 
+# Iniciar el hilo que ejecutará la función cada 1 minuto
+def start_revisar_estado_thread():
+    db = SessionLocal()
+    thread = Thread(target=verificar_mediciones_nodo, args=(db,), daemon=True)
+    thread.start()
+
 # Ejecutar el suscriptor MQTT al iniciar FastAPI
 @app.on_event("startup")
 async def startup_event():
@@ -66,6 +72,7 @@ async def startup_event():
     db: Session = SessionLocal()
     try:
         for tipo in TIPOS_DE_DATOS_INICIALES:
+            
             tipo_dato = TipoDatoCreate(
                 nombre=tipo["nombre"],
                 unidad=tipo["unidad"],
@@ -78,6 +85,9 @@ async def startup_event():
                 pass
     finally:
         db.close()
+
+    # Iniciar el hilo que revisa el estado de los nodos cada minuto
+    start_revisar_estado_thread()
 
     # Iniciar el suscriptor MQTT
     start_mqtt_thread()
