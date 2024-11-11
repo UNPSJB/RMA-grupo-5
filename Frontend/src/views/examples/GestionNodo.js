@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from "reactstrap"; // Importa Tooltip
+import { Tooltip } from "reactstrap";
 import "../../assets/css/Gestion_Nodo.css";
 
 const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
-  const [tooltipOpen, setTooltipOpen] = useState(false); // Estado para el Tooltip
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const navigate = useNavigate();
 
   const fetchNodos = async () => {
@@ -24,23 +24,6 @@ const GestionNodo = () => {
     fetchNodos();
   }, []);
 
-  
-  const [estados, setEstados] = useState([]);
-  const [nombreEstado, setNombreEstado] = useState("");
-  useEffect(() => {
-    const fetchEstados = async () => {
-      const response = await axios.get("http://localhost:8000/leer_estados_nodo/");
-      setEstados(response.data);
-    };
-
-    fetchEstados();
-  }, []);
-
-  const getEstadoNodo = (id) => {
-    const estado = estados.find(estado => estado.id === id);
-    return estado ? estado.nombre : "Estado desconocido";
-  }
-
   const handleEdit = (nodoId) => {
     navigate(`/admin/modificar_nodo/${nodoId}`);
   };
@@ -48,14 +31,16 @@ const GestionNodo = () => {
   const handleAddNodo = () => {
     navigate("/admin/registrar_nodo");
   };
-{/*
+
   const toggleEstado = async (numeroNodo) => {
     try {
       const response = await axios.put(`http://localhost:8000/toggle_estado/${numeroNodo}`);
+      
       if (response.status === 200) {
+        const nuevoEstado = response.data.estado;  // Estado actualizado del nodo
         setNodos((prevNodos) =>
           prevNodos.map((nodo) =>
-            nodo.numero === numeroNodo ? { ...nodo, is_activo: !nodo.is_activo } : nodo
+            nodo.numero === numeroNodo ? { ...nodo, estado: nuevoEstado } : nodo
           )
         );
       }
@@ -63,9 +48,33 @@ const GestionNodo = () => {
       console.error("Error al cambiar el estado del nodo:", error);
     }
   };
-*/}
-  // Función para alternar el tooltip
+  
+
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
+  const getEstadoTexto = (estado) => {
+    switch (estado) {
+      case 1:
+        return "Activo";
+      case 2:
+        return "Inactivo";
+      case 3:
+        return "Mantenimiento";
+    }
+  };
+
+  const getEstadoClass = (estado) => {
+    switch (estado) {
+      case 1:
+        return "text-success"; // Activo
+      case 2:
+        return "text-danger"; // Inactivo
+      case 3:
+        return "mantenimiento"; // Mantenimiento
+      default:
+        return "text-muted"; // Desconocido
+    }
+  };
 
   return (
     <>
@@ -76,23 +85,8 @@ const GestionNodo = () => {
       <div className="table-container">
         <h2 className="table-header">
           Lista de Nodos Registrados
-          <i
-            id="helpIcon" // ID para vincular el Tooltip
-            className="bi bi-question-circle ml-2 text-info"
-            style={{ cursor: "pointer" }}
-          ></i>
-          <Tooltip
-            placement="right" // Posición del Tooltip
-            isOpen={tooltipOpen}
-            target="helpIcon"
-            toggle={toggleTooltip}
-          >
-            El estado de los nodos es el siguiente:
-              - Activo/Inactivo: es automatico (falta implementar), segun si le llega datos las ultimas 24hs
-              - Mantenimiento: es manual, el usuario va a cambiarlo
-          </Tooltip>
         </h2>
-        
+
         <button className="add-button" onClick={handleAddNodo}>
           Registrar nuevo nodo
         </button>
@@ -105,10 +99,27 @@ const GestionNodo = () => {
               <th>Longitud</th>
               <th>Latitud</th>
               <th>Acciones</th>
-              <th>Estado</th>
+              <th>
+                Estado
+                <i
+                  id="helpIcon"
+                  className="bi bi-question-circle ml-2 text-info"
+                  style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+                ></i>
+                <Tooltip
+                  placement="right"
+                  isOpen={tooltipOpen}
+                  target="helpIcon"
+                  toggle={toggleTooltip}
+                >
+                   <p>- <span className="activo">Activo</span>: El nodo está funcionando y enviando datos.</p>
+                   <p>- <span className="inactivo">Sin mediciones </span>: El nodo no ha enviado mediciones en las últimas 24 horas.</p>
+                   <p>- <span className="mantenimiento">Mantenimiento </span>: El nodo está en mantenimiento y no registrarán mediciones.</p>
+                </Tooltip>
+              </th>
             </tr>
           </thead>
-          
+
           <tbody>
             {nodos.map((nodo) => (
               <tr key={nodo.numero}>
@@ -124,20 +135,19 @@ const GestionNodo = () => {
                     Modificar
                   </button>
                 </td>
-                
                 <td>
                   <div className="status-indicator">
-                    <span className={getEstadoNodo(nodo.estado_nodo_id) === "activo" ? "text-success" : "text-danger"}>
-                      {getEstadoNodo(nodo.estado_nodo_id)}
+                    <span className={getEstadoClass(nodo.estado)}>
+                      {getEstadoTexto(nodo.estado)}
                     </span>
-                    {/*  
-                    <button
-                      type="button"
-                      onClick={() => toggleEstado(nodo.numero)} 
-                    >
-                      <i className={`bi ${nodo.is_activo ? "bi-x-circle text-danger" : "bi-check-circle text-success"}`}></i>
-                    </button>
-                    */}
+                    {(nodo.estado === 1 || nodo.estado === 2 || nodo.estado === 3) && (
+                      <button
+                        type="button"
+                        onClick={() => toggleEstado(nodo.numero)} 
+                      >
+                        <i className="bi bi-wrench text-warning"></i> {/* Icono de mantenimiento */}
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
@@ -150,3 +160,4 @@ const GestionNodo = () => {
 };
 
 export default GestionNodo;
+

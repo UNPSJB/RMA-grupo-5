@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { Card, Container, Row, Col, Button } from "reactstrap";
+import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
 import Header from "components/Headers/Header.js";
@@ -203,6 +203,13 @@ const MapWrapper = () => {
 
       {/* Configuracion del icono para que muestre el nro de nodo*/}
       {nodos.map((nodo) => {
+        // Define el color del ícono en función del estado del nodo
+        const colorEstado = nodo.estado === 1 
+          ? "green" // Verde para nodos activos
+          : nodo.estado === 2 
+          ? "red" // Rojo para nodos inactivos
+          : "orange"; // Naranja para mantenimiento
+
         const customIcon = L.divIcon({
           className: "custom-icon",
           html: `<div style="
@@ -212,14 +219,12 @@ const MapWrapper = () => {
                   width: 25px;
                   height: 25px;
                   border-radius: 50%;
-                  background-color: #2E86C1;
+                  background-color: ${colorEstado};
                   color: white;
                   font-size: 15px;
                   font-weight: bold;
                   border: 2px solid #ccc;
                 ">${nodo.numero}</div>`,
-          iconSize: [30, 30],
-          iconAnchor: [15, 15]
         });
 
         return (
@@ -231,7 +236,7 @@ const MapWrapper = () => {
           >
             <Popup>
                 <div style={{ textAlign: "center" }}>
-                <b>Nodo {nodo.numero}</b> <br />
+                <b>Nodo: {nodo.numero}</b> <br />
                 "{nodo.nombre}" <br />
                 </div>
                 
@@ -260,7 +265,7 @@ const Maps = () => {
   return (
     <>
       <Header />
-      <Container className="mt--9" fluid>
+      <Container className="mt--7" fluid>
         <Row>
           <Col lg="12">
             <Card
