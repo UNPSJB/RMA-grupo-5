@@ -234,7 +234,7 @@ def modificar_tipo_dato(
 def eliminar_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
     db_tipo_dato = leer_tipo_dato(db, id_tipo)
     if len(db_tipo_dato.mediciones) > 0:
-        raise exceptions.TipoDatoConMediciones()
+        raise exceptions.TipoDatoTieneMediciones()
     db.delete(db_tipo_dato)
     db.commit()
     return db_tipo_dato

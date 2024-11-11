@@ -144,9 +144,10 @@ const ConfiguracionSistema = () => {
       <Header title="Tipos de Datos Registrados" />
       <Container className="mt--4" fluid>
         <div className="table-container">
+          {/*}
           <Button variant="primary" className="add-button mb-2" onClick={handleCreate}>
             Registrar nuevo tipo de dato
-          </Button>
+          </Button>*/}
 
           <Row>
             <Col md="2">
@@ -163,7 +164,7 @@ const ConfiguracionSistema = () => {
             </Col>
           </Row>
 
-          <table className="table">
+          <table className="table mt--3">
             <thead>
               <tr>
                 <th>Id</th>
@@ -215,7 +216,6 @@ const ConfiguracionSistema = () => {
                   />
                 </FormGroup>
               )}
-
               <FormGroup>
                 <Label for="nombre">Nombre</Label>
                 <Input
@@ -225,6 +225,7 @@ const ConfiguracionSistema = () => {
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   placeholder="Ingrese el nombre del tipo de dato"
+                  disabled={isEditing} // Desactiva el campo si está en modo de edición
                 />
               </FormGroup>
               <FormGroup>
