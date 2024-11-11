@@ -2,24 +2,6 @@ from pydantic import BaseModel, Field, constr
 from typing import List, Optional
 from datetime import datetime
 
-# Clase base para EstadoNodo
-class EstadoNodoBase(BaseModel):
-    nombre: str
-
-    class Config:
-        from_attributes = True
-
-class EstadoNodoCreate(EstadoNodoBase):
-    nombre: str 
-
-class EstadoNodoUpdate(EstadoNodoBase):
-    nombre: Optional[str] = None
-
-# Clase para representar un EstadoNodo
-class EstadoNodo(EstadoNodoBase):
-    id: int
-    nombre: str
-
 # Clase base para TipoDato
 class TipoDatoBase(BaseModel):
     nombre: str 
@@ -79,6 +61,7 @@ class NodoBase(BaseModel):
     nombre: Optional[str] = None
     longitud: float
     latitud: float
+    estado: int
     class Config:
         from_attributes = True
 
@@ -88,18 +71,17 @@ class NodoCreate(NodoBase):
     nombre: str
     longitud: float
     latitud: float
-    estado_nodo_nombre: str
+    estado: int
 
 class NodoUpdate(NodoBase):
     nombre: Optional[str] = None
     longitud: Optional[float] = None
     latitud: Optional[float] = None
-    estado_nodo: Optional[int] = None
+    estado: Optional[int] = None
 
 # Clase para representar un Nodo completo
 class Nodo(NodoBase):
     numero: int
-    estado_nodo_id: int
 
 # Clase base para Registro
 class RegistroBase(BaseModel):

@@ -6,16 +6,6 @@ from src.db_models import BaseModel
 
 UTC = timezone.utc
 
-# Modelo para la tabla EstadoNodo
-class EstadoNodo(BaseModel):
-    __tablename__ = 'estados_nodo'
-
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String,nullable=False, index=True)
-    nodos = relationship("Nodo", back_populates="estado")
-    fecha_creacion = Column(DateTime, default=datetime.utcnow)
-    fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
 # Modelo para la tabla TipoDato
 class TipoDato(BaseModel):
     __tablename__ = 'tipos_dato'
@@ -37,8 +27,7 @@ class Nodo(BaseModel):
     nombre = Column(String) 
     longitud = Column(Float, nullable=False)    
     latitud = Column(Float, nullable=False)    
-    estado_nodo_id = Column(String, ForeignKey('estados_nodo.id'), nullable=False)
-    estado = relationship("EstadoNodo", back_populates="nodos")
+    estado = Column(Integer, nullable=False)
     mediciones = relationship("Medicion", back_populates="nodo")
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

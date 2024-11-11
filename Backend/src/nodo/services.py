@@ -2,11 +2,11 @@ from typing import List
 from sqlalchemy.orm import Session
 from src.nodo import schemas
 from src.nodo import exceptions
-from src.nodo.models import Medicion, Nodo, Registro, TipoDato, EstadoNodo
+from src.nodo.models import Medicion, Nodo, Registro, TipoDato
 from src.nodo import schemas
 from src.nodo import exceptions
-import json
-from datetime import datetime
+import time, json
+from datetime import datetime, timedelta
 from fastapi import HTTPException
 
 
@@ -88,7 +88,7 @@ def leer_ultima_medicion(db: Session) -> Medicion:
     db_medicion = db.query(Medicion).order_by(Medicion.time.desc()).first()
     if db_medicion is None:
         raise exceptions.MedicionNoEncontrada()
-    return db_medicion
+    return db_medicion  
 
 #/--- Métodos de clase Nodo ---/
 
@@ -97,17 +97,13 @@ def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
     nodo_existente = db.query(Nodo).filter(Nodo.numero == nodo.numero).first()
     if nodo_existente is not None:
         raise exceptions.NodoDuplicado()
-    
-    estado_existente = db.query(EstadoNodo).filter(EstadoNodo.nombre == nodo.estado_nodo_nombre).first()
-    if estado_existente is None:
-        raise exceptions.EstadoNodoNoEncontrado()
-    
+
     db_nodo = Nodo(
         numero=nodo.numero,
         nombre=nodo.nombre,
         longitud=nodo.longitud,
         latitud=nodo.latitud,
-        estado_nodo_id=estado_existente.id
+        estado= nodo.estado
     )
     
     db.add(db_nodo)
@@ -118,16 +114,13 @@ def crear_nodo(db: Session, nodo: schemas.NodoCreate) -> Nodo:
 def leer_nodo(db: Session, numero_nodo: int) -> Nodo:
     # Buscar el nodo por su número
     db_nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
-    
-    # Si no encuentra el nodo, lanza una excepción
     if db_nodo is None:
         raise exceptions.NodoNoEncontrado()
+    
     return db_nodo
 
 def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.NodoUpdate) -> Nodo:
     db_nodo = leer_nodo(db, numero_nodo)
-    if db_nodo is None:
-        raise exceptions.NodoNoEncontrado()
     
     if nodo_actualizado.nombre is not None:
         db_nodo.nombre = nodo_actualizado.nombre
@@ -135,9 +128,9 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
         db_nodo.longitud = nodo_actualizado.longitud
     if nodo_actualizado.latitud is not None:
         db_nodo.latitud = nodo_actualizado.latitud
-    if nodo_actualizado.estado_nodo is not None:
-        db_nodo.estado_nodo_id = nodo_actualizado.estado_nodo
-        
+    if nodo_actualizado.estado is not None:
+        db_nodo.estado = nodo_actualizado.estado
+
     db.add(db_nodo)
     db.commit()
     db.refresh(db_nodo)
@@ -146,18 +139,47 @@ def modificar_nodo(db: Session, numero_nodo: int, nodo_actualizado: schemas.Nodo
 
 def leer_nodos(db: Session) -> List[Nodo]:
     # Obtener todos los nodos
-    return db.query(Nodo).all()
+    return db.query(Nodo).order_by(Nodo.numero.asc()).all()
+    
+def leer_nodos_activos(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos activos
+    return db.query(Nodo).filter(Nodo.numero == 1).all()
 
-def leer_nodos_por_estado(db: Session, estado_nodo_id: int) -> List[Nodo]:
-    # Obtener todos los nodos segun un
-    return db.query(Nodo).filter(Nodo.estado_nodo_id== estado_nodo_id).all()
+def leer_nodos_inactivos(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos inactivos
+    return db.query(Nodo).filter(Nodo.numero == 2).all()
+
+def leer_nodos_de_baja(db: Session) -> List[Nodo]:
+    # Obtener todos los nodos en mantenimiento/dados de baja
+    return db.query(Nodo).filter(Nodo.numero == 3).all()
+
+# Verificar periodicamente si el nodo recibio mediciones en las ultimas 24hs para saber si esta activo
+def verificar_mediciones_nodo(db: Session):
+    while True:
+        # Llamar a tu función de actualización del estado de los nodos aquí
+        for nodo in db.query(Nodo).all():
+            # Verificar si no esta en mantenimiento el nodo
+            if nodo.estado != 3:
+                ultima_medicion = db.query(Medicion).filter(Medicion.nodo_numero == nodo.numero).order_by(Medicion.time.desc()).first()
+                
+                if ultima_medicion is not None:
+                    # Si la última medición es mayor a 24 horas, poner el nodo en estado Inactivo
+                    if ultima_medicion.time < datetime.now() - timedelta(hours=24):
+                        nodo.estado = 2  # Estado Inactivo
+                    else:
+                        nodo.estado = 1  # Estado Activo
+                else:
+                    # Si no hay mediciones
+                    nodo.estado = 2  # Estado Inactivo
+
+                db.commit()
+        # Esperar 60 segundos antes de ejecutar nuevamente
+        time.sleep(10)
 
 def eliminar_nodo(db: Session, numero_nodo: int) -> Nodo:
-    nodo = db.query(Nodo).filter(Nodo.numero == numero_nodo).first()
+    nodo = leer_nodo(db, numero_nodo)
     
-    if nodo is None:
-        raise exceptions.NodoNoEncontrado()
-    elif len(nodo.mediciones) > 0:
+    if len(nodo.mediciones) > 0:
         raise exceptions.NodoTieneMediciones()
     
     db.delete(nodo)
@@ -183,7 +205,13 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
     return db_tipo_dato
 
 def leer_tipos_datos(db: Session) -> List[TipoDato]:
-    return db.query(TipoDato).all()
+    tipos_datos = db.query(TipoDato).all()
+    for tipo in tipos_datos:
+        if tipo.rango_minimo is None:
+            tipo.rango_minimo = 0 
+        if tipo.rango_maximo is None:
+            tipo.rango_maximo = 0 
+    return tipos_datos
 
 def leer_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
     db_tipo_dato = db.query(TipoDato).filter(TipoDato.id == id_tipo).first()
@@ -205,54 +233,12 @@ def modificar_tipo_dato(
 
 def eliminar_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
     db_tipo_dato = leer_tipo_dato(db, id_tipo)
+    if len(db_tipo_dato.mediciones) > 0:
+        raise exceptions.TipoDatoConMediciones()
     db.delete(db_tipo_dato)
     db.commit()
     return db_tipo_dato
 
-#/--- Métodos de clase Estado ---/
-def crear_estado_nodo(db: Session, estado: schemas.EstadoNodoCreate) -> EstadoNodo:
-    estado_existente = db.query(EstadoNodo).filter(EstadoNodo.nombre == estado.nombre).first()
-    
-    if estado_existente is not None:
-        raise exceptions.EstadoNodoDuplicado()
-
-    db_estado_nodo = EstadoNodo(
-        nombre = estado.nombre,
-    )
-    db.add(db_estado_nodo)
-    db.commit()
-    db.refresh(db_estado_nodo)
-    return db_estado_nodo
-
-def leer_estados_nodo(db: Session) -> List[EstadoNodo]:
-    return db.query(EstadoNodo).all()
-
-def leer_estado_nodo(db: Session, nombre: str) -> EstadoNodo:
-    db_estado_nodo = db.query(EstadoNodo).filter(EstadoNodo.nombre == nombre).first()
-    if db_estado_nodo is None:
-        raise exceptions.EstadoNodoNoEncontrado() 
-    return db_estado_nodo
-
-def modificar_estado_nodo(
-    db: Session, nombre: str, estado_actualizado: schemas.EstadoNodoUpdate) -> EstadoNodo:
-    db_estado_nodo = leer_estado_nodo(db, nombre)
-    if estado_actualizado.nombre is not None:
-        estado_nodo = db.query(EstadoNodo).filter(EstadoNodo.nombre == estado_actualizado.nombre).first()
-        if estado_nodo is None:
-            raise exceptions.EstadoNodoNoEncontrado()
-        db_estado_nodo.nombre = estado_actualizado.nombre
-    db.commit()
-    db.refresh(db_estado_nodo)
-    return db_estado_nodo
-
-def eliminar_estado_nodo(db: Session, nombre: str) -> EstadoNodo:
-    db_estado_nodo = leer_estado_nodo(db, nombre)
-
-    if db_estado_nodo is None:
-            raise exceptions.EstadoNodoNoEncontrado()
-    db.delete(db_estado_nodo)
-    db.commit()
-    return db_estado_nodo
 def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
     mediciones_importadas = []
     

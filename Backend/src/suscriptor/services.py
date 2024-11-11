@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from src.nodo.schemas import MedicionCreate
 from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato
-from src.nodo.models import TipoDato, EstadoNodo
+from src.nodo.models import TipoDato
 
 def medicion_es_erronea(data: str, type_dt: TipoDato, time_dt: datetime) -> bool:
     # Intenta convertir data a un float
@@ -42,27 +42,24 @@ def procesar_mensaje(mensaje: str, db: Session) -> None:
     try:
         nodo_existente = leer_nodo(db, nodo_numero)
     except Exception as e:
+        print(f"Error al leer el nodo {nodo_numero}: {e}")
         return
     
-       # Verificar el estado del nodo
-    estado_nodo = db.query(EstadoNodo).filter(EstadoNodo.id == nodo_existente.estado_nodo_id).first()
-    if estado_nodo and estado_nodo.nombre == "Mantenimiento":
-        return  # Si el nodo está en "Mantenimiento", se ignora la medición
+    if nodo_existente.estado not in [1, 2]:
+        return  # Si el nodo no está activo (1) o inactivo (2), se ignora la medición
+
     
     time_dt = datetime.fromisoformat(mensaje_dict['time'])
-    tipo_str = mensaje_dict['type']  # Almacena el tipo de dato como una cadena
+    tipo_str = mensaje_dict['type']
     valor_data = mensaje_dict['data']
 
     es_erroneo = False  # Por defecto, la medición no es errónea
     try:
         type_dt = leer_tipo_dato(db, tipo_str)
-        # Validar la medición
         es_erroneo = medicion_es_erronea(valor_data, type_dt, time_dt)
     except Exception as e:
         es_erroneo = True
-        tipo_str = "Desconocido"
-
-
+        tipo_str = "DESCONOCIDO"
 
     medicion = MedicionCreate(
         tipo_dato_nombre=tipo_str,  # Se usa None si el tipo es erróneo
