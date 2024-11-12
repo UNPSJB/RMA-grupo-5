@@ -33,8 +33,14 @@ const Tables = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(15);
-  const [ordenamiento, setOrdenamiento] = useState("fecha"); // Nuevo estado para ordenamiento
-  const [ordenAscendente, setOrdenAscendente] = useState(true); // Estado para dirección de orden
+  const [ordenamiento, setOrdenamiento] = useState("fecha");
+  const [ordenAscendente, setOrdenAscendente] = useState(true);
+  const [umbralMin, setUmbralMin] = useState("");
+  const [umbralMax, setUmbralMax] = useState("");
+  const [showUmbrales, setShowUmbrales] = useState(false);
+  const [showFecha, setShowFecha] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+
 
   // Filtrar los datos por tipo y rango de fechas
   let filteredData;
@@ -224,7 +230,11 @@ const Tables = () => {
       // Filtrar también por tipo si es necesario
       const tipoValido = (tipoIdSeleccionado === null || dato.type === tipoIdSeleccionado);
       
-      return dentroRango && tipoValido;
+      const dentroUmbral =
+      (umbralMin ? dato.data >= umbralMin : true) &&
+      (umbralMax ? dato.data <= umbralMax : true);
+
+      return dentroRango && tipoValido && dentroUmbral;
     });
 
     // Ordenar según el criterio seleccionado y la dirección de orden
@@ -320,33 +330,42 @@ const Tables = () => {
   return (
     <>
       <Header />
-      <Container className="mt--9" fluid>
-      <Row className="mt-5 mb-3">
-          <Col xl="2">
-            <select
-              value={nodoSeleccionado}
-              onChange={(e) => {
-                setNodoSeleccionado(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="form-control"
-            >
-              {nodos.map((nodo, index) => (
-                <option key={index} value={nodo.numero}>
-                  Nodo {nodo.numero}
-                </option>
-              ))}
-            </select>
-          </Col>
-
-          <Col xl="2">
-            <select
-              value={tipoSeleccionado}
-              onChange={(e) => {setTipoSeleccionado(e.target.value); filtrar_datos(); setCurrentPage(1)}}
-              className="form-control"
-            >
-              <option value="">Tipo de Dato</option>
-              <option value="temp_t ">Temperatura</option>
+      <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
+        <Card className="shadow mb-4">
+          <CardHeader className="border-0">
+            {/* Título y Texto */}
+            <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado || "Todos"}</h3>
+            <p className="text-muted mt-2">Mostrando datos de más reciente a más antiguo.</p>
+            
+            {/* Selección de Nodo y Tipo de Dato */}
+            <Row className="align-items-center">
+              <Col xs="12" className="d-flex justify-content-start mt-2">
+                <select
+                  value={nodoSeleccionado}
+                  onChange={(e) => {
+                    setNodoSeleccionado(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="form-control mr-2"
+                >
+                  {nodos.map((nodo, index) => (
+                    <option key={index} value={nodo.numero}>
+                      Nodo {nodo.numero}
+                    </option>
+                  ))}
+                </select>
+  
+                <select
+                  value={tipoSeleccionado}
+                  onChange={(e) => {
+                    setTipoSeleccionado(e.target.value);
+                    filtrar_datos();
+                    setCurrentPage(1);
+                  }}
+                  className="form-control mr-2"
+                >
+                  <option value="">Tipo de Dato</option>
+                  <option value="temp_t ">Temperatura</option>
               
               <option value="temp2_t">Temperatura #2</option>
               <option value="humidity_t">Humedad Relativa</option>
@@ -386,111 +405,166 @@ const Tables = () => {
               <option value="energy2_t">Energía #2</option>
               <option value="weight_t">Peso</option>
               <option value="weight2_t">Peso #2</option>
+                </select>
+              </Col>
               
-            </select>
-          </Col>
-        </Row>
-        
-        <Row className="mb-3">
-          <Col xl="2">
-            <input
-              type="date"
-              className="form-control"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
-            />
-          </Col>
-          <Col xl="2">
-            <input
-              type="date"
-              className="form-control"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-            />
-          </Col>
-          {/* Campo para seleccionar la cantidad de datos a exportar */}
-          <Col xl="2">
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Cantidad a exportar"
-              value={cantidadExportar}
-              onChange={(e) => setCantidadExportar(e.target.value)}
-            />
-          </Col>
-          {/* Botón para exportar cantidad seleccionada */}
-          <Col xl="2">
-            <Button color="primary" onClick={exportSelectedToExcel}>
-              Exportar Cantidad
-            </Button>
-          </Col>
-          {/* Botón para exportar todos los datos */}
-          <Col xl="2">
-            <Button color="primary" onClick={exportAllToExcel}>
-              Exportar Todo
-            </Button>
-          </Col>
-          <Col xl="2">
-            <CustomFileInput onChange={importData} />
-          </Col>
-        </Row>
+              {/* Botones de Filtros, Exportación, Fecha, y Subir Archivo */}
+              <Col xs="12" className="d-flex justify-content-start mt-2">
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowUmbrales(!showUmbrales);
+                    setShowFecha(false);
+                    setShowExport(false);
+                  }}
+                  className="mr-2"
+                >
+                  Filtros de Umbrales
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowExport(!showExport);
+                    setShowUmbrales(false);
+                    setShowFecha(false);
+                  }}
+                  className="mr-2"
+                >
+                  Exportar Datos y Subir Archivo
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowFecha(!showFecha);
+                    setShowUmbrales(false);
+                    setShowExport(false);
+                  }}
+                  className="mr-2"
+                >
+                  Filtrar por Fecha
+                </Button>
+              </Col>
+            </Row>
+          </CardHeader>
+  
+            {/* Grupo de Filtros de Umbrales */}
+            {showUmbrales && (
+              <Row className="mb-4 ml-2 align-items-center">
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Umbral Mínimo</Label>
+                    <Input
+                      type="number"
+                      value={umbralMin}
+                      onChange={(e) => setUmbralMin(e.target.value)}
+                      placeholder="Valor mínimo"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Umbral Máximo</Label>
+                    <Input
+                      type="number"
+                      value={umbralMax}
+                      onChange={(e) => setUmbralMax(e.target.value)}
+                      placeholder="Valor máximo"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="2" className="d-flex align-items-end">
+                  <Button className="edit-button" onClick={filtrar_datos}>
+                    Aplicar Filtro
+                  </Button>
+                </Col>
+              </Row>
+            )}
 
-        <Row>
-          <div className="col">
-            <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado || "Todos"}</h3>
-                <p className="text-muted">
-                  Mostrando datos de más reciente a más antiguo.
-                </p>
-              </CardHeader>
-              <Table className="align-items-center table-flush" responsive>
-                <thead>
-                  <tr>
-                    <th scope="col">Nodo</th>
-                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-                      Tipo 
-                      {ordenamiento === "tipo" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                      Data 
-                      {ordenamiento === "data" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-                      Fecha-Hora 
-                      {ordenamiento === "fecha" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((medicion, index) => (
-                    <tr key={index}>
-                      <td>{medicion.nodo_numero}</td>
-                      <td>{obtenerNombreTipo(medicion.type)}</td>
-                      <td>
-                        {parseFloat(medicion.data).toFixed(2)}{" "}
-                        {obtenerUnidad(medicion.type)} 
-                      </td> 
-                      <td>
-                        {new Date(medicion.time).toLocaleString('es-AR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false 
-                        })}
-                      </td>
+  
+          {/* Grupo de Selección de Fechas */}
+          {showFecha && (
+            <Row className="mb-4 ml-2">
+              <Col md="3">
+                <FormGroup>
+                  <Label>Fecha Inicio</Label>
+                  <Input
+                    type="date"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Label>Fecha Fin</Label>
+                  <Input
+                    type="date"
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          )}
+  
+          {/* Grupo de Exportación */}
+          {showExport && (
+            <Row className="mb-4 ml-2 align-items-center">
+              <Col md="3">
+                <FormGroup>
+                  <Label>Cantidad a Exportar</Label>
+                  <Input
+                    type="number"
+                    value={cantidadExportar}
+                    onChange={(e) => setCantidadExportar(e.target.value)}
+                    placeholder="Cantidad a exportar"
+                  />
+                </FormGroup>
+              </Col>
+              <Col md="6" className="d-flex justify-content-start">
+                <Button className="edit-button mr-2" onClick={exportSelectedToExcel}>
+                  Exportar Cantidad
+                </Button>
+                <Button className="edit-button mr-2" onClick={exportAllToExcel}>
+                  Exportar Todo
+                </Button>
+                <CustomFileInput className="edit-button" onChange={importData} />
+              </Col>
+            </Row>
+          )}
+
+  
+          {/* Tabla de Datos */}
+          <Row>
+            <div className="col">
+              <Card className="shadow">
+                <Table className="align-items-center table-flush" responsive>
+                  <thead>
+                    <tr>
+                      <th scope="col">Nodo</th>
+                      <th scope="col" onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+                        Tipo {ordenamiento === "tipo" && (ordenAscendente ? "▲" : "▼")}
+                      </th>
+                      <th scope="col" onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                        Data {ordenamiento === "data" && (ordenAscendente ? "▲" : "▼")}
+                      </th>
+                      <th scope="col" onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                        Fecha-Hora {ordenamiento === "fecha" && (ordenAscendente ? "▲" : "▼")}
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {currentItems.map((medicion, index) => (
+                      <tr key={index}>
+                        <td>{medicion.nodo_numero}</td>
+                        <td>{obtenerNombreTipo(medicion.type)}</td>
+                        <td>{parseFloat(medicion.data).toFixed(2)} {obtenerUnidad(medicion.type)}</td>
+                        <td>{new Date(medicion.time).toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+
               {/* Paginación */}
               <div className="py-3">
                 <Pagination className="pagination justify-content-end mb-0">
@@ -550,10 +624,10 @@ const Tables = () => {
             </Card>
           </div>
         </Row>
-      </Container>
-    </>
+      </Card>
+    </Container>
+  </>
   );
 };
 
 export default Tables;
-
