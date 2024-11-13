@@ -22,6 +22,10 @@ def read_mediciones(db: Session = Depends(get_db)):
 def read_medicion(medicion_id: int, db: Session = Depends(get_db)):
     return services.leer_medicion(db, medicion_id)
 
+@router.get("/leer_ultima_medicion", response_model=schemas.Medicion)
+def read_ultimo_nodo(db: Session = Depends(get_db)):
+    return services.leer_ultima_medicion(db)
+
 @router.get("/<", response_model=schemas.Medicion)
 def read_ultimo_nodo(db: Session = Depends(get_db)):
     return services.leer_ultima_medicion(db)
