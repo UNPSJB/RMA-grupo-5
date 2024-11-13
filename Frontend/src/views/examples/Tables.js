@@ -528,7 +528,10 @@ const Tables = () => {
                 <Button className="edit-button mr-2" onClick={exportAllToExcel}>
                   Exportar Todo
                 </Button>
-                <CustomFileInput className="edit-button" onChange={importData} />
+                <Button className="edit-button mr-2">
+                  <CustomFileInput className="edit-button" onChange={importData} />
+                </Button>
+                
               </Col>
             </Row>
           )}

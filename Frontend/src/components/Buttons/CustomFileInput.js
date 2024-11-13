@@ -34,16 +34,13 @@ export function CustomFileInput({ onChange, accept = "text/csv, application/json
 
 
     return (
-        <div className={"container"}>
-          <div
-            className={styles.dropZone}
-            onDragOver={handleDragOver}
-            onDrop={handleFileDrop}
-            onClick={handleImageUploadClick}
+        <div
+          className={styles.dropZone}
+          onDragOver={handleDragOver}
+          onDrop={handleFileDrop}
+          onClick={handleImageUploadClick}
           >
-            <Button color="primary"> 
                 Subir archivo
-            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -51,7 +48,7 @@ export function CustomFileInput({ onChange, accept = "text/csv, application/json
               style={{ display: "none" }}
               onChange={updateFile}
             />
-          </div>
+
         </div>
     );
 
