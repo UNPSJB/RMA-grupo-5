@@ -80,6 +80,9 @@ const GestionNodo = () => {
   return (
     <>
       <Header />
+      <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
         <Card className="shadow mb-4">
           <CardHeader className="border-0">

@@ -408,11 +408,6 @@ const Tables = () => {
                     />
                   </FormGroup>
                 </Col>
-                <Col md="2" className="d-flex align-items-end">
-                  <Button className="edit-button" onClick={filtrar_datos}>
-                    Aplicar Filtro
-                  </Button>
-                </Col>
               </Row>
             )}
 
