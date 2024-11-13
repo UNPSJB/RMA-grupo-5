@@ -93,7 +93,7 @@ const Sidebar = (props) => {
       <Container fluid>
         {/* Toggler */}
         <button
-          className="navbar-toggler"
+          className="navbar-toggler "
           type="button"
           onClick={toggleCollapse}
         >

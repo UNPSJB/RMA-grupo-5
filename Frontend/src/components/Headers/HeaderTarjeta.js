@@ -24,7 +24,7 @@ const Header = ({ title, subtitle }) => {
       // Ejecutar la solicitud cada cierto tiempo
       const intervalId = setInterval(() => {
         fetchUltimaMedicion();
-      }, 1000); // 1 seg
+      }, 5000); // 1 seg
   
       // Limpiar el intervalo cuando el componente se desmonte
       return () => clearInterval(intervalId);
@@ -132,17 +132,11 @@ const Header = ({ title, subtitle }) => {
   
     return (
         <>
-            <div className="header bg-gradient-info pb-150 pt-7 d-flex flex-column align-items-center">
-                <h1 className="header-title" style={{ color: 'white', textAlign: 'center' }}>
-                    {title}
-                </h1>
-                <p className="header-subtitle" style={{ color: 'white', textAlign: 'center' }}>
-                    {subtitle}
-                </p> 
+            <div className="header bg-gradient-info pb-2  pt-7 "> 
                 <Container fluid className="d-flex justify-content-center">
-                    <div className="header-body">
+                    <div className="header-body" >
                         <Row className="justify-content-center">
-                            <Col lg="6" xl="10" className="d-flex justify-content-center">
+                            <Col lg="6" xl="10" className="d-flex justify-content-center "  >
                                 <Card className="card-stats mb-1" style={{ height: '85px', width: '950px' }}> 
                                     <CardBody className="d-flex align-items-center" style={{ padding: '4px' }}>
                                         <Row className="w-100">

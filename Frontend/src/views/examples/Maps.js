@@ -178,7 +178,7 @@ const MapWrapper = () => {
       maxZoom={14}
       maxBounds={bounds}
       maxBoundsViscosity={1.0}
-      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
+      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc", padding: '100px' }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -262,7 +262,7 @@ const Maps = () => {
   return (
     <>
       <Header />
-      <Container className="mt--7" fluid>
+      <Container className="mt--7" fluid style={{ padding: '130px' }}>
         <Row>
           <Col lg="12">
             <Card

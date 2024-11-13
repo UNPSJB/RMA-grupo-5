@@ -338,7 +338,7 @@ const Index = (props) => {
   return (
     <>
       <Header />
-      <Container className="mt--9" fluid>
+      <Container className="mt--9" fluid style={{padding: '135px'}} >
         
         <Row className="mt-5 mb-3">
           <Col xl="2">
@@ -654,7 +654,7 @@ const Index = (props) => {
             </div>
             </ModalBody>
           </Modal>
-          {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE*/}
+          {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE
           <Row className="mt-5">
             <Col>
               <h2>Valores de Nodos (Data)</h2>
@@ -671,7 +671,7 @@ const Index = (props) => {
               <h2>Datos JSON:</h2>
               <pre>{JSON.stringify(medicionesDiarias, null, 2)}</pre>
             </div>
-          </Row>
+          </Row>*/}
         </Container>
     </>
   );
