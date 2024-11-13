@@ -16,6 +16,13 @@ from src.suscriptor.config import config
 from src.suscriptor.services import procesar_mensaje
 from src import config_cors
 
+#para autentificacion a traves de la utilizacion de un token
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from typing import Annotated
+from fastapi.exceptions import HTTPException
+import jwt
+import time
+
 load_dotenv()
 
 TOPIC = os.getenv("MQTT_TOPIC")
@@ -25,12 +32,58 @@ ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}")
 # FastAPI configuration
 app = FastAPI(root_path=ROOT_PATH)
 
+SECRET_KEY = "your_secret_key"
+ALGORITHM = "HS256"
+
+
 # Configuracion de CORS
 config_cors.add_cors(app)
 
 # Asociar los routers a nuestra app
 app.include_router(example_router)
- 
+
+# esta dependencia nos genera un token
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# Usuarios simulados en un diccionario
+users = {
+    "user1": {"username": "yami", "password": "123"},
+    "user2": {"username": "user2", "password": "user2"},
+}
+
+# Generar el token con una expiración
+def encode_token(payload: dict) -> str:
+    payload["exp"] = time.time() + 600  # El token expira en 10 minutos
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+# Decodificar el token para obtener el usuario
+def decode_token(token: Annotated[str, Depends(oauth2_scheme)]) -> dict:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("username")
+        user = users.get(username)
+        if not user:
+            raise HTTPException(status_code=401, detail="Usuario no autorizado")
+        return user
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expirado")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+@app.post("/token")
+def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    user = users.get(form_data.username)
+    if not user or user["password"] != form_data.password:
+        raise HTTPException(status_code=400, detail="Usuario o contraseña incorrectos")
+    token = encode_token({"username": user["username"]})
+    return {"access_token": token, "token_type": "bearer"}
+
+# Endpoint protegido para obtener datos del usuario
+@app.get("/users/profile")
+def profile(my_user: Annotated[dict, Depends(decode_token)]):
+    return my_user
+
+
 def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
 
