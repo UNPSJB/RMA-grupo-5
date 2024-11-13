@@ -99,7 +99,7 @@ const ModificarNodo = () => {
             </div>
 
             <div>
-              <label className="label-style">Longitud (eje x):</label>
+              <label className="label-style">Latitud (eje y):</label>
               <input
                 type="text"
                 className="input-style"
@@ -110,7 +110,7 @@ const ModificarNodo = () => {
             </div>
 
             <div>
-              <label className="label-style">Latitud (eje y):</label>
+              <label className="label-style">Longitud (eje x):</label>
               <input
                 type="text"
                 className="input-style"
