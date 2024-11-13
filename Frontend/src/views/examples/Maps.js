@@ -5,7 +5,7 @@ import L from "leaflet";
 import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
-import Header from "components/Headers/Header.js";
+import Header from "components/Headers/HeaderTarjeta.js";
 
 // Eliminar el icono por defecto
 delete L.Icon.Default.prototype._getIconUrl;
