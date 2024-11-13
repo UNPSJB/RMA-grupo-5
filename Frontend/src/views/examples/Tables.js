@@ -16,25 +16,32 @@ import {
   PaginationLink,
   Button,
 } from "reactstrap";
-import * as XLSX from "xlsx"; // Importar la librería XLSX
+import * as XLSX from "xlsx";
 import Header from "components/Headers/Header.js";
 import { CustomFileInput } from "components/Buttons/CustomFileInput";
+import { useLocation } from "react-router-dom";
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
   const [medicionData, setMedicionData] = useState([]);
   const [nodoSeleccionado, setNodoSeleccionado] = useState(0);
-  const [tipoSeleccionado, setTipoSeleccionado] = useState("");
-  const [tipoIdSeleccionado, setTipoIdSeleccionado] = useState(null);
+  const [tipoSeleccionado, setTipoSeleccionado] = useState(1);;
+  const [tiposDatos, setTiposDatos] = useState([]);
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
   const [cantidadExportar, setCantidadExportar] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(15);
-  const [ordenamiento, setOrdenamiento] = useState("fecha"); // Nuevo estado para ordenamiento
-  const [ordenAscendente, setOrdenAscendente] = useState(true); // Estado para dirección de orden
+  const [itemsPerPage] = useState(20);
+  const [ordenamiento, setOrdenamiento] = useState("fecha");
+  const [ordenAscendente, setOrdenAscendente] = useState(true);
+  const [umbralMin, setUmbralMin] = useState("");
+  const [umbralMax, setUmbralMax] = useState("");
+  const [showUmbrales, setShowUmbrales] = useState(false);
+  const [showFecha, setShowFecha] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const location = useLocation();
 
   // Filtrar los datos por tipo y rango de fechas
   let filteredData;
@@ -46,6 +53,12 @@ const Tables = () => {
   let totalPages;
   
 
+  useEffect(() => {
+    if (location.state && location.state.selectedNode !== undefined) {
+      setNodoSeleccionado(location.state.selectedNode);
+    }
+  }, [location.state]);
+  
   // Carga de nodos
   useEffect(() => {
     const getNodos = async () => {
@@ -58,9 +71,9 @@ const Tables = () => {
         const data = await response.json();
         setNodos(data);
 
-        // Establecer el nodo por defecto si hay nodos disponibles
-        if (data.length > 0) {
-          setNodoSeleccionado(data[0].numero); // Establece el primer nodo como seleccionado
+        // Solo establecer el nodo por defecto si no hay un nodo seleccionado
+        if (data.length > 0 && nodoSeleccionado === null) {
+          setNodoSeleccionado(data[0].numero); // Establece el primer nodo como seleccionado solo si nodoSeleccionado es null
         }
       } catch (error) {
         console.error("Error cargando los nodos", error);
@@ -70,190 +83,145 @@ const Tables = () => {
       }
     };
     getNodos();
-  }, []);
-
-  // Carga de mediciones según el nodo seleccionado
-  useEffect(() => {
-    const getMedicionData = async () => {
-      if (nodoSeleccionado !== null) {
-        setLoading(true);
-        try {
-          const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
-          if (!response.ok) {
-            throw new Error("Error al hacer el fetch de mediciones");
-          }
-          const data = await response.json();
-          setMedicionData(data);
-        } catch (error) {
-          console.error("Error cargando los datos", error);
-          setError(error);
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    // Llamar a getMedicionData al montar el componente o cuando nodoSeleccionado cambie
-    getMedicionData();
   }, [nodoSeleccionado]);
 
 
-  const unidadesMedida = {
-    1: "°C",       // Grados Celsius para temperatura
-    2: "°C",       // Grados Celsius para temperatura 2
-    3: "%",        // Porcentaje para humedad
-    4: "hPa",      // Hectopascales para presión
-    5: "Luz",
-    6: "%",       // Humedad del suelo
-    7: "%",       // Humedad del suelo 2
-    8: "Ω.m2/m",       //Ohmios Resistencia del suelo
-    9:"Ω.m2/m",        //Ohmios Resistencia del suelo 2
-    10: "%",        //Porcentaje para el oxígeno
-    11: "ppm", //Partes por millón (ppm) (Dióxido de Carbono)
-    12: "m/s",  // Metros por segundo (Velocidad del Viento)
-    13: "°",    // Grados (Dirección del Viento)
-    14: "mm",   // Milímetros (Precipitación)
-    15: "",     // Sin unidad específica (Movimiento)
-    16: "V",    // Voltios (Voltaje)
-    17: "V",    // Voltios (Voltaje #2)
-    18: "A",    // Amperios (Corriente)
-    19: "A",    // Amperios (Corriente #2)
-    20: "",     // Sin unidad específica (Iteraciones)
-    21: "°",    // Grados (Latitud GPS)
-    22: "°",    // Grados (Longitud GPS)
-    23: "m",    // Metros (Altitud GPS)
-    24: "",     // Sin unidad específica (HDOP GPS)
-    25: "m",    // Metros (Nivel de Fluido)
-    26: "Índice UV",  // Índice UV (Radiación UV)
-    27: "µg/m³",      // Microgramos por metro cúbico (Partículas 1)
-    28: "µg/m³",      // Microgramos por metro cúbico (Partículas 2.5)
-    29: "µg/m³",      // Microgramos por metro cúbico (Partículas 10)
-    30: "W",    // Vatios (Potencia)
-    31: "W",    // Vatios (Potencia #2)
-    32: "Wh",   // Vatios-hora (Energía)
-    33: "Wh",   // Vatios-hora (Energía #2)
-    34: "kg",   // Kilogramos (Peso)
-    35: "kg"    // Kilogramos (Peso #2)
-    
-    
-  };
-  const obtenerUnidad = (tipo) => {
-    // Si el tipo existe devuelve la unidad, sino, devuelve una cadena vacía.
-    return unidadesMedida[tipo] || "";
-  };
-
-  const nombreTipo = {
-    1: "Temperatura",
-    2: "Temperatura",       
-    3: "Humedad",        
-    4: "Presión atmosférica",
-    5: "Luz",  
-    6: "Humedad del suelo",  
-    7: "Humedad del suelo 2",
-    8: "Resistencia del suelo",
-    9: "Resistencia del suelo 2",
-    10: "Oxígeno",
-    11: "Dióxido de Carbono",
-    12: "Velocidad del viento",
-    13: "Dirección del Viento",
-    14: "Precipitación",
-    15: "Movimiento",
-    16: "Voltaje",
-    17: "Voltaje #2",
-    18: "Corriente",
-    19: "Corriente #2",
-    20: "Iteraciones",
-    21: "Latitud GPS",
-    22: "Longitud GPS",
-    23: "Altura del Agua",
-    24: "HDOP GPS (Dilución Horizontal de Precisión)",
-    25: "Nivel de Fluido",
-    26: "Radiación UV",
-    27: "Partículas 1",
-    28: "Partículas 2.5",
-    29: "Partículas 10",
-    30: "Potencia",
-    31: "Potencia #2",
-    32: "Energía",
-    33: "Energía #2",
-    34: "Peso",
-    35: "Peso #2"         
-  };
-  const obtenerNombreTipo = (data) => {
-    return nombreTipo[data] || "";
-  };
-
   useEffect(() => {
-    const getTipoDato = async () => {
-      if (tipoSeleccionado) {
-        try {
-          const response = await fetch(`http://localhost:8000/tipo_dato/${tipoSeleccionado}`);
-          if (!response.ok) {
-            throw new Error("Error al hacer el fetch de mediciones");
-          }
-          const data = await response.json();
-          console.log(`el tipo es ${data.tipo}`)
-          setTipoIdSeleccionado(data.tipo);
-        } catch (error) {
-          console.error("Error cargando los datos", error);
-          setError(error);
-        } 
-      }else{
-        setTipoIdSeleccionado(null);
+    if (nodoSeleccionado !== null && nodoSeleccionado !== undefined) {
+        const getMedicionData = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+                if (!response.ok) {
+                    throw new Error("Error al hacer el fetch de mediciones");
+                }
+                const data = await response.json();
+                setMedicionData(data);
+            } catch (error) {
+                console.error("Error cargando los datos", error);
+                setError(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getMedicionData();
+    }
+}, [nodoSeleccionado]);
+
+  
+  useEffect(() => {
+    const getTiposDatos = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/leer_tipos_datos");
+        if (!response.ok) {
+          throw new Error("Error al obtener los tipos de datos");
+        }
+        const data = await response.json();
+        const tiposValidos = data.filter(tipo => tipo.nombre !== 'DESCONOCIDO');
+        
+        setTiposDatos(tiposValidos);
+      } catch (error) {
+        console.error("Error cargando los tipos de datos", error);
+        setError(error);
       }
-      
     };
+  
+    getTiposDatos();
+  }, []);
+  
+  // Traducir los nombres de los tipos para mostrarlos
+  const tipoDatoMap = {
+    "TEMP_T": "Temperatura",
+    "TEMP2_T": "Temperatura #2",
+    "HUMIDITY_T": "Humedad Relativa",
+    "PRESSURE_T": "Presión Atmosférica",
+    "LIGHT_T": "Luz (lux)",
+    "SOIL_T": "Humedad del Suelo",
+    "SOIL2_T": "Humedad del Suelo #2",
+    "SOILR_T": "Resistencia del Suelo",
+    "SOILR2_T": "Resistencia del Suelo #2",
+    "OXYGEN_T": "Oxígeno",
+    "CO2_T": "Dióxido de Carbono",
+    "WINDSPD_T": "Velocidad del Viento",
+    "WINDHDG_T": "Dirección del Viento",
+    "RAINFALL_T": "Precipitación",
+    "MOTION_T": "Movimiento",
+    "VOLTAGE_T": "Voltaje",
+    "VOLTAGE2_T": "Voltaje #2",
+    "CURRENT_T": "Corriente",
+    "CURRENT2_T": "Corriente #2",
+    "IT_T": "Iteraciones",
+    "LATITUDE_T": "Latitud GPS",
+    "LONGITUDE_T": "Longitud GPS",
+    "ALTITUDE_T": "Altitud GPS",
+    "HDOP_T": "HDOP GPS",
+    "LEVEL_T": "Nivel de Fluido",
+    "UV_T": "UV",
+    "PM1_T": "Partículas PM1",
+    "PM2_5_T": "Partículas PM2.5",
+    "PM10_T": "Partículas PM10",
+    "POWER_T": "Potencia",
+    "POWER2_T": "Potencia #2",
+    "ENERGY_T": "Energía",
+    "ENERGY2_T": "Energía #2",
+    "WEIGHT_T": "Peso",
+    "WEIGHT2_T": "Peso #2",
+  };
 
-    // Llamar a getMedicionData al montar el componente o cuando nodoSeleccionado cambie
-    getTipoDato();
-  }, [tipoSeleccionado]);
-
-  // Filtrar datos según el criterio seleccionado
   const filtrar_datos = () => {
-    const fechaInicioDate = fechaInicio ? new Date(`${fechaInicio}T00:00:00`) : null; // Inicio del día
-    const fechaFinDate = fechaFin ? new Date(`${fechaFin}T23:59:59`) : null; // Fin del día
+    const fechaInicioDate = fechaInicio ? new Date(`${fechaInicio}T00:00:00`) : null;
+    const fechaFinDate = fechaFin ? new Date(`${fechaFin}T23:59:59`) : null;
   
     // Filtrar los datos por tipo y rango de fechas
     filteredData = medicionData.filter((dato) => {
       const fechaMedicion = new Date(dato.time);
   
-      const dentroRango = 
-        (fechaInicioDate ? fechaMedicion >= fechaInicioDate : true) && 
+      const dentroRangoFecha =
+        (fechaInicioDate ? fechaMedicion >= fechaInicioDate : true) &&
         (fechaFinDate ? fechaMedicion <= fechaFinDate : true);
   
-      // Filtrar también por tipo si es necesario
-      const tipoValido = (tipoIdSeleccionado === null || dato.type === tipoIdSeleccionado);
-      
-      return dentroRango && tipoValido;
-    });
+      const tipoValido = tipoSeleccionado
+        ? dato.tipo_dato_id === parseInt(tipoSeleccionado)
+        : true;
 
+      // Asegurarse de que los umbrales son numeros antes de comparar
+      const umbralMinValue = parseFloat(umbralMin) || -Infinity;
+      const umbralMaxValue = parseFloat(umbralMax) || Infinity;
+
+      const dentroUmbral =
+        dato.data >= umbralMinValue && dato.data <= umbralMaxValue;
+
+      return dentroRangoFecha && tipoValido && dentroUmbral;
+    });
+  
     // Ordenar según el criterio seleccionado y la dirección de orden
     sortedMedicionData = [...filteredData].sort((a, b) => {
       let comparison = 0;
       switch (ordenamiento) {
         case "tipo":
-          comparison = a.type - b.type; 
+          comparison = a.tipo_dato_id - b.tipo_dato_id;
           break;
         case "data":
-          comparison = a.data - b.data; 
+          comparison = a.data - b.data;
           break;
         case "fecha":
         default:
-          comparison = new Date(a.time) - new Date(b.time); 
+          comparison = new Date(a.time) - new Date(b.time);
           break;
       }
-      return ordenAscendente ? comparison : -comparison; // Invertir el resultado si es descendente
+      return ordenAscendente ? comparison : -comparison;
     });
-
+  
     // Lógica de paginación
     indexOfLastItem = currentPage * itemsPerPage;
     indexOfFirstItem = indexOfLastItem - itemsPerPage;
     currentItems = sortedMedicionData.slice(indexOfFirstItem, indexOfLastItem);
     totalPages = Math.ceil(sortedMedicionData.length / itemsPerPage);
   };
-
+  
   filtrar_datos();
- 
+
   async function importData(e) {
     const files = Array.from(e.target.files);
     console.log("files:", files[0]);
@@ -279,17 +247,22 @@ const Tables = () => {
       setError(error);
     }
   }
-  
 
   // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
     const ws = XLSX.utils.json_to_sheet(
-      sortedMedicionData.map((dato) => ({
-        Nodo: dato.nodo_numero,
-        Tipo: dato.type,
-        Data: dato.data,
-        "Fecha-Hora": new Date(dato.time).toLocaleString(),
-      }))
+      sortedMedicionData.map((dato) => {
+        // Buscar el tipo de dato por el id
+        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
+        const tipoNombre = tipoDatoMap[tipo.nombre];    
+        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;
+        return {
+          Nodo: dato.nodo_numero,
+          Tipo: tipoNombre,
+          Data: dataConUnidad,
+          "Fecha-Hora": new Date(dato.time).toLocaleString(),
+        };
+      })
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
@@ -301,12 +274,18 @@ const Tables = () => {
     const cantidad = parseInt(cantidadExportar) || sortedMedicionData.length; // Determinar cantidad a exportar
     const dataToExport = sortedMedicionData.slice(0, cantidad); // Obtener la cantidad seleccionada
     const ws = XLSX.utils.json_to_sheet(
-      dataToExport.map((dato) => ({
-        Nodo: dato.nodo_numero,
-        Tipo: dato.type,
-        Data: dato.data,
-        "Fecha-Hora": new Date(dato.time).toLocaleString(),
-      }))
+      dataToExport.map((dato) => {
+        // Buscar el tipo de dato por el id
+        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
+        const tipoNombre = tipoDatoMap[tipo.nombre];     
+        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;   
+        return {
+          Nodo: dato.nodo_numero,
+          Tipo: tipoNombre,
+          Data: dataConUnidad,
+          "Fecha-Hora": new Date(dato.time).toLocaleString(),
+        };
+      })
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
@@ -320,130 +299,184 @@ const Tables = () => {
   return (
     <>
       <Header />
-      <Container className="mt--9" fluid>
-      <Row className="mt-5 mb-3">
-          <Col xl="2">
-            <select
-              value={nodoSeleccionado}
-              onChange={(e) => {
-                setNodoSeleccionado(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="form-control"
-            >
-              {nodos.map((nodo, index) => (
-                <option key={index} value={nodo.numero}>
-                  Nodo {nodo.numero}
-                </option>
-              ))}
-            </select>
-          </Col>
+      <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
+        <Card className="shadow mb-4">
+          <CardHeader className="border-0">
+            {/* Título y Texto */}
+            <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado}</h3>
+            <p className="text-muted mt-2">Mostrando datos de más reciente a más antiguo.</p>
+            
+            {/* Selección de Nodo y Tipo de Dato */}
+            <Row className="align-items-center">
+              <Col xs="12" className="d-flex justify-content-start mt-2">
+                <select
+                  value={nodoSeleccionado}
+                  onChange={(e) => {
+                    setNodoSeleccionado(e.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="form-control mr-2"
+                >
+                  {nodos.map((nodo, index) => (
+                    <option key={index} value={nodo.numero}>
+                      Nodo {nodo.numero}
+                    </option>
+                  ))}
+                </select>
+  
+                <select
+                  value={tipoSeleccionado}
+                  onChange={(e) => { 
+                    setTipoSeleccionado(e.target.value); 
+                    setCurrentPage(1);
+                  }}
+                  className="form-control mr-2"
+                >
+                  <option value="">Tipo de Dato</option>
+                  {tiposDatos.map((tipo, index) => {
+                    const tipoTraducido = tipo && tipoDatoMap[tipo.nombre] ? tipoDatoMap[tipo.nombre] : (tipo ? tipo.nombre : "Sin tipo");
+                    return (
+                      <option key={index} value={tipo.id}>
+                        {tipoTraducido}
+                      </option>
+                    );
+                  })}
+                </select>
+              </Col>
+              
+              {/* Botones de Filtros, Exportación, Fecha, y Subir Archivo */}
+              <Col xs="12" className="d-flex justify-content-start mt-2">
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowUmbrales(!showUmbrales);
+                    setShowFecha(false);
+                    setShowExport(false);
+                  }}
+                  className="mr-2"
+                >
+                  Filtros de Umbrales
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowExport(!showExport);
+                    setShowUmbrales(false);
+                    setShowFecha(false);
+                  }}
+                  className="mr-2"
+                >
+                  Exportar Datos y Subir Archivo
+                </Button>
+                <Button
+                  color="secondary"
+                  onClick={() => {
+                    setShowFecha(!showFecha);
+                    setShowUmbrales(false);
+                    setShowExport(false);
+                  }}
+                  className="mr-2"
+                >
+                  Filtrar por Fecha
+                </Button>
+              </Col>
+            </Row>
+          </CardHeader>
+  
+            {/* Grupo de Filtros de Umbrales */}
+            {showUmbrales && (
+              <Row className="mb-4 ml-2 align-items-center">
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Umbral Mínimo</Label>
+                    <Input
+                      type="number"
+                      value={umbralMin}
+                      onChange={(e) => setUmbralMin(e.target.value)}
+                      placeholder="Valor mínimo"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Umbral Máximo</Label>
+                    <Input
+                      type="number"
+                      value={umbralMax}
+                      onChange={(e) => setUmbralMax(e.target.value)}
+                      placeholder="Valor máximo"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="2" className="d-flex align-items-end">
+                  <Button className="edit-button" onClick={filtrar_datos}>
+                    Aplicar Filtro
+                  </Button>
+                </Col>
+              </Row>
+            )}
 
-          <Col xl="2">
-            <select
-              value={tipoSeleccionado}
-              onChange={(e) => {setTipoSeleccionado(e.target.value); filtrar_datos(); setCurrentPage(1)}}
-              className="form-control"
-            >
-              <option value="">Tipo de Dato</option>
-              <option value="temp_t ">Temperatura</option>
-              
-              <option value="temp2_t">Temperatura #2</option>
-              <option value="humidity_t">Humedad Relativa</option>
-              <option value="pressure_t">Presión Atmosférica</option>
-              <option value="light_t">Luz (lux)</option>
-              <option value="soil_t">Humedad del Suelo</option>
-              <option value="soil2_t">Humedad del Suelo #2</option>
-              <option value="soilr_t">Resistencia del Suelo</option>
-              <option value="soilr2_t">Resistencia del Suelo #2</option>
-              <option value="oxygen_t">Oxígeno</option>
-              <option value="co2_t">Dióxido de Carbono</option>
-              <option value="windspd_t">Velocidad del Viento</option>
-              <option value="windhdg_t">Dirección del Viento</option>
-              <option value="rainfall_t">Precipitación</option>
-              <option value="motion_t">Movimiento</option>
-              
-              <option value="voltage_t">Voltaje Batería</option>
-              
-              <option value="voltage2_t">Voltaje #2</option>
-              <option value="current_t">Corriente</option>
-              <option value="current2_t">Corriente #2</option>
-              <option value="it_t">Iteraciones</option>
-              <option value="latitude_t">Latitud GPS</option>
-              <option value="longitude_t">Longitud GPS</option>
-              
-              <option value="altitude_t">Altura del Agua</option>
-              
-              <option value="hdop_t">HDOP GPS (Horizontal Dilution of Precision)</option>
-              <option value="level_t">Nivel de Fluido</option>
-              <option value="uv_t">Radiación UV</option>
-              <option value="pm1_t">Partículas 1</option>
-              <option value="pm2_5_t">Partículas 2.5</option>
-              <option value="pm10_t">Partículas 10</option>
-              <option value="power_t">Potencia</option>
-              <option value="power2_t">Potencia #2</option>
-              <option value="energy_t">Energía</option>
-              <option value="energy2_t">Energía #2</option>
-              <option value="weight_t">Peso</option>
-              <option value="weight2_t">Peso #2</option>
-              
-            </select>
-          </Col>
-        </Row>
-        
-        <Row className="mb-3">
-          <Col xl="2">
-            <input
-              type="date"
-              className="form-control"
-              value={fechaInicio}
-              onChange={(e) => setFechaInicio(e.target.value)}
-            />
-          </Col>
-          <Col xl="2">
-            <input
-              type="date"
-              className="form-control"
-              value={fechaFin}
-              onChange={(e) => setFechaFin(e.target.value)}
-            />
-          </Col>
-          {/* Campo para seleccionar la cantidad de datos a exportar */}
-          <Col xl="2">
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Cantidad a exportar"
-              value={cantidadExportar}
-              onChange={(e) => setCantidadExportar(e.target.value)}
-            />
-          </Col>
-          {/* Botón para exportar cantidad seleccionada */}
-          <Col xl="2">
-            <Button color="primary" onClick={exportSelectedToExcel}>
-              Exportar Cantidad
-            </Button>
-          </Col>
-          {/* Botón para exportar todos los datos */}
-          <Col xl="2">
-            <Button color="primary" onClick={exportAllToExcel}>
-              Exportar Todo
-            </Button>
-          </Col>
-          <Col xl="2">
-            <CustomFileInput onChange={importData} />
-          </Col>
-        </Row>
+  
+          {/* Grupo de Selección de Fechas */}
+          {showFecha && (
+            <Row className="mb-4 ml-2">
+              <Col md="3">
+                <FormGroup>
+                  <Label>Fecha Inicio</Label>
+                  <Input
+                    type="date"
+                    value={fechaInicio}
+                    onChange={(e) => setFechaInicio(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Label>Fecha Fin</Label>
+                  <Input
+                    type="date"
+                    value={fechaFin}
+                    onChange={(e) => setFechaFin(e.target.value)}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          )}
+  
+          {/* Grupo de Exportación */}
+          {showExport && (
+            <Row className="mb-4 ml-2 align-items-center">
+              <Col md="3">
+                <FormGroup>
+                  <Label>Cantidad a Exportar</Label>
+                  <Input
+                    type="number"
+                    value={cantidadExportar}
+                    onChange={(e) => setCantidadExportar(e.target.value)}
+                    placeholder="Cantidad a exportar"
+                  />
+                </FormGroup>
+              </Col>
+              <Col md="6" className="d-flex justify-content-start">
+                <Button className="edit-button mr-2" onClick={exportSelectedToExcel}>
+                  Exportar Cantidad
+                </Button>
+                <Button className="edit-button mr-2" onClick={exportAllToExcel}>
+                  Exportar Todo
+                </Button>
+                <Button className="edit-button mr-2">
+                  <CustomFileInput className="edit-button" onChange={importData} />
+                </Button>
+                
+              </Col>
+            </Row>
+          )}
 
-        <Row>
+  
+          {/* Tabla de Datos */}
+          <Row>
           <div className="col">
             <Card className="shadow">
-              <CardHeader className="border-0">
-                <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado || "Todos"}</h3>
-                <p className="text-muted">
-                  Mostrando datos de más reciente a más antiguo.
-                </p>
-              </CardHeader>
               <Table className="align-items-center table-flush" responsive>
                 <thead>
                   <tr>
@@ -455,7 +488,7 @@ const Tables = () => {
                       )}
                     </th>
                     <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                      Data 
+                      Valor 
                       {ordenamiento === "data" && (
                         <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
                       )}
@@ -469,27 +502,35 @@ const Tables = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentItems.map((medicion, index) => (
-                    <tr key={index}>
-                      <td>{medicion.nodo_numero}</td>
-                      <td>{obtenerNombreTipo(medicion.type)}</td>
-                      <td>
-                        {parseFloat(medicion.data).toFixed(2)}{" "}
-                        {obtenerUnidad(medicion.type)} 
-                      </td> 
-                      <td>
-                        {new Date(medicion.time).toLocaleString('es-AR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          hour12: false 
-                        })}
-                      </td>
-                    </tr>
-                  ))}
+                  {currentItems.map((medicion, index) => {
+                    // Encuentra el tipo de dato que coincide con el tipo de medición
+                    const tipoDato = tiposDatos.find(
+                      (tipo) => tipo.id === medicion.tipo_dato_id
+                    );
+
+                    return (
+                      <tr key={index}>
+                        <td>{medicion.nodo_numero}</td>
+                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
+                        <td>
+                          {parseFloat(medicion.data).toFixed(2)}{" "}
+                          {tipoDato ? tipoDato.unidad : ""}
+                        </td>
+                        <td>
+                          {new Date(medicion.time).toLocaleString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
+
               </Table>
               {/* Paginación */}
               <div className="py-3">
@@ -550,8 +591,9 @@ const Tables = () => {
             </Card>
           </div>
         </Row>
-      </Container>
-    </>
+      </Card>
+    </Container>
+  </>
   );
 };
 
