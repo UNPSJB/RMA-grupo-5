@@ -192,7 +192,6 @@ const MapWrapper = () => {
         opacity={0.5} // Opacidad del borde
         fillColor="slategray" // Color de relleno
         fillOpacity={0.3} // Opacidad del relleno
-        //dashArray="5,10" // Estilo de línea discontinua
         lineCap="round" // Forma de los extremos de la línea
         lineJoin="round" // Unión de las líneas
       
@@ -203,9 +202,7 @@ const MapWrapper = () => {
 
       {/* Configuracion del icono para que muestre el nro de nodo*/}
       {nodos.map((nodo) => {
-        // Define el color del ícono en función del estado del nodo
-        const colorEstado = nodo.estado === 1 
-          ? "green" // Verde para nodos activos
+        const colorEstado = nodo.estado === 1 ? "green" // Verde para nodos activos
           : nodo.estado === 2 
           ? "red" // Rojo para nodos inactivos
           : "orange"; // Naranja para mantenimiento
@@ -231,24 +228,24 @@ const MapWrapper = () => {
           <Marker
             key={nodo.numero}
             position={[nodo.longitud, nodo.latitud]}
-            // Agregar el icono nuevo
+
             icon={customIcon}
           >
             <Popup>
-                <div style={{ textAlign: "center" }}>
+              <div style={{ textAlign: "center" }}>
                 <b>Nodo: {nodo.numero}</b> <br />
                 "{nodo.nombre}" <br />
-                </div>
-                
-                <b>Latitud:</b> {parseFloat(nodo.latitud).toFixed(4)} <br />
-                <b>Longitud:</b> {parseFloat(nodo.longitud).toFixed(4)} <br />
-                <br />
-                <button
-                  type="submit" className="button-style"
-                  onClick={() => navigate("/admin/tables")}
-                >
-                  Ver Detalle
-                </button>
+              </div>
+              <b>Latitud:</b> {parseFloat(nodo.latitud).toFixed(4)} <br />
+              <b>Longitud:</b> {parseFloat(nodo.longitud).toFixed(4)} <br />
+              <br />
+              <button
+                type="submit"
+                className="button-style"
+                onClick={() => navigate("/admin/tables", { state: { selectedNode: nodo.numero } })}
+              >
+                Ver Detalle
+              </button>
             </Popup>
           </Marker>
         );
