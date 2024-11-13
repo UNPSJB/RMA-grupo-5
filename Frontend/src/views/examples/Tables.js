@@ -298,7 +298,7 @@ const Tables = () => {
   
   return (
     <>
-      <Header />
+    <Header />
       <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
         <Card className="shadow mb-4">
           <CardHeader className="border-0">
@@ -308,7 +308,7 @@ const Tables = () => {
             
             {/* Selección de Nodo y Tipo de Dato */}
             <Row className="align-items-center">
-              <Col xs="12" className="d-flex justify-content-start mt-2">
+              <Col xs="12" className="d-flex justify-content-start">
                 <select
                   value={nodoSeleccionado}
                   onChange={(e) => {
@@ -473,65 +473,64 @@ const Tables = () => {
           )}
 
   
-          {/* Tabla de Datos */}
-          <Row>
-          <div className="col">
-            <Card className="shadow">
-              <Table className="align-items-center table-flush" responsive>
-                <thead>
-                  <tr>
-                    <th scope="col">Nodo</th>
-                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-                      Tipo 
-                      {ordenamiento === "tipo" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                      Valor 
-                      {ordenamiento === "data" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-                      Fecha-Hora 
-                      {ordenamiento === "fecha" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((medicion, index) => {
-                    // Encuentra el tipo de dato que coincide con el tipo de medición
-                    const tipoDato = tiposDatos.find(
-                      (tipo) => tipo.id === medicion.tipo_dato_id
-                    );
+ {/* Tabla de Datos */}
+<Row>
+  <div className="col">
+  <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
+  <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
+    <thead>
+      <tr>
+        <th scope="col">Nodo</th>
+        <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+          Tipo 
+          {ordenamiento === "tipo" && (
+            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+          )}
+        </th>
+        <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+          Valor 
+          {ordenamiento === "data" && (
+            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+          )}
+        </th>
+        <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+          Fecha-Hora 
+          {ordenamiento === "fecha" && (
+            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+          )}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {currentItems.map((medicion, index) => {
+        const tipoDato = tiposDatos.find(
+          (tipo) => tipo.id === medicion.tipo_dato_id
+        );
 
-                    return (
-                      <tr key={index}>
-                        <td>{medicion.nodo_numero}</td>
-                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
-                        <td>
-                          {parseFloat(medicion.data).toFixed(2)}{" "}
-                          {tipoDato ? tipoDato.unidad : ""}
-                        </td>
-                        <td>
-                          {new Date(medicion.time).toLocaleString("es-AR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          })}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+        return (
+          <tr key={index}>
+            <td>{medicion.nodo_numero}</td>
+            <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
+            <td>
+              {parseFloat(medicion.data).toFixed(2)}{" "}
+              {tipoDato ? tipoDato.unidad : ""}
+            </td>
+            <td>
+              {new Date(medicion.time).toLocaleString("es-AR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+              })}
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </Table>
 
-              </Table>
               {/* Paginación */}
               <div className="py-3">
                 <Pagination className="pagination justify-content-end mb-0">
@@ -587,13 +586,13 @@ const Tables = () => {
                     </PaginationLink>
                   </PaginationItem>
                 </Pagination>
-              </div>
-            </Card>
-          </div>
-        </Row>
-      </Card>
-    </Container>
-  </>
+               </div>
+             </Card>
+            </div>
+          </Row>
+        </Card>
+      </Container>
+    </>
   );
 };
 

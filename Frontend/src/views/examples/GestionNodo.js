@@ -4,6 +4,7 @@ import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from "reactstrap";
 import "../../assets/css/Gestion_Nodo.css";
+import {Card, CardHeader,Container, Row, Col, Table} from "reactstrap";
 
 const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
@@ -79,85 +80,98 @@ const GestionNodo = () => {
   return (
     <>
       <Header />
-      <header>  
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
-      </header>
-      <div className="table-container">
-        <h2 className="table-header">
-          Lista de Nodos Registrados
-        </h2>
+      <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
+        <Card className="shadow mb-4">
+          <CardHeader className="border-0">
+            {/* Título y Texto */}
+            <h3 className="mb-0">Lista de Nodos Registrados</h3>
+            <p className="text-muted mt-2">Gestión de los nodos registrados en el sistema.</p>
+            
+            {/* Botón de Registro */}
+            <Row className="align-items-center">
+              <Col xs="12" className="d-flex justify-content-start ms-3"> {/* Ajusta "ms-3" según la distancia deseada */}
+                <button className="add-button" onClick={handleAddNodo}>
+                  Registrar nuevo nodo
+                </button>
+              </Col>
+            </Row>
 
-        <button className="add-button" onClick={handleAddNodo}>
-          Registrar nuevo nodo
-        </button>
-
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Número de Nodo</th>  
-              <th>Alias</th> 
-              <th>Longitud</th>
-              <th>Latitud</th>
-              <th>Acciones</th>
-              <th>
-                Estado
-                <i
-                  id="helpIcon"
-                  className="bi bi-question-circle ml-2 text-info"
-                  style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
-                ></i>
-                <Tooltip
-                  placement="right"
-                  isOpen={tooltipOpen}
-                  target="helpIcon"
-                  toggle={toggleTooltip}
-                >
-                   <p>- <span className="activo">Activo</span>: El nodo está funcionando y enviando datos.</p>
-                   <p>- <span className="inactivo">Sin mediciones </span>: El nodo no ha enviado mediciones en las últimas 24 horas.</p>
-                   <p>- <span className="mantenimiento">Mantenimiento </span>: El nodo está en mantenimiento y no registrarán mediciones.</p>
-                </Tooltip>
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {nodos.map((nodo) => (
-              <tr key={nodo.numero}>
-                <td>{nodo.numero}</td>
-                <td>{nodo.nombre}</td>
-                <td>{nodo.longitud}</td>
-                <td>{nodo.latitud}</td>
-                <td>
-                  <button 
-                    className="edit-button" 
-                    onClick={() => handleEdit(nodo.numero)} 
-                  >
-                    Modificar
-                  </button>
-                </td>
-                <td>
-                  <div className="status-indicator">
-                    <span className={getEstadoClass(nodo.estado)}>
-                      {getEstadoTexto(nodo.estado)}
-                    </span>
-                    {(nodo.estado === 1 || nodo.estado === 2 || nodo.estado === 3) && (
-                      <button
-                        type="button"
-                        onClick={() => toggleEstado(nodo.numero)} 
-                      >
-                        <i className="bi bi-wrench text-warning"></i> {/* Icono de mantenimiento */}
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  
+            {/* Tabla de Nodos */}
+            <Row>
+              <div className="col">
+                <Card className="shadow mt-4">
+                  <Table className="align-items-center table-flush" responsive>
+                    <thead>
+                      <tr>
+                        <th>Número de Nodo</th>
+                        <th>Alias</th>
+                        <th>Longitud</th>
+                        <th>Latitud</th>
+                        <th>Acciones</th>
+                        <th>
+                          Estado
+                          <i
+                            id="helpIcon"
+                            className="bi bi-question-circle ml-2 text-info"
+                            style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+                          ></i>
+                          <Tooltip
+                            placement="right"
+                            isOpen={tooltipOpen}
+                            target="helpIcon"
+                            toggle={toggleTooltip}
+                          >
+                            <p>- <span className="activo">Activo</span>: El nodo está funcionando y enviando datos.</p>
+                            <p>- <span className="inactivo">Sin mediciones</span>: El nodo no ha enviado mediciones en las últimas 24 horas.</p>
+                            <p>- <span className="mantenimiento">Mantenimiento</span>: El nodo está en mantenimiento y no registrará mediciones.</p>
+                          </Tooltip>
+                        </th>
+                      </tr>
+                    </thead>
+  
+                    <tbody>
+                      {nodos.map((nodo) => (
+                        <tr key={nodo.numero}>
+                          <td>{nodo.numero}</td>
+                          <td>{nodo.nombre}</td>
+                          <td>{nodo.longitud}</td>
+                          <td>{nodo.latitud}</td>
+                          <td>
+                            <button 
+                              className="edit-button" 
+                              onClick={() => handleEdit(nodo.numero)} 
+                            >
+                              Modificar
+                            </button>
+                          </td>
+                          <td>
+                            <div className="status-indicator">
+                              <span className={getEstadoClass(nodo.estado)}>
+                                {getEstadoTexto(nodo.estado)}
+                              </span>
+                              {(nodo.estado === 1 || nodo.estado === 2 || nodo.estado === 3) && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleEstado(nodo.numero)} 
+                                >
+                                  <i className="bi bi-wrench text-warning"></i> {/* Icono de mantenimiento */}
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </Card>
+              </div>
+            </Row>
+          </CardHeader>
+        </Card>
+      </Container>
     </>
   );
-};
-
+}
 export default GestionNodo;
 

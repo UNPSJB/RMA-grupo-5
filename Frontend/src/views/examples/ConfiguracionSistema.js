@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "components/Headers/Header.js";
 import {
+  Card,
+  CardHeader,
   Modal,
   ModalHeader,
   ModalBody,
@@ -178,16 +180,22 @@ const ConfiguracionSistema = () => {
 
   return (
     <>
-      <Header title="Tipos de Datos Registrados" />
-      <Container className="mt--4" fluid>
-        <div className="table-container">
+      <Header  />
+      <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
+        <Card className="shadow mb-4">
+          <CardHeader className="border-0">
+            <h3 className="mb-0">Tipos de datos registrados</h3>
+            <p className="text-muted mt-2">Configuración de los tipos de datos (unidad de medida, rangos mínimos y máximos.).</p>
+
+
+      {/*  <div className="table-container"> /*}
           {/*}
           <Button variant="primary" className="add-button mb-2" onClick={handleCreate}>
             Registrar nuevo tipo de dato
           </Button>*/}
 
-          <Row>
-            <Col md="2">
+          <Row className="align-items-center mt-4">
+            <Col xs="12" className="d-flex justify-content-start">
               <FormGroup>
                 <Input
                   type="text"
@@ -200,36 +208,37 @@ const ConfiguracionSistema = () => {
               </FormGroup>
             </Col>
           </Row>
-
-          <table className="table mt--3">
-            <thead>
-              <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Unidad de medida</th>
-                <th>Rango minimo</th>
-                <th>Rango maximo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTiposDatos.map((tipoDato) => (
-                <tr key={tipoDato.id}>
-                  <td>{tipoDato.id}</td>
-                  <td>{tipoDatoMap[tipoDato.nombre] || tipoDato.nombre}</td>
-                  <td>{tipoDato.unidad}</td>
-                  <td>{tipoDato.rango_minimo}</td>
-                  <td>{tipoDato.rango_maximo}</td>
-                  <td>
-                    <Button className="edit-button" onClick={() => handleEdit(tipoDato.id)}>
-                      Modificar
-                    </Button>{" "}
-                  </td>
+          <Card className="shadow mt-3">
+            <table className="table align-items-center table-flush">
+              <thead>
+                <tr>
+                  <th>Id</th>
+                  <th>Nombre</th>
+                  <th>Unidad de medida</th>
+                  <th>Rango mínimo</th>
+                  <th>Rango máximo</th>
+                  <th>Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredTiposDatos.map((tipoDato) => (
+                  <tr key={tipoDato.id}>
+                    <td>{tipoDato.id}</td>
+                    <td>{tipoDatoMap[tipoDato.nombre] || tipoDato.nombre}</td>
+                    <td>{tipoDato.unidad}</td>
+                    <td>{tipoDato.rango_minimo}</td>
+                    <td>{tipoDato.rango_maximo}</td>
+                    <td>
+                      <Button className="edit-button" onClick={() => handleEdit(tipoDato.id)}>
+                        Modificar
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </Card>
+
 
         <Modal isOpen={modalOpen} toggle={toggleModal}>
           <ModalHeader toggle={toggleModal}>
@@ -293,6 +302,8 @@ const ConfiguracionSistema = () => {
             </Button>
           </ModalFooter>
         </Modal>
+        </CardHeader>
+        </Card>
       </Container>
     </>
   );
