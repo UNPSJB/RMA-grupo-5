@@ -8,7 +8,30 @@ import ConfiguracionSistema from "views/examples/ConfiguracionSistema";
 //import Icons from "views/examples/Icons.js";
 
 var routes = [
-  
+  {
+    path: "/maps",
+    name: "Mapa",
+    icon: "ni ni-pin-3 text-orange",
+    component: <Maps />,
+    layout: "/admin",
+  }, 
+
+  {
+    path: "/tables",
+    name: "Tablas",
+    icon: "ni ni-bullet-list-67 text-red",
+    component: <Tables />,
+    layout: "/admin",
+  },
+
+  {
+    path: "/tables-error",
+    name: "Tablas con errores",
+    icon: "ni ni-settings-gear-65 text-blue",
+    component: <TablesError />,
+    layout: "/admin",
+  },
+
   {
     path: "/index",
     name: "Graficos",
@@ -32,6 +55,15 @@ var routes = [
     showInMenu: false, 
   },
 
+  {
+    path: "/configuracion-sistema",
+    name: "Configuracion del Sistema",
+    icon: "ni ni-settings-gear-65 text-blue",
+    component: <ConfiguracionSistema />,
+    layout: "/admin",
+    showInFooter: true,
+  },
+
 /*
   {
     path: "/Icons",
@@ -41,33 +73,8 @@ var routes = [
     layout: "/admin",
   },
   */
-  {
-    path: "/tables",
-    name: "Tablas",
-    icon: "ni ni-bullet-list-67 text-red",
-    component: <Tables />,
-    layout: "/admin",
-  },
-  {
-    path: "/tables-error",
-    name: "Tablas con errores",
-    icon: "ni ni-settings-gear-65 text-blue",
-    component: <TablesError />,
-    layout: "/admin",
-  },
-  {
-    path: "/configuracion-sistema",
-    name: "Configuracion del Sistema",
-    icon: "ni ni-settings-gear-65 text-blue",
-    component: <ConfiguracionSistema />,
-    layout: "/admin",
-  },
-  {
-    path: "/maps",
-    name: "Mapa",
-    icon: "ni ni-pin-3 text-orange",
-    component: <Maps />,
-    layout: "/admin",
-  }, 
+
+
+
 ];
 export default routes;
