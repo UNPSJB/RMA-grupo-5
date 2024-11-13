@@ -72,7 +72,62 @@ const Header = ({ title, subtitle }) => {
       LATITUDE_T: "Latitud GPS",
       LONGITUDE_T: "Longitud GPS",
       ALTITUDE_T: "Altitud GPS",
-      HDOP_T: "HDOP GPS"
+      HDOP_T: "HDOP GPS",
+      LEVEL_T: "Nivel de Fluido", 
+      UV_T: "Rayos UV",
+      PM1_T: "Particulas PM1",
+      PM2_5_T: "Particulas PM2.5",
+      PM10_T: "Particulas PM10",
+      POWER_T: "Potencia",
+      POWER2_T: "Potencia 2",
+      ENERGY_T: "Energía",
+      ENERGY2_T: "Energía 2",
+      WEIGHT_T: "Peso",
+      WEIGHT2_T: "Peso 2"
+    };
+
+    const unidadesMedida = {
+      1: "°C",       // Grados Celsius para temperatura
+      2: "°C",       // Grados Celsius para temperatura 2
+      3: "%",        // Porcentaje para humedad
+      4: "hPa",      // Hectopascales para presión
+      5: "Luz",
+      6: "%",       // Humedad del suelo
+      7: "%",       // Humedad del suelo 2
+      8: "Ω.m2/m",       //Ohmios Resistencia del suelo
+      9:"Ω.m2/m",        //Ohmios Resistencia del suelo 2
+      10: "%",        //Porcentaje para el oxígeno
+      11: "ppm", //Partes por millón (ppm) (Dióxido de Carbono)
+      12: "m/s",  // Metros por segundo (Velocidad del Viento)
+      13: "°",    // Grados (Dirección del Viento)
+      14: "mm",   // Milímetros (Precipitación)
+      15: "",     // Sin unidad específica (Movimiento)
+      16: "V",    // Voltios (Voltaje)
+      17: "V",    // Voltios (Voltaje #2)
+      18: "A",    // Amperios (Corriente)
+      19: "A",    // Amperios (Corriente #2)
+      20: "",     // Sin unidad específica (Iteraciones)
+      21: "°",    // Grados (Latitud GPS)
+      22: "°",    // Grados (Longitud GPS)
+      23: "m",    // Metros (Altitud GPS)
+      24: "",     // Sin unidad específica (HDOP GPS)
+      25: "m",    // Metros (Nivel de Fluido)
+      26: "Índice UV",  // Índice UV (Radiación UV)
+      27: "µg/m³",      // Microgramos por metro cúbico (Partículas 1)
+      28: "µg/m³",      // Microgramos por metro cúbico (Partículas 2.5)
+      29: "µg/m³",      // Microgramos por metro cúbico (Partículas 10)
+      30: "W",    // Vatios (Potencia)
+      31: "W",    // Vatios (Potencia #2)
+      32: "Wh",   // Vatios-hora (Energía)
+      33: "Wh",   // Vatios-hora (Energía #2)
+      34: "kg",   // Kilogramos (Peso)
+      35: "kg"    // Kilogramos (Peso #2)
+      
+      
+    };
+    const obtenerUnidad = (tipo) => {
+      // Si el tipo existe devuelve la unidad, sino, devuelve una cadena vacía.
+      return unidadesMedida[tipo] || "";
     };
   
     return (
@@ -102,7 +157,7 @@ const Header = ({ title, subtitle }) => {
                                                 {medicion ? (
                                                     <Row className="justify-content-center" style={{ fontSize: '1rem', wordBreak: 'break-word', padding: '1px'}}>
                                                         <Col xs="4" className="text-center">
-                                                            <span className="text-muted">Data:</span> {medicion.data ? parseFloat(medicion.data).toFixed(2) : "Cargando..."}
+                                                            <span className="text-muted">Data:</span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
                                                         </Col>
                                                         <Col xs="4" className="text-center">
                                                             <span className="text-muted">Fecha:</span> {new Date(medicion.time).toLocaleString()}
