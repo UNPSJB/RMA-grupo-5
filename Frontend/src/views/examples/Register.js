@@ -44,7 +44,7 @@ const Register = () => {
           setNombreUsuario('');
           setContrasena('');
           
-          navigate("/admin/index");
+          navigate("/admin/maps");
         })
         .catch(error => {
           if (error.response && error.response.data) {
