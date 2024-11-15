@@ -1,5 +1,6 @@
 from typing import List
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from src.nodo import schemas
 from src.nodo import exceptions
 from src.nodo.models import Medicion, Nodo, Registro, TipoDato
@@ -18,9 +19,7 @@ def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     if nodo_existente is None:
         raise exceptions.NodoNoEncontrado()  # Lanza una excepción si el nodo no existe
 
-    tipo_dato_existente = db.query(TipoDato).filter(TipoDato.nombre == medicion.tipo_dato_nombre).first()
-    if tipo_dato_existente is None:
-        raise exceptions.TipoDatoNoEncontrado()
+    tipo_dato_existente = leer_tipo_dato_por_nombre(db, medicion.tipo_dato_nombre)
 
     db_medicion = Medicion(
         tipo_dato_id=tipo_dato_existente.id,
@@ -215,6 +214,12 @@ def leer_tipos_datos(db: Session) -> List[TipoDato]:
 
 def leer_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
     db_tipo_dato = db.query(TipoDato).filter(TipoDato.id == id_tipo).first()
+    if db_tipo_dato is None:
+        raise exceptions.TipoDatoNoEncontrado() 
+    return db_tipo_dato
+
+def leer_tipo_dato_por_nombre(db: Session, nombre_tipo: str) -> TipoDato:
+    db_tipo_dato = db.query(TipoDato).filter(func.lower(TipoDato.nombre) == nombre_tipo.lower()).first()
     if db_tipo_dato is None:
         raise exceptions.TipoDatoNoEncontrado() 
     return db_tipo_dato

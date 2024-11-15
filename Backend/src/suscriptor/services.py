@@ -2,8 +2,9 @@ from sqlalchemy.orm import Session
 import json
 from datetime import datetime
 from src.nodo.schemas import MedicionCreate
-from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato
+from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato_por_nombre
 from src.nodo.models import TipoDato
+from src.nodo import exceptions
 
 def medicion_es_erronea(data: str, type_dt: TipoDato, time_dt: datetime) -> bool:
     # Intenta convertir data a un float
@@ -55,9 +56,9 @@ def procesar_mensaje(mensaje: str, db: Session) -> None:
 
     es_erroneo = False  # Por defecto, la medición no es errónea
     try:
-        type_dt = leer_tipo_dato(db, tipo_str)
+        type_dt = leer_tipo_dato_por_nombre(db, tipo_str)
         es_erroneo = medicion_es_erronea(valor_data, type_dt, time_dt)
-    except Exception as e:
+    except exceptions.TipoDatoNoEncontrado:
         es_erroneo = True
         tipo_str = "DESCONOCIDO"
 

@@ -107,6 +107,10 @@ def create_tipo_dato(tipo_dato: schemas.TipoDatoCreate, db: Session = Depends(ge
 def read_tipo_dato(id_tipo: int, db: Session = Depends(get_db)):
     return services.leer_tipo_dato(db, id_tipo)
 
+@router.get("/leer_tipo_dato_por_nombre/{nombre_tipo}", response_model=schemas.TipoDato)
+def read_tipo_dato(nombre_tipo: str, db: Session = Depends(get_db)):
+    return services.leer_tipo_dato_por_nombre(db, nombre_tipo)
+
 @router.get("/leer_tipos_datos/", response_model=List[schemas.TipoDato])
 def read_tipos_datos(db: Session = Depends(get_db)):
     tipos = services.leer_tipos_datos(db)
