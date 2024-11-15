@@ -262,24 +262,44 @@ def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
             continue
     return mediciones_importadas
 
+from datetime import datetime
+
 def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
     mediciones_importadas = []
 
     for item in data:
-        medicion = schemas.MedicionCreate(
-            type=int(item['type']), 
-            data=item['data'],
-            time=item['time'],
-            nodo_numero=int(item['nodo_numero']),
-            es_erroneo=bool(item['es_erroneo'])
-        )
+        # Convertir 'data' a string, si es necesario
+        data_str = str(item['data'])
+        
+        # Asignar un valor predeterminado a tipo_dato_nombre si no está presente
+        tipo_dato_nombre = item.get('tipo_dato_nombre', 'Desconocido')
+
+        # Convertir 'time' a datetime, si es necesario
         try:
-            medicion_creada = crear_medicion(db, medicion) 
+            time = datetime.fromisoformat(item['time'])
+        except ValueError:
+            # Si el formato de 'time' no es correcto, asigna la fecha y hora actual
+            time = datetime.now()
+
+        medicion = schemas.MedicionCreate(
+            tipo_dato_nombre=tipo_dato_nombre,  # Asegúrate de que este campo esté disponible
+            data=data_str,  # Convertir a string
+            time=time,  # Asegúrate de que sea un datetime
+            nodo_numero=int(item['nodo_numero']),
+            es_erroneo=bool(int(item['es_erroneo'])),
+        )
+
+        try:
+            medicion_creada = crear_medicion(db, medicion)
             mediciones_importadas.append(medicion_creada)
         except exceptions.NodoNoEncontrado:
             continue
+        except Exception as e:
+            print(f"Error al crear la medición: {e}")
+            continue
 
     return mediciones_importadas
+
 #/--- Metodos de clase Registro ---/
 def crear_usuario(db: Session, registro: schemas.RegistroCreate):
    
