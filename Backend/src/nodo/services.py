@@ -17,9 +17,9 @@ def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     nodo_existente = db.query(Nodo).filter(Nodo.numero == medicion.nodo_numero).first()
     
     if nodo_existente is None:
-        raise exceptions.NodoNoEncontrado()  # Lanza una excepción si el nodo no existe
+        raise exceptions.NodoNoEncontrado()  # Lanzar una excepción si el nodo no existe
 
-    tipo_dato_existente = leer_tipo_dato_por_nombre(db, medicion.tipo_dato_nombre)
+    tipo_dato_existente = leer_tipo_dato(db, medicion.tipo_dato_id) 
 
     db_medicion = Medicion(
         tipo_dato_id=tipo_dato_existente.id,
@@ -249,7 +249,7 @@ def importar_datos_json(db: Session, data: List[dict]) -> List[Medicion]:
     
     for item in data:
         medicion = schemas.MedicionCreate(
-            type=item['type'],
+            tipo_dato_id=item['type'],
             data=item['data'],
             time=item['time'],
             nodo_numero=int(item['nodo_numero']),
@@ -271,8 +271,7 @@ def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
         # Convertir 'data' a string, si es necesario
         data_str = str(item['data'])
         
-        # Asignar un valor predeterminado a tipo_dato_nombre si no está presente
-        tipo_dato_nombre = item.get('tipo_dato_nombre', 'Desconocido')
+        tipo_dato_id = item.get('tipo_dato_id')
 
         # Convertir 'time' a datetime, si es necesario
         try:
@@ -282,7 +281,7 @@ def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
             time = datetime.now()
 
         medicion = schemas.MedicionCreate(
-            tipo_dato_nombre=tipo_dato_nombre,  # Asegúrate de que este campo esté disponible
+            tipo_dato_id=tipo_dato_id,
             data=data_str,  # Convertir a string
             time=time,  # Asegúrate de que sea un datetime
             nodo_numero=int(item['nodo_numero']),

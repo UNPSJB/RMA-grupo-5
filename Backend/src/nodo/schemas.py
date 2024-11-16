@@ -31,17 +31,18 @@ class MedicionBase(BaseModel):
     time: datetime
     nodo_numero: int
     es_erroneo: bool
+    tipo_dato_id: int
 
     class Config:
         from_attributes = True
 
 # Clases de creación y actualización de Medicion
 class MedicionCreate(MedicionBase):
-    tipo_dato_nombre: str
     data: str
     time: datetime
     nodo_numero: int
-    es_erroneo: bool
+    es_erroneo: bool=False
+    tipo_dato_id: int
 
 class MedicionUpdate(MedicionBase):
     pass
@@ -49,11 +50,11 @@ class MedicionUpdate(MedicionBase):
 # Clase para representar una Medicion completa
 class Medicion(MedicionBase):
     id: int
-    tipo_dato_id: int
     data: str
     time: datetime
     nodo_numero: int
     es_erroneo: bool
+    tipo_dato_id: int
 
 # Clase base Nodo
 class NodoBase(BaseModel):
