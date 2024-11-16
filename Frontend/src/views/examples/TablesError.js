@@ -409,15 +409,9 @@ const TablesError = () => {
                     />
                   </FormGroup>
                 </Col>
-                <Col md="2" className="d-flex align-items-end">
-                  <Button className="edit-button" onClick={filtrar_datos}>
-                    Aplicar Filtro
-                  </Button>
-                </Col>
               </Row>
             )}
 
-  
           {/* Grupo de Selección de Fechas */}
           {showFecha && (
             <Row className="mb-4 ml-2">
@@ -472,119 +466,119 @@ const TablesError = () => {
   
           {/* Tabla de Datos */}
           <Row>
-          <div className="col">
-            <Card className="shadow">
-              <Table className="align-items-center table-flush" responsive>
-                <thead>
-                  <tr>
-                    <th scope="col">Nodo</th>
-                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-                      Tipo 
-                      {ordenamiento === "tipo" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                      Valor 
-                      {ordenamiento === "data" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-                      Fecha-Hora 
-                      {ordenamiento === "fecha" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((medicion, index) => {
-                    // Encuentra el tipo de dato que coincide con el tipo de medición
-                    const tipoDato = tiposDatos.find(
-                      (tipo) => tipo.id === medicion.tipo_dato_id
-                    );
+            <div className="col">
+              <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
+                <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
+                  <thead>
+                    <tr>
+                      <th scope="col">Nodo</th>
+                      <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+                        Tipo 
+                        {ordenamiento === "tipo" && (
+                          <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                        )}
+                      </th>
+                      <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                        Valor 
+                        {ordenamiento === "data" && (
+                          <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                        )}
+                      </th>
+                      <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                        Fecha-Hora 
+                        {ordenamiento === "fecha" && (
+                          <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                        )}
+                      </th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                      {currentItems.map((medicion, index) => {
+                        // Encuentra el tipo de dato que coincide con el tipo de medición
+                        const tipoDato = tiposDatos.find(
+                          (tipo) => tipo.id === medicion.tipo_dato_id
+                        );
 
-                    return (
-                      <tr key={index}>
-                        <td>{medicion.nodo_numero}</td>
-                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
-                        <td>
-                          {parseFloat(medicion.data).toFixed(2)}{" "}
-                          {tipoDato ? tipoDato.unidad : ""}
-                        </td>
-                        <td>
-                          {new Date(medicion.time).toLocaleString("es-AR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          })}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
+                        return (
+                          <tr key={index}>
+                            <td>{medicion.nodo_numero}</td>
+                            <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
+                            <td>
+                              {parseFloat(medicion.data).toFixed(2)}{" "}
+                              {tipoDato ? tipoDato.unidad : ""}
+                            </td>
+                            <td>
+                              {new Date(medicion.time).toLocaleString("es-AR", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
 
-              </Table>
-              {/* Paginación */}
-              <div className="py-3">
-                <Pagination className="pagination justify-content-end mb-0">
-                  {/* Botón para página anterior */}
-                  <PaginationItem disabled={currentPage === 1}>
-                    <PaginationLink
-                      href="#pablo"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(currentPage - 1);
-                      }}
-                    >
-                      <i className="fas fa-angle-left" />
-                      <span className="sr-only">Previous</span>
-                    </PaginationLink>
-                  </PaginationItem>
+                {/* Paginación */}
+                <div className="py-3">
+                  <Pagination className="pagination justify-content-end mb-0">
+                    {/* Botón para página anterior */}
+                    <PaginationItem disabled={currentPage === 1}>
+                      <PaginationLink
+                        href="#pablo"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(currentPage - 1);
+                        }}
+                      >
+                        <i className="fas fa-angle-left" />
+                        <span className="sr-only">Previous</span>
+                      </PaginationLink>
+                    </PaginationItem>
 
-                  {/* Botones de paginación */}
-                  {(() => {
-                    const pageButtons = [];
-                    const maxButtons = 5;
-                    const startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-                    const endPage = Math.min(totalPages, startPage + maxButtons - 1);
-                    for (let i = startPage; i <= endPage; i++) {
-                      pageButtons.push(
-                        <PaginationItem key={i} active={i === currentPage}>
-                          <PaginationLink
-                            href="#pablo"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setCurrentPage(i);
-                            }}
-                          >
-                            {i}
-                          </PaginationLink>
-                        </PaginationItem>
-                      );
-                    }
-                    return pageButtons;
-                  })()}
+                    {/* Botones de paginación */}
+                    {(() => {
+                      const pageButtons = [];
+                      const maxButtons = 5;
+                      const startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+                      const endPage = Math.min(totalPages, startPage + maxButtons - 1);
+                      for (let i = startPage; i <= endPage; i++) {
+                        pageButtons.push(
+                          <PaginationItem key={i} active={i === currentPage}>
+                            <PaginationLink
+                              href="#pablo"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setCurrentPage(i);
+                              }}
+                            >
+                              {i}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      }
+                      return pageButtons;
+                    })()}
 
-                  {/* Botón para página siguiente */}
-                  <PaginationItem disabled={currentPage === totalPages}>
-                    <PaginationLink
-                      href="#pablo"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setCurrentPage(currentPage + 1);
-                      }}
-                    >
-                      <i className="fas fa-angle-right" />
-                      <span className="sr-only">Next</span>
-                    </PaginationLink>
-                  </PaginationItem>
-                </Pagination>
-              </div>
+                    {/* Botón para página siguiente */}
+                    <PaginationItem disabled={currentPage === totalPages}>
+                      <PaginationLink
+                        href="#pablo"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCurrentPage(currentPage + 1);
+                        }}
+                      >
+                        <i className="fas fa-angle-right" />
+                        <span className="sr-only">Next</span>
+                      </PaginationLink>
+                    </PaginationItem>
+                  </Pagination>
+                </div>
             </Card>
           </div>
         </Row>

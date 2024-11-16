@@ -20,6 +20,7 @@ import * as XLSX from "xlsx";
 import Header from "components/Headers/Header.js";
 import { CustomFileInput } from "components/Buttons/CustomFileInput";
 import { useLocation } from "react-router-dom";
+import { message } from "antd";
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
@@ -239,9 +240,16 @@ const Tables = () => {
       if (!response.ok) {
         throw new Error("Error al hacer el fetch de importar datos");
       }
+      message.success("Archivo cargado con exito")
   
       const data = await response.json();
       console.log("Data importada:", data);
+
+      // Esperar un poco antes de recargar la página para dar tiempo al mensaje
+      setTimeout(() => {
+        window.location.reload(); // Recarga la página
+      }, 1000); // 1 segundo para asegurarse de que el mensaje se muestre
+
     } catch (error) {
       console.error("Error importando los datos", error);
       setError(error);
@@ -255,11 +263,10 @@ const Tables = () => {
         // Buscar el tipo de dato por el id
         const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
         const tipoNombre = tipoDatoMap[tipo.nombre];    
-        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;
         return {
           Nodo: dato.nodo_numero,
           Tipo: tipoNombre,
-          Data: dataConUnidad,
+          Data: dato.data,
           "Fecha-Hora": new Date(dato.time).toLocaleString(),
         };
       })
@@ -277,12 +284,11 @@ const Tables = () => {
       dataToExport.map((dato) => {
         // Buscar el tipo de dato por el id
         const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
-        const tipoNombre = tipoDatoMap[tipo.nombre];     
-        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;   
+        const tipoNombre = tipoDatoMap[tipo.nombre];      
         return {
           Nodo: dato.nodo_numero,
           Tipo: tipoNombre,
-          Data: dataConUnidad,
+          Data: dato.data,
           "Fecha-Hora": new Date(dato.time).toLocaleString(),
         };
       })
@@ -332,7 +338,6 @@ const Tables = () => {
                   }}
                   className="form-control mr-2"
                 >
-                  <option value="">Tipo de Dato</option>
                   {tiposDatos.map((tipo, index) => {
                     const tipoTraducido = tipo && tipoDatoMap[tipo.nombre] ? tipoDatoMap[tipo.nombre] : (tipo ? tipo.nombre : "Sin tipo");
                     return (
@@ -411,120 +416,118 @@ const Tables = () => {
               </Row>
             )}
 
-  
-          {/* Grupo de Selección de Fechas */}
-          {showFecha && (
-            <Row className="mb-4 ml-2">
-              <Col md="3">
-                <FormGroup>
-                  <Label>Fecha Inicio</Label>
-                  <Input
-                    type="date"
-                    value={fechaInicio}
-                    onChange={(e) => setFechaInicio(e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col md="3">
-                <FormGroup>
-                  <Label>Fecha Fin</Label>
-                  <Input
-                    type="date"
-                    value={fechaFin}
-                    onChange={(e) => setFechaFin(e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          )}
-  
-          {/* Grupo de Exportación */}
-          {showExport && (
-            <Row className="mb-4 ml-2 align-items-center">
-              <Col md="3">
-                <FormGroup>
-                  <Label>Cantidad a Exportar</Label>
-                  <Input
-                    type="number"
-                    value={cantidadExportar}
-                    onChange={(e) => setCantidadExportar(e.target.value)}
-                    placeholder="Cantidad a exportar"
-                  />
-                </FormGroup>
-              </Col>
-              <Col md="6" className="d-flex justify-content-start">
-                <Button className="edit-button mr-2" onClick={exportSelectedToExcel}>
-                  Exportar Cantidad
-                </Button>
-                <Button className="edit-button mr-2" onClick={exportAllToExcel}>
-                  Exportar Todo
-                </Button>
-                <Button className="edit-button mr-2">
-                  <CustomFileInput className="edit-button" onChange={importData} />
-                </Button>
-                
-              </Col>
-            </Row>
-          )}
+            {/* Grupo de Selección de Fechas */}
+            {showFecha && (
+              <Row className="mb-4 ml-2">
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Fecha Inicio</Label>
+                    <Input
+                      type="date"
+                      value={fechaInicio}
+                      onChange={(e) => setFechaInicio(e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Fecha Fin</Label>
+                    <Input
+                      type="date"
+                      value={fechaFin}
+                      onChange={(e) => setFechaFin(e.target.value)}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+            )}
+    
+            {/* Grupo de Exportación */}
+            {showExport && (
+              <Row className="mb-4 ml-2 align-items-center">
+                <Col md="3">
+                  <FormGroup>
+                    <Label>Cantidad a Exportar</Label>
+                    <Input
+                      type="number"
+                      value={cantidadExportar}
+                      onChange={(e) => setCantidadExportar(e.target.value)}
+                      placeholder="Cantidad a exportar"
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md="6" className="d-flex justify-content-start">
+                  <Button className="edit-button mr-2" onClick={exportSelectedToExcel}>
+                    Exportar Cantidad
+                  </Button>
+                  <Button className="edit-button mr-2" onClick={exportAllToExcel}>
+                    Exportar Todo
+                  </Button>
+                  <Button className="edit-button mr-2">
+                    <CustomFileInput className="edit-button" onChange={importData} />
+                  </Button>
+                  
+                </Col>
+              </Row>
+            )}
 
-  
- {/* Tabla de Datos */}
-<Row>
-  <div className="col">
-  <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
-  <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
-    <thead>
-      <tr>
-        <th scope="col">Nodo</th>
-        <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-          Tipo 
-          {ordenamiento === "tipo" && (
-            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-          )}
-        </th>
-        <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-          Valor 
-          {ordenamiento === "data" && (
-            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-          )}
-        </th>
-        <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-          Fecha-Hora 
-          {ordenamiento === "fecha" && (
-            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-          )}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {currentItems.map((medicion, index) => {
-        const tipoDato = tiposDatos.find(
-          (tipo) => tipo.id === medicion.tipo_dato_id
-        );
+            {/* Tabla de Datos */}
+            <Row>
+              <div className="col">
+              <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
+              <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
+                <thead>
+                  <tr>
+                    <th scope="col">Nodo</th>
+                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+                      Tipo 
+                      {ordenamiento === "tipo" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                      Valor 
+                      {ordenamiento === "data" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                      Fecha-Hora 
+                      {ordenamiento === "fecha" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((medicion, index) => {
+                    const tipoDato = tiposDatos.find(
+                      (tipo) => tipo.id === medicion.tipo_dato_id
+                    );
 
-        return (
-          <tr key={index}>
-            <td>{medicion.nodo_numero}</td>
-            <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
-            <td>
-              {parseFloat(medicion.data).toFixed(2)}{" "}
-              {tipoDato ? tipoDato.unidad : ""}
-            </td>
-            <td>
-              {new Date(medicion.time).toLocaleString("es-AR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-              })}
-            </td>
-          </tr>
-        );
-      })}
-    </tbody>
-  </Table>
+                    return (
+                      <tr key={index}>
+                        <td>{medicion.nodo_numero}</td>
+                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
+                        <td>
+                          {parseFloat(medicion.data).toFixed(2)}{" "}
+                          {tipoDato ? tipoDato.unidad : ""}
+                        </td>
+                        <td>
+                          {new Date(medicion.time).toLocaleString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
 
               {/* Paginación */}
               <div className="py-3">
