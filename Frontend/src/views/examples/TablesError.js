@@ -118,7 +118,7 @@ const TablesError = () => {
           throw new Error("Error al obtener los tipos de datos");
         }
         const data = await response.json();
-        const tiposValidos = data.filter(tipo => tipo.nombre !== 'DESCONOCIDO');
+        const tiposValidos = data;
         
         setTiposDatos(tiposValidos);
       } catch (error) {
