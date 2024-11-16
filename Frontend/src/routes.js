@@ -57,7 +57,7 @@ var routes = [
 
   {
     path: "/configuracion-sistema",
-    name: "Configuracion del Sistema",
+    name: "Configuracion de Limites",
     icon: "ni ni-settings-gear-65 text-blue",
     component: <ConfiguracionSistema />,
     layout: "/admin",
