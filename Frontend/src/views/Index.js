@@ -28,6 +28,8 @@ import {
   graficoLineal,
   graficoBarras,
   graficoCompuesto,
+  graficoPolar,
+  graficoRadar,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
 
@@ -324,7 +326,14 @@ const Index = (props) => {
     semanalTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
   };
 
-
+  const titulosGraficos = {
+    line: "Altura del canal",
+    bar: "Temperatura de la zona",
+    comp: "Comparación de datos",
+    rad: "Presion atmosférica",
+    pol: "Radiación UV"
+  };
+  
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -545,6 +554,7 @@ const Index = (props) => {
                   <div className="chart">
                     <Radar
                       data={chartData.semanalTemp}
+                      options={graficoRadar.options}
                     />
                   </div>
                 </CardBody>
@@ -634,6 +644,7 @@ const Index = (props) => {
                   <div className="chart">
                     <Polar
                       data={chartData.semanalTemp}
+                      options={graficoPolar.options}
                     />
                   </div>
                 </CardBody>
@@ -641,19 +652,40 @@ const Index = (props) => {
             </Col>
             
           </Row>
-          {/* Modal para mostrar gráfico expandido */}
           <Modal isOpen={modal} toggle={() => toggleModal(null)} size="xl">
-            <ModalHeader toggle={() => toggleModal(null)}>Gráfico Expandido</ModalHeader>
+            <ModalHeader toggle={() => toggleModal(null)}>
+              {titulosGraficos[expandedChart] || "Gráfico Expandido"}
+            </ModalHeader>
             <ModalBody>
-            <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
-              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diarioAlt" : "semanalAlt"]} options={graficoLineal.options} />}
-              {expandedChart === "bar" && <Bar data={chartData.semanalTemp} options={graficoBarras.options} />}
-              {expandedChart === "comp" && <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />}
-              {expandedChart === "rad" && <Radar data={chartData.semanalTemp} />}
-              {expandedChart === "pol" && <Polar data={chartData.semanalTemp} />}
-            </div>
+              <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
+                {expandedChart === "line" && (
+                  <Line
+                    data={chartData[activeNav === 1 ? "diarioAlt" : "semanalAlt"]}
+                    options={graficoLineal.options}
+                  />
+                )}
+                {expandedChart === "bar" && (
+                  <Bar data={chartData.semanalTemp} options={graficoBarras.options} />
+                )}
+                {expandedChart === "comp" && (
+                  <Bar
+                    data={graficoCompuesto.data(
+                      valoresNodosTemp,
+                      1,
+                      valoresNodosDiario,
+                      4,
+                      valoresNodosSemanal,
+                      23
+                    )}
+                    options={graficoCompuesto.options}
+                  />
+                )}
+                {expandedChart === "rad" && <Radar data={chartData.semanalTemp} />}
+                {expandedChart === "pol" && <Polar data={chartData.semanalTemp} />}
+              </div>
             </ModalBody>
           </Modal>
+
           {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE
           <Row className="mt-5">
             <Col>
