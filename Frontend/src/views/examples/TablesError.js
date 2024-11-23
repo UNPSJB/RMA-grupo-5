@@ -249,48 +249,54 @@ const TablesError = () => {
     }
   }
 
-  // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(
-      sortedMedicionData.map((dato) => {
-        // Buscar el tipo de dato por el id
-        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
-        const tipoNombre = tipoDatoMap[tipo.nombre];    
-        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;
-        return {
-          Nodo: dato.nodo_numero,
-          Tipo: tipoNombre,
-          Data: dataConUnidad,
-          "Fecha-Hora": new Date(dato.time).toLocaleString(),
-        };
-      })
-    );
+    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
+    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
+    const tipoUnidad = tipo ? tipo.unidad : "";
+  
+    const rows = sortedMedicionData.map((dato) => ({
+      Valor: dato.data,
+      "Fecha-Hora": new Date(dato.time).toLocaleString(),
+    }));
+  
+    const ws = XLSX.utils.json_to_sheet(rows);
+
+    if (ws["A1"]) {
+      ws["A1"].v = `Valor (${tipoUnidad})`;
+    }
+  
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
-    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_completo.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
+  
+    const nombreArchivo = `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}.xlsx`;
+    XLSX.writeFile(wb, nombreArchivo);
   };
+  
 
   // Función para exportar una cantidad específica de datos
   const exportSelectedToExcel = () => {
     const cantidad = parseInt(cantidadExportar) || sortedMedicionData.length; // Determinar cantidad a exportar
     const dataToExport = sortedMedicionData.slice(0, cantidad); // Obtener la cantidad seleccionada
+    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
+    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
+    const tipoUnidad = tipo ? tipo.unidad : "";
+
     const ws = XLSX.utils.json_to_sheet(
-      dataToExport.map((dato) => {
-        // Buscar el tipo de dato por el id
-        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
-        const tipoNombre = tipoDatoMap[tipo.nombre];     
-        const dataConUnidad = `${dato.data} - ${tipo.unidad || ''}`;   
+      dataToExport.map((dato) => {  
         return {
-          Nodo: dato.nodo_numero,
-          Tipo: tipoNombre,
-          Data: dataConUnidad,
+          Valor: dato.data,
           "Fecha-Hora": new Date(dato.time).toLocaleString(),
         };
       })
     );
+
+    if (ws["A1"]) {
+      ws["A1"].v = `Valor (${tipoUnidad})`;
+    }
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
-    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_${cantidad}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}_${cantidad}.xlsx`);
   };
 
   // Manejo de carga y errores
@@ -333,7 +339,6 @@ const TablesError = () => {
                   }}
                   className="form-control mr-2"
                 >
-                  <option value="">Tipo de Dato</option>
                   {tiposDatos.map((tipo, index) => {
                     const tipoTraducido = tipo && tipoDatoMap[tipo.nombre] ? tipoDatoMap[tipo.nombre] : (tipo ? tipo.nombre : "Sin tipo");
                     return (
@@ -471,13 +476,6 @@ const TablesError = () => {
                 <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
                   <thead>
                     <tr>
-                      <th scope="col">Nodo</th>
-                      <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-                        Tipo 
-                        {ordenamiento === "tipo" && (
-                          <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                        )}
-                      </th>
                       <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
                         Valor 
                         {ordenamiento === "data" && (
@@ -501,10 +499,8 @@ const TablesError = () => {
 
                         return (
                           <tr key={index}>
-                            <td>{medicion.nodo_numero}</td>
-                            <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
                             <td>
-                              {parseFloat(medicion.data).toFixed(2)}{" "}
+                              {parseFloat(medicion.data).toFixed(5)}{" "}
                               {tipoDato ? tipoDato.unidad : ""}
                             </td>
                             <td>
