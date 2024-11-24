@@ -130,6 +130,8 @@ async def startup_event():
                 nombre=tipo["nombre"],
                 unidad=tipo["unidad"],
                 rango_minimo=tipo["rango_minimo"],
+                umbral_alerta_precaucion=tipo["umbral_alerta_precaucion"],
+                umbral_alerta_peligro=tipo["umbral_alerta_peligro"],
                 rango_maximo=tipo["rango_maximo"]
             )
             try:

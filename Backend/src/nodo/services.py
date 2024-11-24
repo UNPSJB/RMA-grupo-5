@@ -196,6 +196,8 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
         nombre = tipoDato.nombre,
         unidad = tipoDato.unidad,
         rango_minimo = tipoDato.rango_minimo,
+        umbral_alerta_precaucion = tipoDato.umbral_alerta_precaucion,
+        umbral_alerta_peligro = tipoDato.umbral_alerta_peligro,
         rango_maximo = tipoDato.rango_maximo 
     )
     db.add(db_tipo_dato)
@@ -205,11 +207,6 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
 
 def leer_tipos_datos(db: Session) -> List[TipoDato]:
     tipos_datos = db.query(TipoDato).all()
-    for tipo in tipos_datos:
-        if tipo.rango_minimo is None:
-            tipo.rango_minimo = 0 
-        if tipo.rango_maximo is None:
-            tipo.rango_maximo = 0 
     return tipos_datos
 
 def leer_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
@@ -231,6 +228,8 @@ def modificar_tipo_dato(
     db_tipo_dato.nombre = tipo_dato_actualizado.nombre
     db_tipo_dato.unidad = tipo_dato_actualizado.unidad
     db_tipo_dato.rango_minimo = tipo_dato_actualizado.rango_minimo
+    db_tipo_dato.umbral_alerta_precaucion = tipo_dato_actualizado.umbral_alerta_precaucion
+    db_tipo_dato.umbral_alerta_peligro = tipo_dato_actualizado.umbral_alerta_peligro
     db_tipo_dato.rango_maximo = tipo_dato_actualizado.rango_maximo
     db.commit()
     db.refresh(db_tipo_dato)

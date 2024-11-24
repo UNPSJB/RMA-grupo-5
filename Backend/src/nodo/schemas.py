@@ -4,10 +4,12 @@ from datetime import datetime
 
 # Clase base para TipoDato
 class TipoDatoBase(BaseModel):
-    nombre: str 
+    nombre: str
     unidad: str
-    rango_minimo: float
-    rango_maximo: float
+    rango_minimo: Optional[float] = None
+    umbral_alerta_precaucion: Optional[float] = None
+    umbral_alerta_peligro: Optional[float] = None
+    rango_maximo: Optional[float] = None
 
     class Config:
         from_attributes = True
@@ -16,10 +18,17 @@ class TipoDatoCreate(TipoDatoBase):
     nombre: str 
     unidad: str
     rango_minimo: Optional[float] = None
+    umbral_alerta_precaucion: Optional [float] = None
+    umbral_alerta_peligro: Optional[float] = None
     rango_maximo: Optional[float] = None
 
 class TipoDatoUpdate(TipoDatoBase):
-    pass
+    nombre: Optional[str] = None
+    unidad: Optional[str] = None
+    rango_minimo: Optional[float] = None
+    umbral_alerta_precaucion: Optional[float] = None
+    umbral_alerta_peligro: Optional[float] = None
+    rango_maximo: Optional[float] = None
 
 # Clase para representar un TipoDato
 class TipoDato(TipoDatoBase):
@@ -103,3 +112,26 @@ class Registro(RegistroBase):
 
     class Config:
        from_attributes = True
+
+# Clase base para Alerta
+class AlertaBase(BaseModel):
+    nombre: str 
+    unidad: str
+    rango_minimo: float
+    rango_maximo: float
+
+    class Config:
+        from_attributes = True
+
+class TipoDatoCreate(TipoDatoBase):
+    nombre: str 
+    unidad: str
+    rango_minimo: Optional[float] = None
+    rango_maximo: Optional[float] = None
+
+class TipoDatoUpdate(TipoDatoBase):
+    pass
+
+# Clase para representar un TipoDato
+class TipoDato(TipoDatoBase):
+    id: int
