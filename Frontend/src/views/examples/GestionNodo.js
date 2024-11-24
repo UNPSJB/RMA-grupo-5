@@ -28,6 +28,12 @@ const GestionNodo = () => {
     fetchNodos();
   }, []);
 
+  useEffect(() => {
+    if (!modalOpen) {
+      setEsEdicion(false); // Restablecer a false cuando el modal se cierra
+    }
+  }, [modalOpen]);
+  
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
   
