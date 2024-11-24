@@ -115,23 +115,26 @@ class Registro(RegistroBase):
 
 # Clase base para Alerta
 class AlertaBase(BaseModel):
-    nombre: str 
-    unidad: str
-    rango_minimo: float
-    rango_maximo: float
+    id: int 
+    tipo_alerta: int
+    leida: bool = False
+    id_medicion: int
+    tipo_dato_id: int
+    nodo_numero: int
 
     class Config:
         from_attributes = True
 
-class TipoDatoCreate(TipoDatoBase):
-    nombre: str 
-    unidad: str
-    rango_minimo: Optional[float] = None
-    rango_maximo: Optional[float] = None
+class AlertaCreate(TipoDatoBase):
+    tipo_alerta: int
+    leida: bool = False
+    id_medicion: int
+    tipo_dato_id: int
+    nodo_numero: int
 
-class TipoDatoUpdate(TipoDatoBase):
+class AlertaUpdate(TipoDatoBase):
     pass
 
-# Clase para representar un TipoDato
-class TipoDato(TipoDatoBase):
+# Clase para representar una Alerta
+class Alerta(TipoDatoBase):
     id: int

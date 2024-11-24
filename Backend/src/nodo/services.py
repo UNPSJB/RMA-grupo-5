@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from src.nodo import schemas
 from src.nodo import exceptions
-from src.nodo.models import Medicion, Nodo, Registro, TipoDato
+from src.nodo.models import Medicion, Nodo, Registro, TipoDato, Alerta
 from src.nodo import schemas
 from src.nodo import exceptions
 import time, json
@@ -12,7 +12,6 @@ from fastapi import HTTPException
 
 
 #/--- Métodos de clase Medicion ---/
-
 def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     nodo_existente = db.query(Nodo).filter(Nodo.numero == medicion.nodo_numero).first()
     
@@ -331,3 +330,33 @@ def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
 
     # Si el usuario y la contraseña son correctos, devolver un mensaje de éxito
     return db_usuario
+
+
+#/--- Métodos de clase Alerta ---/
+def crear_alerta(db: Session, alerta: schemas.AlertaCreate) -> Medicion:
+    db_alerta = Alerta(
+        tipo_dato_id=alerta.tipo_dato_id,
+        id_medicion=alerta.id_medicion,
+        nodo_numero=alerta.nodo_numero,
+        tipo_alerta=alerta.tipo_alerta,
+        leida=alerta.leida
+    )
+    db.add(db_alerta)
+    db.commit()
+    db.refresh(db_alerta)
+    return db_alerta
+
+def leer_alertas(db: Session) -> List[Alerta]:
+    return db.query(Alerta).all()
+
+def leer_alerta(db: Session, alerta_id: int) -> Alerta:
+    db_alerta = db.query(Alerta).filter(Alerta.id_medicion == alerta_id).first()
+    if db_alerta is None:
+        raise exceptions.AlertaNoEncontrada() 
+    return db_alerta
+
+def eliminar_alerta(db: Session, alerta_id: int) -> Alerta:
+    db_alerta = leer_medicion(db, alerta_id)
+    db.delete(db_alerta)
+    db.commit()
+    return db_alerta 

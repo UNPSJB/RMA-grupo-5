@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 import json
 from datetime import datetime
-from src.nodo.schemas import MedicionCreate
-from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato
+from src.nodo.schemas import MedicionCreate, AlertaCreate
+from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato, crear_alerta
 from src.nodo.models import TipoDato
 from src.nodo import exceptions
 
@@ -72,4 +72,14 @@ def procesar_mensaje(mensaje: str, db: Session) -> None:
     )
     
     crear_medicion(db, medicion)
+#
+    #alerta = AlertaCreate(
+        #tipo_dato_id=tipo_dt,
+        #data=valor_data,
+        #time=time_dt,
+        #nodo_numero=nodo_numero,
+        #es_erroneo=es_erroneo
+    #)
+    
+    #crear_alerta(db, alerta)
 
