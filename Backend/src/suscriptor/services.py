@@ -5,12 +5,25 @@ from src.nodo.schemas import MedicionCreate, AlertaCreate
 from src.nodo.services import crear_medicion, leer_nodo, leer_tipo_dato, crear_alerta
 from src.nodo.models import TipoDato
 from src.nodo import exceptions
-from src.conexiones_websocket import connected_clients
+from src.conexiones_websocket import clientes_alertas, clientes_ultima_medicion
 
-async def send_alert_to_clients(alerta_data: dict):
+async def enviar_alerta_a_clientes(alerta_data: dict):
     # Enviar la alerta a todos los clientes conectados a través del WebSocket
-    for client in connected_clients:
-        await client.send_json(alerta_data)
+    for cliente in clientes_alertas:
+        try:
+            await cliente.send_json(alerta_data)
+        except Exception as e:
+            # Si ocurre un error eliminarlo de la lista
+            clientes_alertas.remove(cliente)
+
+async def enviar_medicion_a_clientes(medicion_data: dict):
+    # Enviar la medición a todos los clientes de 'ultima_medicion'
+    for cliente in clientes_ultima_medicion:
+        try:
+            medicion_data['time'] = medicion_data['time'].isoformat()
+            await cliente.send_json(medicion_data)
+        except Exception as e:
+            clientes_ultima_medicion.remove(cliente)
 
 def medicion_es_erronea(data: str, type_dt: TipoDato, time_dt: datetime) -> bool:
     # Intenta convertir data a un float
@@ -94,6 +107,10 @@ async def procesar_mensaje(mensaje: str, db: Session) -> None:
     
     crear_medicion(db, medicion)
 
+    # Enviar la ultima medicion
+    medicion_data = medicion.dict()
+    await enviar_medicion_a_clientes(medicion_data)
+    
     # Si es erroneo, no es necesario verificar si esta dentro de los rangos de alerta
     if es_erroneo == False:
         nro_tipo = verificar_umbrales_medicion(valor_data, type_dt, time_dt)
@@ -108,4 +125,4 @@ async def procesar_mensaje(mensaje: str, db: Session) -> None:
             )
             crear_alerta(db, alerta)
             alerta_data = alerta.dict()  # Convertir a dict para enviar como JSON
-            await send_alert_to_clients(alerta_data)
+            await enviar_alerta_a_clientes(alerta_data)

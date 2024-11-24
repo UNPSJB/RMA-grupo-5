@@ -4,15 +4,26 @@ from typing import List
 router = APIRouter()
 
 # Lista para almacenar conexiones activas
-connected_clients: List[WebSocket] = []
+clientes_alertas: List[WebSocket] = []
+clientes_ultima_medicion: List[WebSocket] = []
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()  # Aceptar la conexión websocket
-    connected_clients.append(websocket)  # Añadir el websocket a la lista de conexiones activas
+    await websocket.accept()
 
+    tipo_cliente = await websocket.receive_text()  # Recibir tipo_cliente como mensaje
+    # Agregar a la lista correspondiente
+    if tipo_cliente == "alertas":
+        clientes_alertas.append(websocket)
+    elif tipo_cliente == "ultima_medicion":
+        clientes_ultima_medicion.append(websocket)
+    
     try:
         while True:
-            await websocket.receive_text()  # Esperar a recibir mensajes
+            await websocket.receive_text()  # Espera mensajes
     except WebSocketDisconnect:
-        connected_clients.remove(websocket) 
+        # Eliminar el cliente de la lista correcta al desconectarse
+        if tipo_cliente == "alertas":
+            clientes_alertas.remove(websocket)
+        elif tipo_cliente == "ultima_medicion":
+            clientes_ultima_medicion.remove(websocket)
