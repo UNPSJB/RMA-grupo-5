@@ -30,9 +30,11 @@ const GestionNodo = () => {
 
   useEffect(() => {
     if (!modalOpen) {
-      setEsEdicion(false); // Restablecer a false cuando el modal se cierra
+      setEsEdicion(false);
+      setNuevoNodo({ numero: '', nombre: '', longitud: '', latitud: '' }); // Limpiar el formulario
     }
   }, [modalOpen]);
+  
   
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -319,4 +321,3 @@ const GestionNodo = () => {
   );
 }
 export default GestionNodo;
-
