@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 
 
+
 #/--- Métodos de clase Medicion ---/
 def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     nodo_existente = db.query(Nodo).filter(Nodo.numero == medicion.nodo_numero).first()
@@ -336,10 +337,10 @@ def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
 def crear_alerta(db: Session, alerta: schemas.AlertaCreate) -> Medicion:
     db_alerta = Alerta(
         tipo_dato_id=alerta.tipo_dato_id,
-        id_medicion=alerta.id_medicion,
+        valor_medicion=alerta.valor_medicion,
         nodo_numero=alerta.nodo_numero,
         tipo_alerta=alerta.tipo_alerta,
-        leida=alerta.leida
+        estado=alerta.estado
     )
     db.add(db_alerta)
     db.commit()

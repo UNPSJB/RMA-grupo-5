@@ -50,7 +50,6 @@ class Medicion(BaseModel):
     nodo = relationship("Nodo", back_populates="mediciones")
     tipo_dato_id = Column(String, ForeignKey('tipos_dato.id'), nullable=False)
     tipo_dato = relationship("TipoDato", back_populates="mediciones")
-    alertas = relationship("Alerta", back_populates="medicion")
     fecha_creacion = Column(DateTime, default=datetime.utcnow)
     fecha_modificacion = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -67,9 +66,8 @@ class Alerta(BaseModel):
 
     id = Column(Integer, primary_key=True, index=True)
     tipo_alerta = Column(Integer, nullable=False) 
-    leida = Column(Boolean, nullable=False, default=False)
-    id_medicion = Column(String, ForeignKey('mediciones.id'), nullable=False)
-    medicion = relationship("Medicion", back_populates="alertas")
+    estado = Column(Boolean, nullable=False, default=False)
+    valor_medicion = Column(Float, nullable=False)
     tipo_dato_id = Column(String, ForeignKey('tipos_dato.id'), nullable=False)
     tipo_dato = relationship("TipoDato", back_populates="alertas")
     nodo_numero = Column(Integer, ForeignKey('nodos.numero'), nullable=True)
