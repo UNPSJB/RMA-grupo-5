@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import { Tooltip } from "reactstrap";
+
 import L from "leaflet";
 import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
@@ -150,6 +152,8 @@ const MapWrapper = () => {
   const [nodos, setNodos] = useState([]);
   const navigate = useNavigate();
 
+
+
   const position = [-43.583333, -66.0];
   const bounds = [
     [-45.0, -67.5], // Esquina suroeste de los límites
@@ -256,12 +260,19 @@ const MapWrapper = () => {
 
 const Maps = () => {
   const [showImage, setShowImage] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
   const toggleImage = () => {
     setShowImage(!showImage);
   };
   return (
     <>
       <Header />
+      <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <Container className="mt--7" fluid style={{ padding: '130px' }}>
         <Row>
           <Col lg="12">
@@ -272,6 +283,21 @@ const Maps = () => {
               <Container>
                 <h3 className="row justify-content-md-center">
                   Cuenca Sagmata - Nodos Activos
+                  <i
+                            id="helpIcon"
+                            className="bi bi-question-circle ml-2 text-info"
+                            style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+                          ></i>
+                          <Tooltip
+                            placement="right"
+                            isOpen={tooltipOpen}
+                            target="helpIcon"
+                            toggle={toggleTooltip}
+                          >
+                            <p>- <span className="activo">Al hacer click</span>: Al hacer click en el número de nodo, se mostrará una breve información del mismo.</p>
+                            <p>- <span className="activo">Ver Detalle</span>: Al hacer click en 'Ver Detalle', te lleverá a la sección de Tablas.</p>
+
+                          </Tooltip>
                 </h3>
               </Container>
               <MapWrapper />

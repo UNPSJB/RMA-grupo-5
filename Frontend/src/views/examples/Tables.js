@@ -16,6 +16,7 @@ import {
   PaginationLink,
   Button,
 } from "reactstrap";
+import { Tooltip } from "reactstrap";
 import * as XLSX from "xlsx";
 import Header from "components/Headers/Header.js";
 import { CustomFileInput } from "components/Buttons/CustomFileInput";
@@ -42,6 +43,7 @@ const Tables = () => {
   const [showUmbrales, setShowUmbrales] = useState(false);
   const [showFecha, setShowFecha] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const location = useLocation();
 
   // Filtrar los datos por tipo y rango de fechas
@@ -59,6 +61,9 @@ const Tables = () => {
       setNodoSeleccionado(location.state.selectedNode);
     }
   }, [location.state]);
+
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
   
   // Carga de nodos
   useEffect(() => {
@@ -313,11 +318,30 @@ const Tables = () => {
   return (
     <>
     <Header />
+    <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
         <Card className="shadow mb-4">
           <CardHeader className="border-0">
             {/* Título y Texto */}
-            <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado}</h3>
+            <h3 className="mb-0">Historial de Mediciones del Nodo {nodoSeleccionado}
+            <i
+                id="helpIcon"
+                className="bi bi-question-circle ml-2 text-info"
+                style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+              ></i>
+              <Tooltip
+                placement="right"
+                isOpen={tooltipOpen}
+                target="helpIcon"
+                toggle={toggleTooltip}
+              >
+                <p>- <span className="activo">Filtro de Umbrales</span>: Podrás filtrar mediante unos filtros que definas de umbrales mínimos y máximos.</p>
+                <p>- <span className="activo">Exportar e Importar</span>: Podrás exportar por una cantidad que elijas o exportar todo, también subir un archivo.</p>
+                <p>- <span className="activo">Filtro por Fecha</span>: Podrás filtrar por fechas deseadas.</p>
+              </Tooltip>
+            </h3>
             <p className="text-muted mt-2">Mostrando datos de más reciente a más antiguo.</p>
             
             {/* Selección de Nodo y Tipo de Dato */}

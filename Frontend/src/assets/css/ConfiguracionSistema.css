@@ -1,0 +1,45 @@
+
+/* Estilo para el Tooltip */
+.tooltip-inner {
+    background-color: #f0f8ff;
+    color: #333; 
+    font-size: 14px; 
+    padding: 10px; 
+    border-radius: 5px; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    }
+    
+    /* Estilo para el estado "Activo" */
+    .text-success {
+      font-weight: bold; 
+      color: green; 
+    }
+    
+    /* Estilo para el estado "Inactivo" */
+    .text-danger {
+      font-weight: bold;
+      color: red; 
+    }
+    
+    /* Estilo para el estado "Mantenimiento" */
+    .mantenimiento {
+      font-weight: bold;
+      color: orange; 
+    }
+    
+    /* Personaliza los textos dentro del Tooltip según el estado */
+    .tooltip-inner .activo {
+      color: green;
+      font-weight: bold;
+    }
+    
+    .tooltip-inner .inactivo {
+      color: red; 
+      font-weight: bold; 
+    }
+    
+    .tooltip-inner .mantenimiento {
+      color: orange;
+      font-weight: bold; 
+    }
+    

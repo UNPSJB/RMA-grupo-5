@@ -12,10 +12,16 @@ const Header = ({ title, subtitle }) => {
     const notificacionesRef = useRef(null);
 
     const maxAlertas = 5;
-
     const agregarAlerta = useCallback((nuevaAlerta) => {
         setAlertas((prevAlertas) => {
             const hora = new Date().toLocaleTimeString();
+            const alertaExistente = prevAlertas.some(alerta => 
+                alerta.nodo_numero === nuevaAlerta.nodo_numero && 
+                alerta.tipo_alerta === nuevaAlerta.tipo_alerta &&
+                alerta.hora === nuevaAlerta.hora
+            );
+
+            if (alertaExistente) return prevAlertas;  // No agregar si ya existe
             const nuevasAlertas = [
                 ...prevAlertas,
                 { ...nuevaAlerta, leida: false, hora: hora }
@@ -27,15 +33,16 @@ const Header = ({ title, subtitle }) => {
 
     useEffect(() => {
         let ws;
-
+    
         const conectarWebSocket = () => {
+            if (ws) return; // Si ya hay una conexión, no crear otra
             ws = new WebSocket("ws://localhost:8000/ws");
-
+    
             ws.onopen = () => {
                 console.log("Conectado al WebSocket");
                 ws.send(JSON.stringify({ tipo_cliente: "alertas" }));
             };
-
+    
             ws.onmessage = (event) => {
                 try {
                     const nuevaAlerta = JSON.parse(event.data);
@@ -52,21 +59,20 @@ const Header = ({ title, subtitle }) => {
                     console.error("Error procesando mensaje del WebSocket:", error);
                 }
             };
-
+    
             ws.onclose = () => {
                 console.log("WebSocket cerrado, reconectando...");
                 setTimeout(conectarWebSocket, 3000);
             };
         };
-
+    
         conectarWebSocket();
-
+    
         return () => {
             if (ws) ws.close();
         };
     }, [agregarAlerta]);
-
-  
+    
     useEffect(() => {
         if (notificacionesRef.current && alertas.length > maxAlertas) {
             notificacionesRef.current.scrollTop = notificacionesRef.current.scrollHeight;
@@ -91,6 +97,22 @@ const Header = ({ title, subtitle }) => {
         });
     };
 
+    const toggleNotificaciones = () => {
+        setMostrarNotificaciones(!mostrarNotificaciones);
+
+        // Marcar todas las alertas como leídas al abrir/cerrar el dropdown
+        if (!mostrarNotificaciones) {
+            setAlertas((prevAlertas) => {
+                const nuevasAlertas = prevAlertas.map(alerta => ({
+                    ...alerta,
+                    leida: true
+                }));
+                localStorage.setItem('alertas', JSON.stringify(nuevasAlertas));
+                return nuevasAlertas;
+            });
+        }
+    };
+
     return (
         <div className="header bg-gradient-info pb-50 pt-7">
             <div className="header-content">
@@ -105,9 +127,13 @@ const Header = ({ title, subtitle }) => {
                         size="2x" 
                         color="white" 
                         style={{ cursor: "pointer" }}
-                        onClick={() => setMostrarNotificaciones(!mostrarNotificaciones)}
+                        onClick={toggleNotificaciones}
                     />
-                    {alertas.length > 0 && <span className="badge">{alertas.length}</span>}
+                    {alertas.some(alerta => !alerta.leida) && (
+                        <span className="badge">
+                            {alertas.filter(alerta => !alerta.leida).length}
+                        </span>
+                    )}
                 </div>
             </div>
 
@@ -117,7 +143,7 @@ const Header = ({ title, subtitle }) => {
                         <h4>Notificaciones</h4>
                         <button
                             className="cerrar-boton"
-                            onClick={() => setMostrarNotificaciones(false)}
+                            onClick={toggleNotificaciones}
                         >
                             <FontAwesomeIcon icon={faTimes} />
                         </button>
@@ -139,7 +165,7 @@ const Header = ({ title, subtitle }) => {
                                         className="checkmark-icon" 
                                     />
                                 )}
-                                {`Alerta ${alerta.tipo_alerta}: Valor ${alerta.valor_medicion} en nodo ${alerta.nodo_numero}`}
+                                {`Alerta ${alerta.tipo_alerta}: Valor: ${alerta.valor_medicion} | Tipo: ${alerta.tipo_dato_id} | Nodo: ${alerta.nodo_numero}`}
                                 <div className="hora-alerta">
                                     <small>{alerta.hora}</small>
                                 </div>

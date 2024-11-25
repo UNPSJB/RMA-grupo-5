@@ -46,11 +46,11 @@ async def enviar_alertas(alerta):
 @router.post("/enviar-alerta/")
 async def enviar_alerta_manual():
     alerta = {
-        "tipo_alerta": 2,
+        "tipo_alerta": 1,
         "estado": True,
         "valor_medicion": 1.20,
         "tipo_dato_id": 1,
-        "nodo_numero": 0
+        "nodo_numero": 4
     }
     await enviar_alertas(alerta)
     return {"status": "Alerta enviada"}

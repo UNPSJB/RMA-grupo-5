@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "components/Headers/Header.js";
+import "../../assets/css/ConfiguracionSistema.css";
 import {
   Card,
   CardHeader,
@@ -16,6 +17,8 @@ import {
   Row,
   Col,
   Container,
+  Tooltip,
+  Table,
 } from "reactstrap";
 import { message, Modal as AntdModal } from "antd";
 
@@ -23,6 +26,8 @@ const ConfiguracionSistema = () => {
   const [tiposDatos, setTiposDatos] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
 
   const [tipoDato, setTipoDato] = useState('');
   const [nombre, setNombre] = useState('');
@@ -32,6 +37,11 @@ const ConfiguracionSistema = () => {
   const [umbral_alerta_peligro, setUmbral_alerta_peligro] = useState('');
   const [rango_maximo, setRango_maximo] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+
+  const handleAyuda = () => {
+    alert('Ayuda: Use este formulario para filtrar datos según los criterios seleccionados. Puede elegir un nodo, tipo de dato, rango de fechas y establecer umbrales mínimo y máximo.');
+  };
+
 
   const fetchTiposDatos = async () => {
     try {
@@ -182,6 +192,8 @@ const ConfiguracionSistema = () => {
     "WEIGHT2_T": "Peso #2",
     "DESCONOCIDO": "Desconocido",
   };
+  const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
+
 
   // Filtrar los tipos de datos según el nombre
   const filteredTiposDatos = tiposDatos.filter((tipoDato) => {
@@ -195,6 +207,9 @@ const ConfiguracionSistema = () => {
   return (
     <>
       <Header  />
+      <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <Container className="mt-5" fluid> {/* Ajuste del margen superior */}
         <Card className="shadow mb-4">
           <CardHeader className="border-0">
@@ -223,7 +238,7 @@ const ConfiguracionSistema = () => {
             </Col>
           </Row>
           <Card className="shadow mt-3">
-            <table className="table align-items-center table-flush">
+            <Table className="table align-items-center table-flush">
               <thead>
                 <tr>
                   <th>Id</th>
@@ -233,7 +248,22 @@ const ConfiguracionSistema = () => {
                   <th>Umbral Alerta-Precaucion</th>
                   <th>Umbral Alerta-Peligro</th>
                   <th>Rango máximo</th>
-                  <th>Acciones</th>
+                  <th>
+                    Acciones
+                    <i
+                        id="helpIcon"
+                        className="bi bi-question-circle ml-2 text-info"
+                        style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+                      ></i>
+                      <Tooltip
+                        placement="right"
+                        isOpen={tooltipOpen}
+                        target="helpIcon"
+                        toggle={toggleTooltip}
+                      >
+                          <p>- <span className="activo">Modificar</span>: aca se modifica xd</p>
+                          </Tooltip>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -256,7 +286,7 @@ const ConfiguracionSistema = () => {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </Table>
           </Card>
 
 
