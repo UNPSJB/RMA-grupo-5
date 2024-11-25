@@ -1,0 +1,11 @@
+ENV="DEV"
+ROOT_PATH_DEV=""
+ROOT_PATH_PROD="/api"
+DB_URL="sqlite:///./src/mi-db-sqlite.db"
+MQTT_TOPIC="test_topic"
+MQTT_HOST="localhost"
+MQTT_PORT=1883
+MQTT_KEEPALIVE=60
+
+SECRET_KEY="your_secret_key"
+ALGORITHM="HS256"

@@ -13,18 +13,20 @@ const IniciarSesion = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación simple para los campos de usuario y contraseña
+    // Validación simple para los campos de username y contraseña
     if (!nombreUsuario || !contrasena) {
       message.error("Por favor, complete todos los campos.");
       return;
     }
 
     const datosUsuario = {
-      usuario: nombreUsuario,
-      contrasenia: contrasena,
+      username: nombreUsuario,
+      password: contrasena,
     };
 
-    axios.post('http://localhost:8000/iniciar_sesion', datosUsuario)
+    axios.post('http://localhost:8000/iniciar_sesion', datosUsuario, {
+      withCredentials: true  
+    })
       .then(response => {
         message.success("Inicio de sesión exitoso");
 

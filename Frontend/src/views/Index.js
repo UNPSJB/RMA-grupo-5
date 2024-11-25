@@ -4,7 +4,7 @@ import Chart from "chart.js";
 import { Line, Bar, Radar, Polar} from "react-chartjs-2";
 import html2canvas from "html2canvas";
 import "../assets/css/index.css";
-
+import {default as axios} from "./examples/axiosConfig"; 
 import {
   Card,
   CardHeader,
@@ -28,10 +28,9 @@ import {
   graficoLineal,
   graficoBarras,
   graficoCompuesto,
-  graficoPolar,
-  graficoRadar,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
+import { setTokenToCookie } from "./examples/utils";
 
   
 const Index = (props) => {
@@ -74,18 +73,27 @@ const Index = (props) => {
     }
   };
 
+
+  
   // Obtener todos los nodos para el desplegable
   useEffect(() => {
     const getNodos = async () => {
       setLoading(true); // Iniciar la carga
+      setTokenToCookie()
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
+        //const response = await fetch("http://localhost:8000/leer_nodos", {
+          const response = await axios.get("http://localhost:8000/leer_nodos", {
+          method: 'GET',
+          credentials: 'include', // Esto asegura que las cookies se envíen
+        });
+    
         if (!response.ok) {
           throw new Error("Error al obtener nodos");
         }
+    
         const data = await response.json();
         setNodos(data);
-
+    
         // Si no hay nodos, el nodo seleccionado será 0
         if (data.length === 0) {
           setNodoSeleccionado(0);
@@ -147,7 +155,8 @@ const Index = (props) => {
       if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
           if (!response.ok) {
             throw new Error("Error al obtener las mediciones diarias");
           }
@@ -182,7 +191,9 @@ const Index = (props) => {
       if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
-          const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          setTokenToCookie()
+          //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
           if (!response.ok) {
             throw new Error("Error al obtener las mediciones diarias");
           }
@@ -222,7 +233,9 @@ const Index = (props) => {
     if (nodoSeleccionado !== null) {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+            setTokenToCookie()
+            //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+            const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
             if (!response.ok) {
                 throw new Error("Error al obtener las mediciones semanales");
             }
@@ -326,14 +339,7 @@ const Index = (props) => {
     semanalTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
   };
 
-  const titulosGraficos = {
-    line: "Altura del canal",
-    bar: "Temperatura de la zona",
-    comp: "Comparación de datos",
-    rad: "Presion atmosférica",
-    pol: "Radiación UV"
-  };
-  
+
 
   if (window.Chart) {
     parseOptions(Chart, chartOptions());
@@ -554,7 +560,6 @@ const Index = (props) => {
                   <div className="chart">
                     <Radar
                       data={chartData.semanalTemp}
-                      options={graficoRadar.options}
                     />
                   </div>
                 </CardBody>
@@ -644,7 +649,6 @@ const Index = (props) => {
                   <div className="chart">
                     <Polar
                       data={chartData.semanalTemp}
-                      options={graficoPolar.options}
                     />
                   </div>
                 </CardBody>
@@ -652,40 +656,19 @@ const Index = (props) => {
             </Col>
             
           </Row>
+          {/* Modal para mostrar gráfico expandido */}
           <Modal isOpen={modal} toggle={() => toggleModal(null)} size="xl">
-            <ModalHeader toggle={() => toggleModal(null)}>
-              {titulosGraficos[expandedChart] || "Gráfico Expandido"}
-            </ModalHeader>
+            <ModalHeader toggle={() => toggleModal(null)}>Gráfico Expandido</ModalHeader>
             <ModalBody>
-              <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
-                {expandedChart === "line" && (
-                  <Line
-                    data={chartData[activeNav === 1 ? "diarioAlt" : "semanalAlt"]}
-                    options={graficoLineal.options}
-                  />
-                )}
-                {expandedChart === "bar" && (
-                  <Bar data={chartData.semanalTemp} options={graficoBarras.options} />
-                )}
-                {expandedChart === "comp" && (
-                  <Bar
-                    data={graficoCompuesto.data(
-                      valoresNodosTemp,
-                      1,
-                      valoresNodosDiario,
-                      4,
-                      valoresNodosSemanal,
-                      23
-                    )}
-                    options={graficoCompuesto.options}
-                  />
-                )}
-                {expandedChart === "rad" && <Radar data={chartData.semanalTemp} />}
-                {expandedChart === "pol" && <Polar data={chartData.semanalTemp} />}
-              </div>
+            <div style={{ width: "100%", height: "500px" }}> {/* Ajusta la altura */}
+              {expandedChart === "line" && <Line data={chartData[activeNav === 1 ? "diarioAlt" : "semanalAlt"]} options={graficoLineal.options} />}
+              {expandedChart === "bar" && <Bar data={chartData.semanalTemp} options={graficoBarras.options} />}
+              {expandedChart === "comp" && <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosDiario, 4, valoresNodosSemanal, 23)} options={graficoCompuesto.options} />}
+              {expandedChart === "rad" && <Radar data={chartData.semanalTemp} />}
+              {expandedChart === "pol" && <Polar data={chartData.semanalTemp} />}
+            </div>
             </ModalBody>
           </Modal>
-
           {/* MUESTRA DATOS PARA VERIFICAR Q LOS CONSIGUE
           <Row className="mt-5">
             <Col>
