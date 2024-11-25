@@ -1,14 +1,59 @@
 .header {
-    position: relative; /* Asegura el posicionamiento relativo para los elementos hijos */
-    padding: 20px; /* Espaciado general */
-    background: #007bff; /* Fondo del header */
-    color: white;
-    display: flex;
-    justify-content: center; /* Centra el título */
-    align-items: center; /* Centra verticalmente */
-    height: 100px; /* Ajusta la altura según tu diseño */
+    background: linear-gradient(90deg, rgba(29, 185, 222, 1) 0%, rgba(36, 161, 156, 1) 100%);
+
+    padding: 20px 0;
+}
+.card-stats {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
+.card-stats:hover {
+    transform: translateY(-2px);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    color: #2c3e50;
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+}
+
+.text-muted {
+    color: #7f8c8d !important;
+    font-size: 0.9rem;
+}
+
+span {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #34495e;
+}
+
+.text-uppercase {
+    font-size: 1rem;
+    letter-spacing: 0.1rem;
+}
+
+.row .col {
+    margin: 5px 0;
+}
+
+.card-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+    .card-stats {
+        width: 100%;
+        height: auto;
+    }
+}   
 
 .header-title {
     font-size: 3rem; /* Tamaño más grande para el título */
