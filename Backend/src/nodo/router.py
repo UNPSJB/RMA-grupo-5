@@ -151,3 +151,28 @@ def iniciar_sesion(registro: schemas.RegistroBase, db: Session = Depends(get_db)
     return services.iniciar_sesion(registro, db)
 
 
+#/--- Rutas de clase Alerta ---/
+@router.post("/crear_alerta", response_model=schemas.Alerta)
+def create_alerta(alerta: schemas.AlertaCreate, db: Session = Depends(get_db)):
+    return services.crear_alerta(db, alerta)
+
+@router.get("/leer_alertas", response_model=schemas.Alerta)
+def read_alerta(db: Session = Depends(get_db)):
+    return services.leer_alertas(db)
+
+@router.get("/leer_alerta/{id_alerta}", response_model=schemas.Alerta)
+def read_alerta(id_alerta: int, db: Session = Depends(get_db)):
+    return services.leer_alerta(db, id_alerta)
+
+@router.delete("/eliminar_alerta/{id_alerta}", response_model=schemas.Alerta)
+def delete_alerta(id_alerta: int, db: Session = Depends(get_db)):
+    return services.eliminar_alerta(db, id_alerta)
+
+@router.put("/toggle_leida/{alerta_id}", response_model=schemas.Alerta)
+def toggle_estado_nodo(alerta_id: int, db: Session = Depends(get_db)):
+    alerta = services.leer_alerta(db, alerta_id)
+    alerta.leida = not alerta.leida
+
+    db.commit()
+    db.refresh(alerta)
+    return alerta

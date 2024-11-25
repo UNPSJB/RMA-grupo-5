@@ -256,46 +256,54 @@ const Tables = () => {
     }
   }
 
-  // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(
-      sortedMedicionData.map((dato) => {
-        // Buscar el tipo de dato por el id
-        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
-        const tipoNombre = tipoDatoMap[tipo.nombre];    
-        return {
-          Nodo: dato.nodo_numero,
-          Tipo: tipoNombre,
-          Data: dato.data,
-          "Fecha-Hora": new Date(dato.time).toLocaleString(),
-        };
-      })
-    );
+    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
+    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
+    const tipoUnidad = tipo ? tipo.unidad : "";
+  
+    const rows = sortedMedicionData.map((dato) => ({
+      Valor: dato.data,
+      "Fecha-Hora": new Date(dato.time).toLocaleString(),
+    }));
+  
+    const ws = XLSX.utils.json_to_sheet(rows);
+
+    if (ws["A1"]) {
+      ws["A1"].v = `Valor (${tipoUnidad})`;
+    }
+  
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
-    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_completo.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
+  
+    const nombreArchivo = `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}.xlsx`;
+    XLSX.writeFile(wb, nombreArchivo);
   };
+  
 
   // Función para exportar una cantidad específica de datos
   const exportSelectedToExcel = () => {
     const cantidad = parseInt(cantidadExportar) || sortedMedicionData.length; // Determinar cantidad a exportar
     const dataToExport = sortedMedicionData.slice(0, cantidad); // Obtener la cantidad seleccionada
+    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
+    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
+    const tipoUnidad = tipo ? tipo.unidad : "";
+
     const ws = XLSX.utils.json_to_sheet(
-      dataToExport.map((dato) => {
-        // Buscar el tipo de dato por el id
-        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
-        const tipoNombre = tipoDatoMap[tipo.nombre];      
+      dataToExport.map((dato) => {  
         return {
-          Nodo: dato.nodo_numero,
-          Tipo: tipoNombre,
-          Data: dato.data,
+          Valor: dato.data,
           "Fecha-Hora": new Date(dato.time).toLocaleString(),
         };
       })
     );
+
+    if (ws["A1"]) {
+      ws["A1"].v = `Valor (${tipoUnidad})`;
+    }
+
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
-    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_${cantidad}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}_${cantidad}.xlsx`);
   };
 
   // Manejo de carga y errores
@@ -474,60 +482,50 @@ const Tables = () => {
             {/* Tabla de Datos */}
             <Row>
               <div className="col">
-              <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
-              <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
-                <thead>
-                  <tr>
-                    <th scope="col">Nodo</th>
-                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
-                      Tipo 
-                      {ordenamiento === "tipo" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                      Valor 
-                      {ordenamiento === "data" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-                      Fecha-Hora 
-                      {ordenamiento === "fecha" && (
-                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                      )}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentItems.map((medicion, index) => {
-                    const tipoDato = tiposDatos.find(
-                      (tipo) => tipo.id === medicion.tipo_dato_id
-                    );
-
-                    return (
-                      <tr key={index}>
-                        <td>{medicion.nodo_numero}</td>
-                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
-                        <td>
-                          {parseFloat(medicion.data).toFixed(2)}{" "}
-                          {tipoDato ? tipoDato.unidad : ""}
-                        </td>
-                        <td>
-                          {new Date(medicion.time).toLocaleString("es-AR", {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: false,
-                          })}
-                        </td>
+                <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
+                  <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
+                    <thead>
+                      <tr>
+                        <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                          Valor 
+                          {ordenamiento === "data" && (
+                            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                          )}
+                        </th>
+                        <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                          Fecha-Hora 
+                          {ordenamiento === "fecha" && (
+                            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                          )}
+                        </th>
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
+                    </thead>
+                    <tbody>
+                      {currentItems.map((medicion, index) => {
+                        const tipoDato = tiposDatos.find(
+                          (tipo) => tipo.id === medicion.tipo_dato_id
+                        );
+                        return (
+                          <tr key={index}>
+                            <td>
+                              {parseFloat(medicion.data).toFixed(5)}{" "}
+                              {tipoDato ? tipoDato.unidad : ""}
+                            </td>
+                            <td>
+                              {new Date(medicion.time).toLocaleString("es-AR", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: false,
+                              })}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
 
               {/* Paginación */}
               <div className="py-3">

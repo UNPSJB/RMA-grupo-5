@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Header from "components/Headers/Header.js";
-import { Tooltip, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { message } from "antd"; // Para notificaciones
+import { Tooltip } from "reactstrap";
 import "../../assets/css/Gestion_Nodo.css";
-import { Card, CardHeader, Container, Row, Col, Table } from "reactstrap";
+import {Card, CardHeader,Container, Row, Col, Table, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
+import { message } from "antd";
 
 const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false); // Estado para el modal
   const [nuevoNodo, setNuevoNodo] = useState({ numero: '', nombre: '', longitud: '', latitud: '' });
-
+  const [esEdicion, setEsEdicion] = useState(false); // Si el modal está en modo edición
+  const [nodoActual, setNodoActual] = useState(null); // Nodo actual a modificar
+  
   const fetchNodos = async () => {
     try {
       const response = await axios.get(`http://localhost:8000/leer_nodos`);
@@ -25,14 +27,51 @@ const GestionNodo = () => {
     fetchNodos();
   }, []);
 
+  useEffect(() => {
+    if (!modalOpen) {
+      setEsEdicion(false); // Restablecer a false cuando el modal se cierra
+    }
+  }, [modalOpen]);
+  
   const toggleTooltip = () => setTooltipOpen(!tooltipOpen);
   const toggleModal = () => setModalOpen(!modalOpen);
-
+  
+  const handleModificarNodo = (nodo) => {
+    setEsEdicion(true);
+    setNodoActual(nodo);
+    setNuevoNodo({
+      numero: nodo.numero.toString(),
+      nombre: nodo.nombre,
+      longitud: nodo.longitud.toString(),
+      latitud: nodo.latitud.toString(),
+    });
+    toggleModal();
+  };
+  
   const handleNuevoNodoChange = (e) => {
     const { name, value } = e.target;
     setNuevoNodo({ ...nuevoNodo, [name]: value });
   };
 
+  const handleActualizarNodo = async () => {
+    try {
+      const nodoData = {
+        numero: parseInt(nuevoNodo.numero),
+        nombre: nuevoNodo.nombre,
+        longitud: parseFloat(nuevoNodo.longitud),
+        latitud: parseFloat(nuevoNodo.latitud),
+      };
+  
+      await axios.put(`http://localhost:8000/modificar_nodo/${nodoActual.numero}`, nodoData);
+      message.success("Nodo actualizado exitosamente");
+      toggleModal();
+      setEsEdicion(false);
+      fetchNodos(); // Refrescar la lista de nodos
+    } catch (error) {
+      message.error("Error al actualizar el nodo, intente nuevamente");
+    }
+  };
+  
   const handleRegistrarNodo = async () => {
     const { numero, nombre, longitud, latitud } = nuevoNodo;
 
@@ -60,6 +99,24 @@ const GestionNodo = () => {
       message.error("Error al registrar el nodo, intente nuevamente");
     }
   };
+
+    try {
+      const nodoData = {
+        numero: parseInt(numero),
+        nombre,
+        longitud: parseFloat(longitud),
+        latitud: parseFloat(latitud),
+        estado: 1,
+      };
+
+      await axios.post('http://localhost:8000/crear_nodo', nodoData);
+      message.success("Nodo registrado exitosamente");
+      toggleModal(); // Cerrar el modal
+      fetchNodos(); // Refrescar la lista
+      setNuevoNodo({ numero: '', nombre: '', longitud: '', latitud: '' }); // Limpiar el formulario
+    } catch (error) {
+      message.error("Error al cambiar el estado del nodo:", error);
+    }
 
   const getEstadoTexto = (estado) => {
     switch (estado) {
@@ -90,6 +147,9 @@ const GestionNodo = () => {
   return (
     <>
       <Header />
+      <header>  
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
+      </header>
       <Container className="mt-5" fluid>
         <Card className="shadow mb-4">
           <CardHeader className="border-0">
@@ -125,8 +185,28 @@ const GestionNodo = () => {
                           <td>{nodo.nombre}</td>
                           <td>{nodo.longitud}</td>
                           <td>{nodo.latitud}</td>
-                          <td className={getEstadoClass(nodo.estado)}>
-                            {getEstadoTexto(nodo.estado)}
+                          <td>
+                          <button
+                            className="edit-button"
+                            onClick={() => handleModificarNodo(nodo)}
+                          >
+                            Modificar
+                          </button>
+                          </td>
+                          <td>
+                            <div className="status-indicator">
+                              <span className={getEstadoClass(nodo.estado)}>
+                                {getEstadoTexto(nodo.estado)}
+                              </span>
+                              {(nodo.estado === 1 || nodo.estado === 2 || nodo.estado === 3) && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleEstado(nodo.numero)} 
+                                >
+                                  <i className="bi bi-wrench text-warning"></i> {/* Icono de mantenimiento */}
+                                </button>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -138,9 +218,10 @@ const GestionNodo = () => {
           </CardHeader>
         </Card>
       </Container>
-
       <Modal isOpen={modalOpen} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>Registrar Nuevo Nodo</ModalHeader>
+      <ModalHeader toggle={toggleModal}>
+        {esEdicion ? "Modificar Nodo" : "Registrar Nuevo Nodo"}
+      </ModalHeader>
         <ModalBody>
           <form>
             <div className="form-group">
@@ -153,6 +234,7 @@ const GestionNodo = () => {
                 value={nuevoNodo.numero}
                 onChange={handleNuevoNodoChange}
                 required
+                readOnly={esEdicion} // Solo lectura si estás editando
               />
             </div>
             <div className="form-group">
@@ -193,10 +275,23 @@ const GestionNodo = () => {
           </form>
         </ModalBody>
         <ModalFooter>
-          <button className="btn btn-primary" onClick={handleRegistrarNodo}>
-            Guardar
-          </button>
-          <button className="btn btn-secondary" onClick={toggleModal}>
+          {esEdicion ? (
+            <button className="btn btn-primary" onClick={handleActualizarNodo}>
+              Actualizar
+            </button>
+          ) : (
+            <button className="btn btn-primary" onClick={handleRegistrarNodo}>
+              Guardar
+            </button>
+          )}
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              toggleModal();
+              setEsEdicion(false); // Restablecer el modo edición
+              setNuevoNodo({ numero: "", nombre: "", longitud: "", latitud: "" }); // Limpiar
+            }}
+          >
             Cancelar
           </button>
         </ModalFooter>
@@ -206,5 +301,3 @@ const GestionNodo = () => {
 };
 
 export default GestionNodo;
-
-
