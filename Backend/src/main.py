@@ -1,4 +1,4 @@
-import os, sys, json
+import os, asyncio
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
@@ -15,6 +15,7 @@ from src.suscriptor.sub import Subscriptor
 from src.suscriptor.config import config
 from src.suscriptor.services import procesar_mensaje
 from src import config_cors
+from src.conexiones_websocket import router as websocket_router
 
 #para autentificacion a traves de la utilizacion de un token
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -31,6 +32,8 @@ ROOT_PATH = os.getenv(f"ROOT_PATH_{ENV.upper()}")
 
 # FastAPI configuration
 app = FastAPI(root_path=ROOT_PATH)
+
+app.include_router(websocket_router)
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
@@ -88,7 +91,7 @@ def mi_callback(mensaje: str) -> None:
     db: Session = SessionLocal()
 
     try:
-        procesar_mensaje(mensaje, db)
+       asyncio.run(procesar_mensaje(mensaje, db))
     except Exception as e:
         print(f"Error al procesar el mensaje: {e}")
     finally:
@@ -130,6 +133,8 @@ async def startup_event():
                 nombre=tipo["nombre"],
                 unidad=tipo["unidad"],
                 rango_minimo=tipo["rango_minimo"],
+                umbral_alerta_precaucion=tipo["umbral_alerta_precaucion"],
+                umbral_alerta_peligro=tipo["umbral_alerta_peligro"],
                 rango_maximo=tipo["rango_maximo"]
             )
             try:

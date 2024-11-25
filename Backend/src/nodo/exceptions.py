@@ -11,6 +11,9 @@ class MedicionNoEncontrada(NotFound):
 class TipoDatoNoEncontrado(NotFound):
     DETAIL = ErrorCode.TIPO_DATO_NO_ENCONTRADO
 
+class AlertaNoEncontrada(NotFound):
+    DETAIL = ErrorCode.ALERTA_NO_ENCONTRADA
+
 class NodoDuplicado(BadRequest):
     DETAIL = ErrorCode.NODO_DUPLICADO
 
