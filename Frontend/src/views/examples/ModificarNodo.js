@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios"; 
+//import axios from "axios"; 
 import Header from "components/Headers/Header.js";
 import { useNavigate, useParams } from "react-router-dom";
 import "../../assets/css/ModificarNodo.css";
 import { message } from "antd";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 const ModificarNodo = () => {
   const [nodo, setNodo] = useState('');
@@ -18,7 +20,14 @@ const ModificarNodo = () => {
   useEffect(() => {
     const fetchNodo = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/leer_nodo/${id}`);
+
+        setTokenToCookie()
+        // Configurar los headers, agregando el token si está presente
+        const config = {
+          withCredentials: true, // Si necesitas enviar cookies de sesión
+        }
+
+        const response = await axios.get(`http://localhost:8000/leer_nodo/${id}`, config);
         const { numero, nombre, longitud, latitud, estado } = response.data;
         setNodo(numero);
         setNombre(nombre);
@@ -53,7 +62,7 @@ const ModificarNodo = () => {
       longitud: Number(ubicacionX),
       latitud: Number(ubicacionY),
     };
-
+    setTokenToCookie()
     // Realiza una solicitud PUT para modificar el nodo existente
     axios.put(`http://localhost:8000/modificar_nodo/${id}`, nodoActualizado)
       .then(response => {

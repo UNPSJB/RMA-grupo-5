@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import {default as axios} from "./axiosConfig"; 
 import Header from "components/Headers/Header.js";
 import {
   Card,
@@ -18,6 +18,7 @@ import {
   Container,
 } from "reactstrap";
 import { message, Modal as AntdModal } from "antd";
+import { setTokenToCookie } from './utils';
 
 const ConfiguracionSistema = () => {
   const [tiposDatos, setTiposDatos] = useState([]);
@@ -28,14 +29,19 @@ const ConfiguracionSistema = () => {
   const [nombre, setNombre] = useState('');
   const [unidad, setUnidad] = useState('');
   const [rango_minimo, setRango_minimo] = useState('');
-  const [umbral_alerta_precaucion, setUmbral_alerta_precaucion] = useState('');
-  const [umbral_alerta_peligro, setUmbral_alerta_peligro] = useState('');
   const [rango_maximo, setRango_maximo] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
   const fetchTiposDatos = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/leer_tipos_datos`);
+      setTokenToCookie()
+          
+      // Configurar los headers, agregando el token si está presente
+        const config = {
+        withCredentials: true, // Si necesitas enviar cookies de sesión
+        }
+
+      const response = await axios.get(`http://localhost:8000/leer_tipos_datos`, config);
       setTiposDatos(response.data);
     } catch (error) {
       console.error("Error al obtener los tipos de datos:", error);
@@ -53,8 +59,6 @@ const ConfiguracionSistema = () => {
       setNombre(tipoDatoToEdit.nombre);
       setUnidad(tipoDatoToEdit.unidad);
       setRango_minimo(tipoDatoToEdit.rango_minimo);
-      setUmbral_alerta_precaucion(tipoDatoToEdit.umbral_alerta_precaucion)
-      setUmbral_alerta_peligro(tipoDatoToEdit.umbral_alerta_peligro)
       setRango_maximo(tipoDatoToEdit.rango_maximo);
       setIsEditing(true);
       toggleModal();
@@ -66,8 +70,6 @@ const ConfiguracionSistema = () => {
     setNombre('');
     setUnidad('');
     setRango_minimo('');
-    setUmbral_alerta_precaucion('');
-    setUmbral_alerta_peligro('');
     setRango_maximo('');
     setIsEditing(false);
     toggleModal();
@@ -79,12 +81,10 @@ const ConfiguracionSistema = () => {
     const tipo = {
       nombre: String(nombre),
       unidad: String(unidad),
-      rango_minimo: rango_minimo === '' ? null : parseFloat(rango_minimo),
-      umbral_alerta_precaucion: umbral_alerta_precaucion === '' ? null : parseFloat(umbral_alerta_precaucion),
-      umbral_alerta_peligro: umbral_alerta_peligro === '' ? null : parseFloat(umbral_alerta_peligro),
-      rango_maximo: rango_maximo === '' ? null : parseFloat(rango_maximo),
+      rango_minimo: parseFloat(rango_minimo),
+      rango_maximo: parseFloat(rango_maximo),
     };
-  
+
     if (isEditing) {
       // Modificar tipo de dato
       axios
@@ -111,7 +111,7 @@ const ConfiguracionSistema = () => {
           message.error("Error al registrar el tipo de dato, intente nuevamente");
         });
     }
-  
+
     toggleModal();
   };
 
@@ -119,8 +119,6 @@ const ConfiguracionSistema = () => {
     setNombre('');
     setUnidad('');
     setRango_minimo('');
-    setUmbral_alerta_precaucion('');
-    setUmbral_alerta_peligro('');
     setRango_maximo('');
   };
 
@@ -230,8 +228,6 @@ const ConfiguracionSistema = () => {
                   <th>Nombre</th>
                   <th>Unidad de medida</th>
                   <th>Rango mínimo</th>
-                  <th>Umbral Alerta-Precaucion</th>
-                  <th>Umbral Alerta-Peligro</th>
                   <th>Rango máximo</th>
                   <th>Acciones</th>
                 </tr>
@@ -243,15 +239,11 @@ const ConfiguracionSistema = () => {
                     <td>{tipoDatoMap[tipoDato.nombre] || tipoDato.nombre}</td>
                     <td>{tipoDato.unidad}</td>
                     <td>{tipoDato.rango_minimo}</td>
-                    <td>{tipoDato.umbral_alerta_precaucion}</td>
-                    <td>{tipoDato.umbral_alerta_peligro}</td>
                     <td>{tipoDato.rango_maximo}</td>
                     <td>
-                    {tipoDato.id !== 36 && (
                       <Button className="edit-button" onClick={() => handleEdit(tipoDato.id)}>
                         Modificar
                       </Button>
-                    )}
                     </td>
                   </tr>
                 ))}
@@ -298,28 +290,6 @@ const ConfiguracionSistema = () => {
                   value={rango_minimo}
                   onChange={(e) => setRango_minimo(e.target.value)}
                   placeholder="Ingrese el rango mínimo"
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="umbralAlertaPrecaucion">Umbrar Alerta Precaucion</Label>
-                <Input
-                  type="number"
-                  name="umbralAlertaPrecaucion"
-                  id="umbralAlertaPrecaucion"
-                  value={umbral_alerta_precaucion}
-                  onChange={(e) => setUmbral_alerta_precaucion(e.target.value)}
-                  placeholder="Ingrese el umbral de alerta de precaucion"
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="umbralAlertaPeligro">Umbrar Alerta Peligro</Label>
-                <Input
-                  type="number"
-                  name="umbralAlertaPeligro"
-                  id="umbralAlertaPeligro"
-                  value={umbral_alerta_peligro}
-                  onChange={(e) => setUmbral_alerta_peligro(e.target.value)}
-                  placeholder="Ingrese el umbral de alerta de peligro"
                 />
               </FormGroup>
               <FormGroup>

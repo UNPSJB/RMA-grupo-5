@@ -3,11 +3,15 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { Card, Container, Row, Col, Button} from "reactstrap";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
+//import axios from "axios";
+import {default as axios} from "./axiosConfig"; 
+import {default as navigate} from "./redirectTo"; 
 
 import Header from "components/Headers/HeaderTarjeta.js";
-
+import { setTokenToCookie } from './utils';
 // Eliminar el icono por defecto
+
 delete L.Icon.Default.prototype._getIconUrl;
 
 const polygonPositions = [
@@ -146,9 +150,11 @@ const ImageExpandButton = ({ showImage }) => {
   );
 };
 
+
+
 const MapWrapper = () => {
   const [nodos, setNodos] = useState([]);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const position = [-43.583333, -66.0];
   const bounds = [
@@ -159,10 +165,23 @@ const MapWrapper = () => {
   useEffect(() => {
     const fetchNodos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
-        const data = await response.json();
-        setNodos(data);
+        
+        // Obtener el token del localStorage
+        setTokenToCookie()
+        // Configurar los headers, agregando el token si está presente
+        const config = {
+          withCredentials: true, // Si necesitas enviar cookies de sesión
+        }
+
+        // Realizar la solicitud GET con los headers configurados
+        const response = await axios.get("http://localhost:8000/leer_nodos", config);
+
+        // Usar la respuesta para actualizar el estado de los nodos
+        setNodos(response.data);
       } catch (error) {
+        if (error.response.status === 401){
+          //window.location.href = "http://localhost:3000/auth/register";
+        }
         console.error("Error al obtener los nodos:", error);
       }
     };

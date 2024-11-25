@@ -4,12 +4,10 @@ from datetime import datetime
 
 # Clase base para TipoDato
 class TipoDatoBase(BaseModel):
-    nombre: str
+    nombre: str 
     unidad: str
-    rango_minimo: Optional[float] = None
-    umbral_alerta_precaucion: Optional[float] = None
-    umbral_alerta_peligro: Optional[float] = None
-    rango_maximo: Optional[float] = None
+    rango_minimo: float
+    rango_maximo: float
 
     class Config:
         from_attributes = True
@@ -18,17 +16,10 @@ class TipoDatoCreate(TipoDatoBase):
     nombre: str 
     unidad: str
     rango_minimo: Optional[float] = None
-    umbral_alerta_precaucion: Optional [float] = None
-    umbral_alerta_peligro: Optional[float] = None
     rango_maximo: Optional[float] = None
 
 class TipoDatoUpdate(TipoDatoBase):
-    nombre: Optional[str] = None
-    unidad: Optional[str] = None
-    rango_minimo: Optional[float] = None
-    umbral_alerta_precaucion: Optional[float] = None
-    umbral_alerta_peligro: Optional[float] = None
-    rango_maximo: Optional[float] = None
+    pass
 
 # Clase para representar un TipoDato
 class TipoDato(TipoDatoBase):
@@ -95,8 +86,8 @@ class Nodo(NodoBase):
 
 # Clase base para Registro
 class RegistroBase(BaseModel):
-    usuario: str 
-    contrasenia: str
+    username: str 
+    password: str
 
 # Clase para crear un nuevo registro (sign up)
 class RegistroCreate(RegistroBase):
@@ -104,36 +95,21 @@ class RegistroCreate(RegistroBase):
 
 # Clase para actualizar un registro existente (update)
 class RegistroUpdate(BaseModel):
-    contrasenia: Optional[str] 
+    password: Optional[str] 
 
 # Clase para representar un registro completo (leer o mostrar datos)
 class Registro(RegistroBase):
-    contrasenia: str
+    password: str
 
     class Config:
        from_attributes = True
 
-# Clase base para Alerta
-class AlertaBase(BaseModel):
-    tipo_alerta: int
-    estado: bool = False
-    valor_medicion: float
-    tipo_dato_id: int
-    nodo_numero: int
 
-    class Config:
-        from_attributes = True
+# PARA JWT
+class LoginRequest(RegistroBase):
+    username: str
+    password: str
 
-class AlertaCreate(AlertaBase):
-    tipo_alerta: int
-    estado: bool = False
-    valor_medicion: float
-    tipo_dato_id: int
-    nodo_numero: int
-
-class AlertaUpdate(AlertaBase):
-    pass
-
-# Clase para representar una Alerta
-class Alerta(AlertaBase):
-    id: int
+class Token(BaseModel):
+    access_token: str
+    token_type: str

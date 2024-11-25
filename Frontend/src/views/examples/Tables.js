@@ -21,7 +21,8 @@ import Header from "components/Headers/Header.js";
 import { CustomFileInput } from "components/Buttons/CustomFileInput";
 import { useLocation } from "react-router-dom";
 import { message } from "antd";
-
+import {default as axios} from "./axiosConfig"; 
+import { setTokenToCookie } from "./utils";
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
   const [medicionData, setMedicionData] = useState([]);
@@ -64,14 +65,16 @@ const Tables = () => {
   useEffect(() => {
     const getNodos = async () => {
       setLoading(true);
+      setTokenToCookie()
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
-        if (!response.ok) {
-          throw new Error("Error al hacer el fetch de nodos");
-        }
-        const data = await response.json();
+        // Realizar la solicitud con Axios
+        
+        const response = await axios.get("/leer_nodos");
+    
+        // Extraer los datos de la respuesta
+        const data = response.data;
         setNodos(data);
-
+    
         // Solo establecer el nodo por defecto si no hay un nodo seleccionado
         if (data.length > 0 && nodoSeleccionado === null) {
           setNodoSeleccionado(data[0].numero); // Establece el primer nodo como seleccionado solo si nodoSeleccionado es null
@@ -92,7 +95,9 @@ const Tables = () => {
         const getMedicionData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+                
+                //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+                const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
                 if (!response.ok) {
                     throw new Error("Error al hacer el fetch de mediciones");
                 }
@@ -114,7 +119,9 @@ const Tables = () => {
   useEffect(() => {
     const getTiposDatos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_tipos_datos");
+        setTokenToCookie()
+        //const response = await fetch("http://localhost:8000/leer_tipos_datos");
+        const response = await axios.get("http://localhost:8000/leer_tipos_datos");
         if (!response.ok) {
           throw new Error("Error al obtener los tipos de datos");
         }
@@ -256,54 +263,46 @@ const Tables = () => {
     }
   }
 
+  // Función para exportar todos los datos del nodo seleccionado
   const exportAllToExcel = () => {
-    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
-    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
-    const tipoUnidad = tipo ? tipo.unidad : "";
-  
-    const rows = sortedMedicionData.map((dato) => ({
-      Valor: dato.data,
-      "Fecha-Hora": new Date(dato.time).toLocaleString(),
-    }));
-  
-    const ws = XLSX.utils.json_to_sheet(rows);
-
-    if (ws["A1"]) {
-      ws["A1"].v = `Valor (${tipoUnidad})`;
-    }
-  
+    const ws = XLSX.utils.json_to_sheet(
+      sortedMedicionData.map((dato) => {
+        // Buscar el tipo de dato por el id
+        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
+        const tipoNombre = tipoDatoMap[tipo.nombre];    
+        return {
+          Nodo: dato.nodo_numero,
+          Tipo: tipoNombre,
+          Data: dato.data,
+          "Fecha-Hora": new Date(dato.time).toLocaleString(),
+        };
+      })
+    );
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
-  
-    const nombreArchivo = `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}.xlsx`;
-    XLSX.writeFile(wb, nombreArchivo);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_completo.xlsx`);
   };
-  
 
   // Función para exportar una cantidad específica de datos
   const exportSelectedToExcel = () => {
     const cantidad = parseInt(cantidadExportar) || sortedMedicionData.length; // Determinar cantidad a exportar
     const dataToExport = sortedMedicionData.slice(0, cantidad); // Obtener la cantidad seleccionada
-    const tipo = tiposDatos.find((tipo) => tipo.id === sortedMedicionData[0]?.tipo_dato_id);
-    const tipoNombre = tipo ? tipoDatoMap[tipo.nombre] : "Desconocido";
-    const tipoUnidad = tipo ? tipo.unidad : "";
-
     const ws = XLSX.utils.json_to_sheet(
-      dataToExport.map((dato) => {  
+      dataToExport.map((dato) => {
+        // Buscar el tipo de dato por el id
+        const tipo = tiposDatos.find((tipo) => tipo.id === dato.tipo_dato_id);
+        const tipoNombre = tipoDatoMap[tipo.nombre];      
         return {
-          Valor: dato.data,
+          Nodo: dato.nodo_numero,
+          Tipo: tipoNombre,
+          Data: dato.data,
           "Fecha-Hora": new Date(dato.time).toLocaleString(),
         };
       })
     );
-
-    if (ws["A1"]) {
-      ws["A1"].v = `Valor (${tipoUnidad})`;
-    }
-
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado}`);
-    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado}_${tipoNombre.replace(/\s+/g, "_")}_${cantidad}.xlsx`);
+    XLSX.utils.book_append_sheet(wb, ws, `Mediciones_${nodoSeleccionado || "todos"}`);
+    XLSX.writeFile(wb, `mediciones_nodo_${nodoSeleccionado || "todos"}_${cantidad}.xlsx`);
   };
 
   // Manejo de carga y errores
@@ -482,50 +481,60 @@ const Tables = () => {
             {/* Tabla de Datos */}
             <Row>
               <div className="col">
-                <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
-                  <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
-                    <thead>
-                      <tr>
-                        <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
-                          Valor 
-                          {ordenamiento === "data" && (
-                            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                          )}
-                        </th>
-                        <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
-                          Fecha-Hora 
-                          {ordenamiento === "fecha" && (
-                            <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
-                          )}
-                        </th>
+              <Card className="shadow mt-4 px-3 py-3"> {/* Añade márgenes en el Card */}
+              <Table className="align-items-center" responsive> {/* Quita 'table-flush' */}
+                <thead>
+                  <tr>
+                    <th scope="col">Nodo</th>
+                    <th onClick={() => { setOrdenamiento("tipo"); setOrdenAscendente(!ordenAscendente); }}>
+                      Tipo 
+                      {ordenamiento === "tipo" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("data"); setOrdenAscendente(!ordenAscendente); }}>
+                      Valor 
+                      {ordenamiento === "data" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                    <th onClick={() => { setOrdenamiento("fecha"); setOrdenAscendente(!ordenAscendente); }}>
+                      Fecha-Hora 
+                      {ordenamiento === "fecha" && (
+                        <span className={`arrow ${ordenAscendente ? "desc" : "asc"}`}></span>
+                      )}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((medicion, index) => {
+                    const tipoDato = tiposDatos.find(
+                      (tipo) => tipo.id === medicion.tipo_dato_id
+                    );
+
+                    return (
+                      <tr key={index}>
+                        <td>{medicion.nodo_numero}</td>
+                        <td>{tipoDato && tipoDatoMap[tipoDato.nombre]}</td>
+                        <td>
+                          {parseFloat(medicion.data).toFixed(2)}{" "}
+                          {tipoDato ? tipoDato.unidad : ""}
+                        </td>
+                        <td>
+                          {new Date(medicion.time).toLocaleString("es-AR", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: false,
+                          })}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {currentItems.map((medicion, index) => {
-                        const tipoDato = tiposDatos.find(
-                          (tipo) => tipo.id === medicion.tipo_dato_id
-                        );
-                        return (
-                          <tr key={index}>
-                            <td>
-                              {parseFloat(medicion.data).toFixed(5)}{" "}
-                              {tipoDato ? tipoDato.unidad : ""}
-                            </td>
-                            <td>
-                              {new Date(medicion.time).toLocaleString("es-AR", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                                hour12: false,
-                              })}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </Table>
+                    );
+                  })}
+                </tbody>
+              </Table>
 
               {/* Paginación */}
               <div className="py-3">

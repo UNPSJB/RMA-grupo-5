@@ -411,10 +411,6 @@ let graficoLineal = {
         },
       },
     },
-    legend: {
-      display: true,
-      position: 'bottom',
-    },
   },
   // nodoDataValues son los parametros recibidos desde "views/index"
   data1: (nodoDataValues, nodoA, nodoDataValues2, nodoB) => {
@@ -516,10 +512,7 @@ let graficoBarras = {
         },
       },
     },
-    legend: {
-      display: true,
-      position: 'bottom',
-    },
+    
   },
   data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
     const hoy = new Date();
@@ -631,110 +624,10 @@ let graficoCompuesto = {
   },
 };
 
-let graficoRadar = {
-  options: {
-    legend: {
-      display: true,
-      position: 'bottom',
-    },
-  },
-  data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
-    const hoy = new Date();
-    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
-    const labels = [];
-  
-    // Generate labels for the last 7 days, starting from today and moving backwards
-    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
-      const dia = new Date(hoy);
-      dia.setDate(hoy.getDate() - i);
-      labels.push(diasSemana[dia.getDay()]);
-    }
-    labels[6] = "Hoy";
-    return {
-      labels:labels,
-      datasets: [
-        {
-        label: "Nodo " + nodoA + " ",
-        data: valoresTemperatura,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 50, 132, 1)',
-        borderWidth: 1.5,
-      },
-      {
-        label: "Nodo " + nodoB + " ",
-        data: valoresTemperatura2,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(54, 150, 235, 0.2)',
-        borderColor: 'rgba(54, 150, 235, 1)',
-        borderWidth: 1.5,
-      },
-    ],
-    };
-  },
-};
-
-let graficoPolar = {
-  options: {
-    legend: {
-      display: true,
-      position: "bottom",
-      labels: {
-        generateLabels: (chart) => {
-          const datasets = chart.data.datasets;
-          return datasets.map((dataset, i) => ({
-            text: dataset.label, // Toma la etiqueta del dataset
-            fillStyle: dataset.backgroundColor,
-            strokeStyle: dataset.borderColor,
-            lineWidth: dataset.borderWidth,
-            hidden: !chart.isDatasetVisible(i),
-            index: i,
-          }));
-        },
-      },
-    },
-  },
-  data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
-    const hoy = new Date();
-    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
-    const labels = [];
-  
-    // Generate labels for the last 7 days, starting from today and moving backwards
-    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
-      const dia = new Date(hoy);
-      dia.setDate(hoy.getDate() - i);
-      labels.push(diasSemana[dia.getDay()]);
-    }
-    labels[6] = "Hoy";
-    return {
-      labels:labels,
-      datasets: [
-        {
-        label: "Nodo " + nodoA + " ",
-        data: valoresTemperatura,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 50, 132, 1)',
-        borderWidth: 1.5,
-      },
-      {
-        label: "Nodo " + nodoB + " ",
-        data: valoresTemperatura2,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(54, 150, 235, 0.2)',
-        borderColor: 'rgba(54, 150, 235, 1)',
-        borderWidth: 1.5,
-      },
-    ],
-    };
-  },
-};
 module.exports = {
   chartOptions, // used inside src/views/Index.js
   parseOptions, // used inside src/views/Index.js
   graficoLineal, // used inside src/views/Index.js
   graficoBarras, // used inside src/views/Index.js
   graficoCompuesto, //grafico compuesto
-  graficoPolar,
-  graficoRadar
 };

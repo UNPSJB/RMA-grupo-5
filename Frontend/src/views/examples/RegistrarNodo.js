@@ -1,9 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios"; 
+//import axios from "axios"; 
+import {default as axios} from "./axiosConfig"; 
 import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/RegistrarNodo.css"
 import { message } from "antd";
+import { setTokenToCookie } from './utils';
+//import {default as navigate} from "./redirectTo"; 
 
 const RegistrarNodo = () => {
   const [nodo, setNodo] = useState('');
@@ -25,15 +28,16 @@ const RegistrarNodo = () => {
     return;
   }
     
-
+    setTokenToCookie()
     const nuevoNodo = {
       numero: parseInt(nodo),
       nombre: String(nombre),
       longitud: parseFloat(ubicacionX),
       latitud: parseFloat(ubicacionY),
-      estado: 1
+      estado: 1,
+      withCredentials: true,
     };
-
+    
     axios.post('http://localhost:8000/crear_nodo', nuevoNodo)
       .then(response => {
       message.success("Nodo registrado exitosamente"); 
@@ -114,4 +118,3 @@ const RegistrarNodo = () => {
 };
 
 export default RegistrarNodo;
-

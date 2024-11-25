@@ -1,9 +1,10 @@
 from typing import List
+from src.nodo.auth import hashing
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from src.nodo import schemas
 from src.nodo import exceptions
-from src.nodo.models import Medicion, Nodo, Registro, TipoDato, Alerta
+from src.nodo.models import Medicion, Nodo, Registro, TipoDato
 from src.nodo import schemas
 from src.nodo import exceptions
 import time, json
@@ -11,8 +12,8 @@ from datetime import datetime, timedelta
 from fastapi import HTTPException
 
 
-
 #/--- Métodos de clase Medicion ---/
+
 def crear_medicion(db: Session, medicion: schemas.MedicionCreate) -> Medicion:
     nodo_existente = db.query(Nodo).filter(Nodo.numero == medicion.nodo_numero).first()
     
@@ -196,8 +197,6 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
         nombre = tipoDato.nombre,
         unidad = tipoDato.unidad,
         rango_minimo = tipoDato.rango_minimo,
-        umbral_alerta_precaucion = tipoDato.umbral_alerta_precaucion,
-        umbral_alerta_peligro = tipoDato.umbral_alerta_peligro,
         rango_maximo = tipoDato.rango_maximo 
     )
     db.add(db_tipo_dato)
@@ -207,6 +206,11 @@ def crear_tipo_dato(db: Session, tipoDato: schemas.TipoDatoCreate) -> Medicion:
 
 def leer_tipos_datos(db: Session) -> List[TipoDato]:
     tipos_datos = db.query(TipoDato).all()
+    for tipo in tipos_datos:
+        if tipo.rango_minimo is None:
+            tipo.rango_minimo = 0 
+        if tipo.rango_maximo is None:
+            tipo.rango_maximo = 0 
     return tipos_datos
 
 def leer_tipo_dato(db: Session, id_tipo: int) -> TipoDato:
@@ -228,8 +232,6 @@ def modificar_tipo_dato(
     db_tipo_dato.nombre = tipo_dato_actualizado.nombre
     db_tipo_dato.unidad = tipo_dato_actualizado.unidad
     db_tipo_dato.rango_minimo = tipo_dato_actualizado.rango_minimo
-    db_tipo_dato.umbral_alerta_precaucion = tipo_dato_actualizado.umbral_alerta_precaucion
-    db_tipo_dato.umbral_alerta_peligro = tipo_dato_actualizado.umbral_alerta_peligro
     db_tipo_dato.rango_maximo = tipo_dato_actualizado.rango_maximo
     db.commit()
     db.refresh(db_tipo_dato)
@@ -298,66 +300,58 @@ def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
 
     return mediciones_importadas
 
+
+
 #/--- Metodos de clase Registro ---/
 def crear_usuario(db: Session, registro: schemas.RegistroCreate):
+    
+    db_username_existente = db.query(Registro).filter(Registro.username == registro.username).first()
+    
+    if db_username_existente:
+        raise HTTPException(status_code=400, detail="El username ya está registrado")
+    
+
+    hashed_password = hashing.hash_password(registro.password)
+    db_user = Registro(username=registro.username, password=hashed_password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+
+
+
+'''
+def crear_usuario(db: Session, registro: schemas.RegistroCreate):
    
-    db_usuario_existente = db.query(Registro).filter(Registro.usuario == registro.usuario).first()
+    db_username_existente = db.query(Registro).filter(Registro.username == registro.username).first()
     
-    if db_usuario_existente:
-        raise HTTPException(status_code=400, detail="El usuario ya está registrado")
+    if db_username_existente:
+        raise HTTPException(status_code=400, detail="El username ya está registrado")
     
-    db_usuario = Registro(
-        usuario=registro.usuario,
-        contrasenia=registro.contrasenia
+    db_username = Registro(
+        username=registro.username,
+        password=registro.password
     )
     
-    db.add(db_usuario)
+    db.add(db_username)
     db.commit()
-    db.refresh(db_usuario)
+    db.refresh(db_username)
     
-    return db_usuario
+    return db_username
 
-def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
-    # Buscar al usuario en la base de datos
-    db_usuario = db.query(Registro).filter(Registro.usuario == datos_usuario.usuario).first()
+def iniciar_sesion(datos_username: schemas.RegistroBase, db: Session):
+    # Buscar al username en la base de datos
+    db_username = db.query(Registro).filter(Registro.username == datos_username.username).first()
 
-    # Verificar si el usuario existe
-    if db_usuario is None:
+    # Verificar si el username existe
+    if db_username is None:
         raise HTTPException(status_code=400, detail="Usuario no encontrado")
     
     # Verificar si la contraseña es correcta
-    if db_usuario.contrasenia != datos_usuario.contrasenia:
+    if db_username.password != datos_username.password:
         raise HTTPException(status_code=400, detail="Contraseña incorrecta")
 
-    # Si el usuario y la contraseña son correctos, devolver un mensaje de éxito
-    return db_usuario
+    # Si el username y la contraseña son correctos, devolver un mensaje de éxito
+    return db_username'''
 
-
-#/--- Métodos de clase Alerta ---/
-def crear_alerta(db: Session, alerta: schemas.AlertaCreate) -> Medicion:
-    db_alerta = Alerta(
-        tipo_dato_id=alerta.tipo_dato_id,
-        valor_medicion=alerta.valor_medicion,
-        nodo_numero=alerta.nodo_numero,
-        tipo_alerta=alerta.tipo_alerta,
-        estado=alerta.estado
-    )
-    db.add(db_alerta)
-    db.commit()
-    db.refresh(db_alerta)
-    return db_alerta
-
-def leer_alertas(db: Session) -> List[Alerta]:
-    return db.query(Alerta).all()
-
-def leer_alerta(db: Session, alerta_id: int) -> Alerta:
-    db_alerta = db.query(Alerta).filter(Alerta.id_medicion == alerta_id).first()
-    if db_alerta is None:
-        raise exceptions.AlertaNoEncontrada() 
-    return db_alerta
-
-def eliminar_alerta(db: Session, alerta_id: int) -> Alerta:
-    db_alerta = leer_medicion(db, alerta_id)
-    db.delete(db_alerta)
-    db.commit()
-    return db_alerta 

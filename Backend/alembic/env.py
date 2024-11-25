@@ -33,6 +33,7 @@ target_metadata = None
 
 target_metadata = BaseModel.metadata
 load_dotenv()
+
 config.set_main_option("sqlalchemy.url", os.getenv("DB_URL"))
 
 def upgrade():
