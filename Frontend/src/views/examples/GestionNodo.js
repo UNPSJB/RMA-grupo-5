@@ -6,6 +6,11 @@ import "../../assets/css/Gestion_Nodo.css";
 import {Card, CardHeader,Container, Row, Col, Table, Modal, ModalBody, ModalFooter, ModalHeader} from "reactstrap";
 import { message } from "antd";
 
+import { useNavigate } from "react-router-dom";
+import GenericMap from "./GenericMap";
+import L from "leaflet";
+
+
 const GestionNodo = () => {
   const [nodos, setNodos] = useState([]);
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -23,6 +28,22 @@ const GestionNodo = () => {
       console.error("Error al obtener los nodos:", error);
     }
   };
+
+
+  const [ubicacionX, setUbicacionX] = useState('');
+  const [ubicacionY, setUbicacionY] = useState('');
+
+  const onClickPin = (lat, lng) => {
+
+    console.log(`lat: ${lat}, lng: ${lng}`);
+    setUbicacionY(lat);
+    setUbicacionX(lng);
+
+  }
+
+  const setPos = () => {
+    return {ubicacionX, ubicacionY};
+  }
 
   useEffect(() => {
     fetchNodos();
@@ -74,6 +95,9 @@ const GestionNodo = () => {
   };
   
   const handleRegistrarNodo = async () => {
+    toggleModal();
+    setEsEdicion(false);
+    console.log("akfdsadsfadfsa");
     const { numero, nombre, longitud, latitud } = nuevoNodo;
 
     // Validar los campos
@@ -237,60 +261,77 @@ const GestionNodo = () => {
           </CardHeader>
         </Card>
       </Container>
-      <Modal isOpen={modalOpen} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>
-        {esEdicion ? "Modificar Nodo" : "Registrar Nuevo Nodo"}
-      </ModalHeader>
+      <Modal isOpen={modalOpen} toggle={toggleModal} size="lg">
+        <ModalHeader toggle={toggleModal}>
+          {esEdicion ? "Modificar Nodo" : "Registrar Nuevo Nodo"}
+        </ModalHeader>
         <ModalBody>
           <form>
-            <div className="form-group">
-              <label htmlFor="numeroNodo">Número de Nodo:</label>
-              <input
-                type="text"
-                id="numeroNodo"
-                name="numero"
-                className="form-control"
-                value={nuevoNodo.numero}
-                onChange={handleNuevoNodoChange}
-                required
-                readOnly={esEdicion} // Solo lectura si estás editando
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="aliasNodo">Alias:</label>
-              <input
-                type="text"
-                id="aliasNodo"
-                name="nombre"
-                className="form-control"
-                value={nuevoNodo.nombre}
-                onChange={handleNuevoNodoChange}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="longitudNodo">Longitud:</label>
-              <input
-                type="text"
-                id="longitudNodo"
-                name="longitud"
-                className="form-control"
-                value={nuevoNodo.longitud}
-                onChange={handleNuevoNodoChange}
-                required
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="latitudNodo">Latitud:</label>
-              <input
-                type="text"
-                id="latitudNodo"
-                name="latitud"
-                className="form-control"
-                value={nuevoNodo.latitud}
-                onChange={handleNuevoNodoChange}
-                required
-              />
-            </div>
+            <Container>
+              <Row>
+                <Col md={4}>
+
+                  <div className="form-group">
+                    <label htmlFor="numeroNodo">Número de Nodo:</label>
+                    <input
+                      type="text"
+                      id="numeroNodo"
+                      name="numero"
+                      className="form-control"
+                      value={nuevoNodo.numero}
+                      onChange={handleNuevoNodoChange}
+                      required
+                      readOnly={esEdicion} // Solo lectura si estás editando
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="aliasNodo">Alias:</label>
+                    <input
+                      type="text"
+                      id="aliasNodo"
+                      name="nombre"
+                      className="form-control"
+                      value={nuevoNodo.nombre}
+                      onChange={handleNuevoNodoChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="longitudNodo">Longitud:</label>
+                    <input
+                      type="text"
+                      id="longitudNodo"
+                      name="longitud"
+                      className="form-control"
+                      value={nuevoNodo.longitud}
+                      onChange={handleNuevoNodoChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="latitudNodo">Latitud:</label>
+                    <input
+                      type="text"
+                      id="latitudNodo"
+                      name="latitud"
+                      className="form-control"
+                      value={nuevoNodo.latitud}
+                      onChange={handleNuevoNodoChange}
+                      required
+                    />
+                  </div>
+
+
+                </Col>
+                <Col md={8}>
+                    <GenericMap nodos={[]} isCRUD={true} onClickPin={onClickPin} setPos={setPos} />
+                </Col>
+
+              </Row>
+
+
+            </Container>
+            
+            
           </form>
         </ModalBody>
         <ModalFooter>

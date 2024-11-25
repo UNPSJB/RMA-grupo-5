@@ -5,7 +5,7 @@ import L from "leaflet";
 import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
-import Header from "components/Headers/HeaderTarjeta.js";
+import Header from "components/Headers/Header.js";
 
 const polygonPositions = [
   [-43.52988218344, -66.07521091461],
