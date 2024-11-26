@@ -19,6 +19,7 @@ const GestionNodo = () => {
   const [nuevoNodo, setNuevoNodo] = useState({ numero: '', nombre: '', longitud: '', latitud: '' });
   const [esEdicion, setEsEdicion] = useState(false); // Si el modal está en modo edición
   const [nodoActual, setNodoActual] = useState(null); // Nodo actual a modificar
+  const [markerPos, setMarkerPos] = useState(null);
   
   const fetchNodos = async () => {
     try {
@@ -40,13 +41,13 @@ const GestionNodo = () => {
   const [ubicacionY, setUbicacionY] = useState('');
 
   const onClickPin = (lat, lng) => {
-
-    console.log(`lat: ${lat}, lng: ${lng}`);
-    setUbicacionY(lat);
-    setUbicacionX(lng);
-
-  }
-
+    setMarkerPos({ lat, lng });
+    setNuevoNodo((prev) => ({
+      ...prev,
+      latitud: lat.toFixed(6),
+      longitud: lng.toFixed(6),
+    }));
+  };
   const setPos = () => {
     return {ubicacionX, ubicacionY};
   }
@@ -78,9 +79,15 @@ const GestionNodo = () => {
   
   const handleNuevoNodoChange = (e) => {
     const { name, value } = e.target;
-    setNuevoNodo({ ...nuevoNodo, [name]: value });
-  };
+    setNuevoNodo((prev) => ({ ...prev, [name]: value }));
 
+    if (name === 'longitud' || name === 'latitud') {
+      setMarkerPos((prev) => ({
+        ...prev,
+        [name === 'latitud' ? 'lng' : 'lat']: parseFloat(value),
+      }));
+    }
+  };
   const handleActualizarNodo = async () => {
     try {
       const nodoData = {

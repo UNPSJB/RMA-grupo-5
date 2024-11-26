@@ -129,50 +129,35 @@ const polygonPositions = [
 // Eliminar el icono por defecto
 delete L.Icon.Default.prototype._getIconUrl;
 
-const ImageExpandButton = ({ showImage }) => {
-  return (
-    <div>
-      {showImage && (
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <img 
-            src={require("../../assets/img/maps/Cuenca-Sagmata-zona-de-estudio.jpg")}
-            alt="Imagen expandida" 
-            style={{ width: '80%', borderRadius: '10px', border: '2px solid #ccc' }}
-          />
-        </div>
-      )}
-    </div>
-  );
+
+
+const LocationMarker = ({ onClick, position }) => {
+  const map = useMapEvents({
+    click(e) {
+      if (onClick) {
+        onClick(e.latlng.lng, e.latlng.lat);
+      }
+    },
+  });
+
+  // Actualizar posición del marcador
+  useEffect(() => {
+    if (position) {
+      map.flyTo(position, map.getZoom());
+    }
+  }, [position, map]);
+
+  return position ? (
+    <Marker position={position}>
+      <Popup>Latitud: {position.lat}, Longitud: {position.lng}</Popup>
+    </Marker>
+  ) : null;
 };
 
 
-const LocationMarker = ({onClick, updataePos}) => {
-  const [position, setPosition] = useState(null);
-  const map = useMapEvents({
-    click(e) {
-      setPosition(e.latlng);
-      if (onClick) {
-        onClick( e.latlng.lat, e.latlng.lng);
-      }
-      
-    },
-  })
-
-  //llamar a updatePos
-  // new L.LatLng(setPos.ubicacionX, setPos.ubicacionY)
-
-
-  return position === null ? null : (
-    <Marker position={position}>
-      <Popup>You are here</Popup>
-    </Marker>
-  )
-}
-
-
-const GenericMap = ({nodos, isCRUD, onClickPin, setPos}) => {
-  //const [nodos, setNodos] = useState([]);
+const GenericMap = ({ nodos, isCRUD, onClickPin, markerPos }) => {
   const navigate = useNavigate();
+  const [selectedMarker, setSelectedMarker] = useState(null);
 
   const position = [-43.583333, -66.0];
   const bounds = [
@@ -180,8 +165,11 @@ const GenericMap = ({nodos, isCRUD, onClickPin, setPos}) => {
     [-42.0, -64.0], // Esquina noreste de los límites
   ];
 
-
-
+  // Manejar clics en el mapa
+  const handleMapClick = (lng, lat) => {
+    setSelectedMarker({ lng, lat });
+    if (onClickPin) onClickPin(lng, lat); // Llamar la función de callback si está definida
+  };
 
   return (
     <MapContainer
@@ -191,7 +179,7 @@ const GenericMap = ({nodos, isCRUD, onClickPin, setPos}) => {
       maxZoom={14}
       maxBounds={bounds}
       maxBoundsViscosity={1.0}
-      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc", padding: '100px' }}
+      style={{ height: "600px", width: "100%", borderRadius: "10px", border: "2px solid #ccc" }}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -201,24 +189,30 @@ const GenericMap = ({nodos, isCRUD, onClickPin, setPos}) => {
       <Polygon
         positions={polygonPositions}
         color="slategray"
-        weight={1} // Grosor del borde
-        opacity={0.5} // Opacidad del borde
-        fillColor="slategray" // Color de relleno
-        fillOpacity={0.3} // Opacidad del relleno
-        lineCap="round" // Forma de los extremos de la línea
-        lineJoin="round" // Unión de las líneas
-      
-      >
+        weight={1}
+        opacity={0.5}
+        fillColor="slategray"
+        fillOpacity={0.3}
+        lineCap="round"
+        lineJoin="round"
+      />
 
-      </Polygon>
-      
+      {selectedMarker && (
+        <Marker position={[selectedMarker.lat, selectedMarker.lng]}>
+          <Popup>
+            Latitud: {selectedMarker.lat.toFixed(6)} <br />
+            Longitud: {selectedMarker.lng.toFixed(6)}
+          </Popup>
+        </Marker>
+      )}
 
-      {/* Configuracion del icono para que muestre el nro de nodo*/}
-      {nodos.map((nodo) => {
-        const colorEstado = nodo.estado === 1 ? "green" // Verde para nodos activos
-          : nodo.estado === 2 
-          ? "red" // Rojo para nodos inactivos
-          : "orange"; // Naranja para mantenimiento
+      {nodos.map((nodo, index) => {
+        const colorEstado =
+          nodo.estado === 1
+            ? "green" // Activo
+            : nodo.estado === 2
+            ? "red" // Inactivo
+            : "orange"; // Mantenimiento
 
         const customIcon = L.divIcon({
           className: "custom-icon",
@@ -239,33 +233,24 @@ const GenericMap = ({nodos, isCRUD, onClickPin, setPos}) => {
 
         return (
           <Marker
-            key={nodo.numero}
-            position={[nodo.longitud, nodo.latitud]}
-
+            key={index}
+            position={[parseFloat(nodo.latitud), parseFloat(nodo.longitud)]}
             icon={customIcon}
           >
             <Popup>
-              <div style={{ textAlign: "center" }}>
-                <b>Nodo: {nodo.numero}</b> <br />
-                "{nodo.nombre}" <br />
-              </div>
-              <b>Latitud:</b> {parseFloat(nodo.latitud).toFixed(4)} <br />
-              <b>Longitud:</b> {parseFloat(nodo.longitud).toFixed(4)} <br />
-              <br />
-              <button
-                type="submit"
-                className="button-style"
-                onClick={() => navigate("/admin/tables", { state: { selectedNode: nodo.numero } })}
-              >
-                Ver Detalle
-              </button>
+        
+                <b>Latitud:</b> {nodo.latitud} <br />
+                <b>Longitud:</b> {nodo.longitud}
             </Popup>
           </Marker>
         );
       })}
-      {isCRUD ? <LocationMarker onClick={onClickPin} setPos={setPos}/> : <></>}
+
+      {/* Agregar controlador para clics en el mapa */}
+      <LocationMarker onClick={handleMapClick} />
     </MapContainer>
   );
 };
+
 
 export default GenericMap;

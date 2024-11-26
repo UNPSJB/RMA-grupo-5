@@ -296,7 +296,7 @@ const fetchUltimaMedicion = async () => {
                                           <Col xs="20" sm="">
                                               <CardTitle
                                                   tag="h5"
-                                                  className="text-uppercase text-muted mb-0"
+                                                  className=" text-muted mb-0"
                                                   style={{ fontSize: '1rem', textAlign: 'center', padding: '9px' }}
                                               >
                                                   {medicion ? `Última Medición - Nodo: ${medicion.nodo_numero}` : "Última Medición"}

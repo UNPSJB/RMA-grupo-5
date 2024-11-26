@@ -17,13 +17,13 @@
 }
 
 .card-title {
-    color: #2c3e50;
-    font-weight: bold;
+    color: #32325d;
+    
     letter-spacing: 0.05rem;
 }
 
 .text-muted {
-    color: #7f8c8d !important;
+    color: #32325d !important;
     font-size: 0.9rem;
 }
 
@@ -68,8 +68,8 @@
 }
 .notificaciones-icono {
     position: absolute; /* Permite posicionarlo relativo al contenedor padre */
-    top: -50px; /* Ajusta la posición vertical */
-    right: 20px; /* Ajusta la posición horizontal */
+    top: -80px; /* Ajusta la posición vertical */
+    right: 25px; /* Ajusta la posición horizontal */
     cursor: pointer;
     z-index: 100; /* Asegura que esté por encima de otros elementos */
 }
