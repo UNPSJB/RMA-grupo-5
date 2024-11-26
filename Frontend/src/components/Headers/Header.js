@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faTimes, faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import './Header.css';
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
+import { setTokenToCookie } from '../../views/examples/utils';
+import {default as axios} from "../../views/examples/axiosConfig"; 
 
 const Header = ({ title, subtitle }) => {
     const [alertas, setAlertas] = useState(() => {
@@ -43,37 +45,50 @@ const Header = ({ title, subtitle }) => {
     };
   }, []);
 
-    // Obtener la última medición la primera vez que se carga el componente por si no llegan nuevas mediciones
-    const fetchUltimaMedicion = async () => {
-        try {
-          const response = await fetch(`http://localhost:8000/leer_ultima_medicion`);
-          const data = await response.json();
-          setMedicion(data); 
-        } catch (error) {
-          console.error("Error al obtener la última medición:", error);
+// Obtener la última medición la primera vez que se carga el componente por si no llegan nuevas mediciones
+const fetchUltimaMedicion = async () => {
+    try {
+        setTokenToCookie()
+
+        const config = {
+            withCredentials: true,
         }
-      };
+
+        const response = await axios.get(`http://localhost:8000/leer_ultima_medicion`, config);
+        const data = await response.data;
+        setMedicion(data); 
+        console.log(data);
+    } catch (error) {
+        console.error("Error al obtener la última medición:", error);
+    }
+    };
+
+    useEffect(() => {
+    fetchUltimaMedicion();
+    }, []);
     
-      useEffect(() => {
-        fetchUltimaMedicion();
-      }, []);
-      
-      // Solo llamar a fetchTipoDato cuando medicion esté disponible
-      useEffect(() => {
-        if (medicion && medicion.tipo_dato_id) {
-          const fetchTipoDato = async () => {
-            try {
-              const response = await fetch(`http://localhost:8000/leer_tipo_dato/${medicion.tipo_dato_id}`);
-              const data = await response.json();
-              const tipoDatoTraducido = tipoDatoMap[data.nombre] || data.nombre;
-              setTipoDato(tipoDatoTraducido); 
-            } catch (error) {
-              console.error("Error al obtener el tipo de dato:", error);
+    // Solo llamar a fetchTipoDato cuando medicion esté disponible
+    useEffect(() => {
+    if (medicion && medicion.tipo_dato_id) {
+        const fetchTipoDato = async () => {
+        try {
+            setTokenToCookie()
+
+            const config = {
+                withCredentials: true,
             }
-          };
-          fetchTipoDato();
+            const response = await axios.get(`http://localhost:8000/leer_tipo_dato/${medicion.tipo_dato_id}`, config);
+            const data = await response.data;
+            const tipoDatoTraducido = tipoDatoMap[data.nombre] || data.nombre;
+            setTipoDato(tipoDatoTraducido); 
+        } catch (error) {
+            console.error("Error al obtener el tipo de dato:", error);
         }
-      }, [medicion]);
+        };
+        fetchTipoDato();
+    }
+    }, [medicion]);
+
       // Traducir el nombre del tipo para mostrarlo
   const tipoDatoMap = {
     TEMP_T: "Temperatura",

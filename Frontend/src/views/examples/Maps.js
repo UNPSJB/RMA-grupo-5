@@ -8,6 +8,8 @@ import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
 import Header from "components/Headers/Header.js";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 // Eliminar el icono por defecto
 delete L.Icon.Default.prototype._getIconUrl;
@@ -163,8 +165,14 @@ const MapWrapper = () => {
   useEffect(() => {
     const fetchNodos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
-        const data = await response.json();
+        setTokenToCookie()
+
+        const config = {
+            withCredentials: true,
+        }
+  
+        const response = await axios.get("http://localhost:8000/leer_nodos", config);
+        const data = await response.data;
         setNodos(data);
       } catch (error) {
         console.error("Error al obtener los nodos:", error);
@@ -294,9 +302,11 @@ const Maps = () => {
                             target="helpIcon"
                             toggle={toggleTooltip}
                           >
-                            <p>- <span className="activo">Al hacer click</span>: Al hacer click en el número de nodo, se mostrará una breve información del mismo.</p>
+                            <p>- <span className="activo">Número</span>: Al hacer click en el número de nodo, se mostrará una breve información del mismo.</p>
                             <p>- <span className="activo">Ver Detalle</span>: Al hacer click en 'Ver Detalle', te lleverá a la sección de Tablas.</p>
-
+                            <p>- <span className="activo">●</span>: El nodo está funcionando y enviando datos.</p>
+                            <p>- <span className="inactivo">●</span>: El nodo no ha enviado mediciones en las últimas 24 horas.</p>
+                            <p>- <span className="mantenimiento">●</span>: El nodo está en mantenimiento y no registrará mediciones.</p>
                           </Tooltip>
                 </h3>
               </Container>

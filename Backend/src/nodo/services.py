@@ -1,11 +1,9 @@
 from typing import List
+from src.nodo.auth import hashing
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-from src.nodo import schemas
-from src.nodo import exceptions
+from src.nodo import schemas, exceptions
 from src.nodo.models import Medicion, Nodo, Registro, TipoDato, Alerta
-from src.nodo import schemas
-from src.nodo import exceptions
 import time, json
 from datetime import datetime, timedelta
 from fastapi import HTTPException
@@ -300,38 +298,19 @@ def importar_datos_csv(db: Session, data: List[dict]) -> List[Medicion]:
 
 #/--- Metodos de clase Registro ---/
 def crear_usuario(db: Session, registro: schemas.RegistroCreate):
-   
-    db_usuario_existente = db.query(Registro).filter(Registro.usuario == registro.usuario).first()
     
-    if db_usuario_existente:
-        raise HTTPException(status_code=400, detail="El usuario ya está registrado")
+    db_username_existente = db.query(Registro).filter(Registro.username == registro.username).first()
     
-    db_usuario = Registro(
-        usuario=registro.usuario,
-        contrasenia=registro.contrasenia
-    )
+    if db_username_existente:
+        raise HTTPException(status_code=400, detail="El username ya está registrado")
     
-    db.add(db_usuario)
+
+    hashed_password = hashing.hash_password(registro.password)
+    db_user = Registro(username=registro.username, password=hashed_password)
+    db.add(db_user)
     db.commit()
-    db.refresh(db_usuario)
-    
-    return db_usuario
-
-def iniciar_sesion(datos_usuario: schemas.RegistroBase, db: Session):
-    # Buscar al usuario en la base de datos
-    db_usuario = db.query(Registro).filter(Registro.usuario == datos_usuario.usuario).first()
-
-    # Verificar si el usuario existe
-    if db_usuario is None:
-        raise HTTPException(status_code=400, detail="Usuario no encontrado")
-    
-    # Verificar si la contraseña es correcta
-    if db_usuario.contrasenia != datos_usuario.contrasenia:
-        raise HTTPException(status_code=400, detail="Contraseña incorrecta")
-
-    # Si el usuario y la contraseña son correctos, devolver un mensaje de éxito
-    return db_usuario
-
+    db.refresh(db_user)
+    return db_user
 
 #/--- Métodos de clase Alerta ---/
 def crear_alerta(db: Session, alerta: schemas.AlertaCreate) -> Medicion:

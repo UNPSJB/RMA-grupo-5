@@ -85,6 +85,13 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
 @app.get("/users/profile")
 def profile(my_user: Annotated[dict, Depends(decode_token)]):
     return my_user
+'''#PARA HACER LA REDIRECCION
+@app.get("/protected-route")
+def check_auth():
+    raise HTTPException(
+        status_code=401,
+        detail="Usuario no autenticado. Redirigir al login."
+    )'''
 
 
 def mi_callback(mensaje: str) -> None:

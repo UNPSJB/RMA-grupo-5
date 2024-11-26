@@ -57,8 +57,8 @@ class Medicion(BaseModel):
 class Registro(BaseModel):
     __tablename__ = 'registros'
 
-    usuario = Column(String(10), primary_key=True)
-    contrasenia = Column(String(8), nullable=False)
+    username = Column(String(10), primary_key=True)
+    password = Column(String(8), nullable=False)
 
 # Modelo para Alerta
 class Alerta(BaseModel):

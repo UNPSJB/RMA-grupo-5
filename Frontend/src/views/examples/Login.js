@@ -4,6 +4,9 @@ import Header from "components/Headers/Header.js";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/login.css";
 import { message } from "antd";
+import { message, Modal as AntdModal } from "antd";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 const IniciarSesion = () => {
   const [nombreUsuario, setNombreUsuario] = useState('');
@@ -20,11 +23,17 @@ const IniciarSesion = () => {
     }
 
     const datosUsuario = {
-      usuario: nombreUsuario,
-      contrasenia: contrasena,
+      username: nombreUsuario,
+      password: contrasena,
     };
 
-    axios.post('http://localhost:8000/iniciar_sesion', datosUsuario)
+    setTokenToCookie()
+
+    const config = {
+        withCredentials: true,
+    }
+
+    axios.post('http://localhost:8000/iniciar_sesion', datosUsuario, config)
       .then(response => {
         message.success("Inicio de sesión exitoso");
 
