@@ -64,12 +64,12 @@
     display: flex;
     justify-content: space-between; /* Mantiene el título y la campana separados */
     align-items: center;
-    width: 100%; /* Asegura que ocupe todo el espacio disponible */
+    width: 98%; /* Asegura que ocupe todo el espacio disponible */
 }
 .notificaciones-icono {
     position: absolute; /* Permite posicionarlo relativo al contenedor padre */
-    top: -180px; /* Ajusta la posición vertical */
-    right: 25px; /* Ajusta la posición horizontal */
+    top: -75px; /* Ajusta la posición vertical */
+    right: 45px; /* Ajusta la posición horizontal */
     cursor: pointer;
     z-index: 100; /* Asegura que esté por encima de otros elementos */
 }
