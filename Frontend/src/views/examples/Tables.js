@@ -354,8 +354,8 @@ const Tables = () => {
             <p className="text-muted mt-2">Mostrando datos de más reciente a más antiguo.</p>
             
             {/* Selección de Nodo y Tipo de Dato */}
-            <Row className="align-items-center">
-              <Col xs="12" className="d-flex justify-content-start">
+                      <Row className="align-items-center">
+              <Col xs="12" className="d-flex justify-content-start mt-2">
                 <select
                   value={nodoSeleccionado}
                   onChange={(e) => {
@@ -412,7 +412,7 @@ const Tables = () => {
                   }}
                   className="mr-2"
                 >
-                  Exportar e Importar Datos
+                  Exportar Datos
                 </Button>
                 <Button
                   color="secondary"
@@ -421,7 +421,7 @@ const Tables = () => {
                     setShowUmbrales(false);
                     setShowExport(false);
                   }}
-                  className="mr-2"
+                  className="mr-2 mb-2"
                 >
                   Filtrar por Fecha
                 </Button>
@@ -432,7 +432,7 @@ const Tables = () => {
             {/* Grupo de Filtros de Umbrales */}
             {showUmbrales && (
               <Row className="mb-4 ml-2 align-items-center">
-                <Col md="3">
+                <Col xs="12">
                   <FormGroup>
                     <Label>Umbral Mínimo</Label>
                     <Input

@@ -285,13 +285,13 @@ const fetchUltimaMedicion = async () => {
     };
 
     return (
-        <div className="header bg-gradient-info pb-50 pt-7">
+        <div className="header bg-gradient-info pb-4 pt-7">
             <Container fluid className="d-flex justify-content-center">
-                  <div className="header-body" >
+              <div className="header-body w-100">
                       <Row className="justify-content-center">
-                          <Col lg="6" xl="10" className="d-flex justify-content-center "  >
-                              <Card className="card-stats mb-1" style={{ height: '85px', width: '950px' }}> 
-                                  <CardBody className="d-flex align-items-center" style={{ padding: '4px' }}>
+                          <Col xs="12" sm="10" md="8" lg="6">
+                          <Card className="card-stats mb-4 shadow" style={{ minHeight: '85px' }}>
+                                  <CardBody className="d-flex align-items-center">
                                       <Row className="w-100">
                                           <Col xs="20" sm="">
                                               <CardTitle
@@ -302,14 +302,14 @@ const fetchUltimaMedicion = async () => {
                                                   {medicion ? `Última Medición - Nodo: ${medicion.nodo_numero}` : "Última Medición"}
                                               </CardTitle>
                                               {medicion ? (
-                                                  <Row className="justify-content-center" style={{ fontSize: '1rem', wordBreak: 'break-word', padding: '1px'}}>
-                                                      <Col xs="4" className="text-center">
+                                                  <Row className="text-center">
+                                                      <Col xs="12" sm="4">
                                                           <span className="text-muted">Data:</span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
                                                       </Col>
-                                                      <Col xs="4" className="text-center">
+                                                      <Col xs="12" sm="4">
                                                           <span className="text-muted">Fecha:</span> {new Date(medicion.time).toLocaleString()}
                                                       </Col>
-                                                      <Col xl="4" className="text-center">
+                                                      <Col xs="12" sm="4">
                                                           <span className="text-muted">Tipo:</span> {tipoDato || "Cargando..."}
                                                       </Col>
                                                   </Row>
@@ -324,7 +324,7 @@ const fetchUltimaMedicion = async () => {
                       </Row>
                   </div>
               </Container>
-            <div className="header-content">
+            <div className="header-content text-center mt-4">
                 <div>
                     <h1 className="header-title" style={{ color: 'white' }}>{title}</h1>
                     <p className="header-subtitle" style={{ color: 'white' }}>{subtitle}</p>

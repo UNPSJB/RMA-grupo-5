@@ -281,9 +281,9 @@ const Maps = () => {
       <header>  
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css"></link>
       </header>
-      <Container className="mt--7" fluid style={{ padding: '130px' }}>
-        <Row>
-          <Col lg="12">
+      <Container className="mt-5 py-4" fluid>
+        <Row className="justify-content-center">
+          <Col xs="12" md="10" lg="8">
             <Card
               className="shadow border-0"
               style={{ padding: "20px", borderRadius: "10px", border: "2px solid #ccc" }}
