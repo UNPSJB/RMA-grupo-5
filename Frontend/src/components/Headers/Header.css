@@ -27,12 +27,6 @@
     font-size: 0.9rem;
 }
 
-span {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #34495e;
-}
-
 .text-uppercase {
     font-size: 1rem;
     letter-spacing: 0.1rem;
@@ -40,12 +34,6 @@ span {
 
 .row .col {
     margin: 5px 0;
-}
-
-.card-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 @media screen and (max-width: 768px) {
