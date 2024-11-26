@@ -406,7 +406,7 @@ let graficoLineal = {
             content += label;
           }
 
-          content += "" + parseFloat(yLabel.toFixed(5)) + " Metros"; 
+          content += ": " + parseFloat(yLabel.toFixed(5)) + " m"; 
           return content;
         },
       },
@@ -511,7 +511,7 @@ let graficoBarras = {
           if (data.datasets.length > 1) {
             content += label;
           }
-          content += "" + parseFloat(yLabel.toFixed(1)) + "°c";
+          content += ": " + parseFloat(yLabel.toFixed(1)) + "°C";
           return content;
         },
       },
@@ -637,45 +637,58 @@ let graficoRadar = {
       display: true,
       position: 'bottom',
     },
+    tooltips: {
+      callbacks: {
+        title: (tooltipItems, data) => {
+          // El título usa el label de la posición del tooltip
+          const index = tooltipItems[0].index; // Obtén el índice del punto actual
+          return data.labels[index]; // Usa el label del índice actual
+        },
+        label: (tooltipItem, data) => {
+          let dataset = data.datasets[tooltipItem.datasetIndex];
+          return `${dataset.label}: ${parseFloat(tooltipItem.yLabel).toFixed(2)} hPa`;
+        },
+      },
+    },
   },
-  data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
+  data: (valoresRadar, nodoA, valoresRadar2, nodoB) => {
     const hoy = new Date();
     const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
     const labels = [];
   
-    // Generate labels for the last 7 days, starting from today and moving backwards
-    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
+    // Generar etiquetas para los últimos 7 días, desde hoy hacia atrás
+    for (let i = 6; i >= 0; i--) {
       const dia = new Date(hoy);
       dia.setDate(hoy.getDate() - i);
       labels.push(diasSemana[dia.getDay()]);
     }
     labels[6] = "Hoy";
     return {
-      labels:labels,
+      labels: labels,
       datasets: [
         {
-        label: "Nodo " + nodoA + " ",
-        data: valoresTemperatura,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 50, 132, 1)',
-        borderWidth: 1.5,
-      },
-      {
-        label: "Nodo " + nodoB + " ",
-        data: valoresTemperatura2,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(54, 150, 235, 0.2)',
-        borderColor: 'rgba(54, 150, 235, 1)',
-        borderWidth: 1.5,
-      },
-    ],
+          label: "Nodo " + nodoA + " ",
+          data: valoresRadar,
+          maxBarThickness: 35,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 50, 132, 1)',
+          borderWidth: 1.5,
+        },
+        { 
+          label: "Nodo " + nodoB + " ",
+          data: valoresRadar2,
+          maxBarThickness: 35,
+          backgroundColor: 'rgba(54, 150, 235, 0.2)',
+          borderColor: 'rgba(54, 150, 235, 1)',
+          borderWidth: 1.5,
+        },
+      ],
     };
   },
 };
 
 let graficoPolar = {
-  options: {
+  options: { //opciones de como queremos q se vean los graficos
     legend: {
       display: true,
       position: "bottom",
@@ -683,7 +696,7 @@ let graficoPolar = {
         generateLabels: (chart) => {
           const datasets = chart.data.datasets;
           return datasets.map((dataset, i) => ({
-            text: dataset.label, // Toma la etiqueta del dataset
+            text: dataset.label, 
             fillStyle: dataset.backgroundColor,
             strokeStyle: dataset.borderColor,
             lineWidth: dataset.borderWidth,
@@ -693,42 +706,59 @@ let graficoPolar = {
         },
       },
     },
+    tooltips: {
+      callbacks: {
+        title: (tooltipItems, data) => {
+          const index = tooltipItems[0].index;  
+          return data.labels[index];            
+        },
+        label: (tooltipItem, data) => {
+          let dataset = data.datasets[tooltipItem.datasetIndex];
+          return `${dataset.label}: ${parseFloat(dataset.data[tooltipItem.index]).toFixed(2)} Índice UV`;
+        },
+      },
+    },
+    scale: {
+      ticks: {
+        beginAtZero: true,
+        stepSize: 0, // Ajustas los valores en los q saltan los rangos
+      },
+    },
   },
-  data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
+  data: (valoresPolar, nodoA, valoresPolar2, nodoB) => { // como grafica con los datos recibidos
     const hoy = new Date();
     const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
     const labels = [];
   
-    // Generate labels for the last 7 days, starting from today and moving backwards
-    for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
+    // Generar etiquetas para los últimos 7 días, desde hoy hacia atrás
+    for (let i = 6; i >= 0; i--) {
       const dia = new Date(hoy);
       dia.setDate(hoy.getDate() - i);
       labels.push(diasSemana[dia.getDay()]);
     }
     labels[6] = "Hoy";
     return {
-      labels:labels,
+      labels: labels,
       datasets: [
         {
-        label: "Nodo " + nodoA + " ",
-        data: valoresTemperatura,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 50, 132, 1)',
-        borderWidth: 1.5,
-      },
-      {
-        label: "Nodo " + nodoB + " ",
-        data: valoresTemperatura2,
-        maxBarThickness: 35,
-        backgroundColor: 'rgba(54, 150, 235, 0.2)',
-        borderColor: 'rgba(54, 150, 235, 1)',
-        borderWidth: 1.5,
-      },
-    ],
+          label: "Nodo " + nodoA + " ",
+          data: valoresPolar,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 50, 132, 1)',
+          borderWidth: 1.5,
+        },
+        {
+          label: "Nodo " + nodoB + " ",
+          data: valoresPolar2,
+          backgroundColor: 'rgba(54, 150, 235, 0.2)',
+          borderColor: 'rgba(54, 150, 235, 1)',
+          borderWidth: 1.5,
+        },
+      ],
     };
   },
 };
+
 module.exports = {
   chartOptions, // used inside src/views/Index.js
   parseOptions, // used inside src/views/Index.js
