@@ -285,12 +285,12 @@ const fetchUltimaMedicion = async () => {
     };
 
     return (
-        <div className="header bg-gradient-info pb-4 pt-7">
+        <div className="header bg-gradient-info pb-1 pt-7">
             <Container fluid className="d-flex justify-content-center">
               <div className="header-body w-100">
                       <Row className="justify-content-center">
                           <Col xs="12" sm="10" md="8" lg="6">
-                          <Card className="card-stats mb-4 shadow" style={{ minHeight: '85px' }}>
+                          <Card className="card-stats mb-1 shadow" style={{ minHeight: '85px' }}>
                                   <CardBody className="d-flex align-items-center">
                                       <Row className="w-100">
                                           <Col xs="20" sm="">
@@ -324,7 +324,7 @@ const fetchUltimaMedicion = async () => {
                       </Row>
                   </div>
               </Container>
-            <div className="header-content text-center mt-4">
+            <div className="header-content text-center mt-1">
                 <div>
                     <h1 className="header-title" style={{ color: 'white' }}>{title}</h1>
                     <p className="header-subtitle" style={{ color: 'white' }}>{subtitle}</p>
