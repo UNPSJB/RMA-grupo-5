@@ -403,7 +403,7 @@ const Tables = () => {
                   }}
                   className="mr-2"
                 >
-                  Exportar Datos y Subir Archivo
+                  Exportar e Importar Datos
                 </Button>
                 <Button
                   color="secondary"

@@ -372,7 +372,7 @@ const TablesError = () => {
                   }}
                   className="mr-2"
                 >
-                  Exportar Datos y Subir Archivo
+                  Exportar Datos
                 </Button>
                 <Button
                   color="secondary"
