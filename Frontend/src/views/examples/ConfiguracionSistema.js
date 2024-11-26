@@ -261,7 +261,7 @@ const ConfiguracionSistema = () => {
                         target="helpIcon"
                         toggle={toggleTooltip}
                       >
-                          <p>- <span className="activo">Modificar</span>: Permite moficiar los umbrales</p>
+                          <p>- <span className="activo">Modificar</span>: Permite modificar los umbrales</p>
                           </Tooltip>
                   </th>
                 </tr>

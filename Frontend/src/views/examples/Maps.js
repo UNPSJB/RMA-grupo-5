@@ -294,9 +294,11 @@ const Maps = () => {
                             target="helpIcon"
                             toggle={toggleTooltip}
                           >
-                            <p>- <span className="activo">Al hacer click</span>: Al hacer click en el número de nodo, se mostrará una breve información del mismo.</p>
+                            <p>- <span className="activo">Número</span>: Al hacer click en el número de nodo, se mostrará una breve información del mismo.</p>
                             <p>- <span className="activo">Ver Detalle</span>: Al hacer click en 'Ver Detalle', te lleverá a la sección de Tablas.</p>
-
+                            <p>- <span className="activo">●</span>: El nodo está funcionando y enviando datos.</p>
+                            <p>- <span className="inactivo">●</span>: El nodo no ha enviado mediciones en las últimas 24 horas.</p>
+                            <p>- <span className="mantenimiento">●</span>: El nodo está en mantenimiento y no registrará mediciones.</p>
                           </Tooltip>
                 </h3>
               </Container>
