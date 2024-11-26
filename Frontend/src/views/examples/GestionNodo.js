@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Header from "components/Headers/Header.js";
 import { Tooltip } from "reactstrap";
 import "../../assets/css/Gestion_Nodo.css";
@@ -9,6 +8,8 @@ import { message } from "antd";
 import { useNavigate } from "react-router-dom";
 import GenericMap from "./GenericMap";
 import L from "leaflet";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 
 const GestionNodo = () => {
@@ -21,7 +22,12 @@ const GestionNodo = () => {
   
   const fetchNodos = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/leer_nodos`);
+      setTokenToCookie()
+
+      const config = {
+          withCredentials: true,
+      }  
+      const response = await axios.get(`http://localhost:8000/leer_nodos`, config);
       const nodos = response.data;
       setNodos(nodos);
     } catch (error) {
@@ -83,8 +89,13 @@ const GestionNodo = () => {
         longitud: parseFloat(nuevoNodo.longitud),
         latitud: parseFloat(nuevoNodo.latitud),
       };
+      setTokenToCookie()
+
+      const config = {
+          withCredentials: true,
+      }
   
-      await axios.put(`http://localhost:8000/modificar_nodo/${nodoActual.numero}`, nodoData);
+      await axios.put(`http://localhost:8000/modificar_nodo/${nodoActual.numero}`, nodoData, config);
       message.success("Nodo actualizado exitosamente");
       toggleModal();
       setEsEdicion(false);
@@ -115,7 +126,13 @@ const GestionNodo = () => {
         estado: 1,
       };
 
-      await axios.post('http://localhost:8000/crear_nodo', nodoData);
+      setTokenToCookie()
+
+      const config = {
+          withCredentials: true,
+      }
+
+      await axios.post('http://localhost:8000/crear_nodo', nodoData, config);
       message.success("Nodo registrado exitosamente");
       toggleModal(); // Cerrar el modal
       fetchNodos(); // Refrescar la lista
@@ -127,7 +144,13 @@ const GestionNodo = () => {
 
   const toggleEstado = async (numeroNodo) => {
     try {
-      const response = await axios.put(`http://localhost:8000/toggle_estado/${numeroNodo}`);
+      setTokenToCookie()
+
+      const config = {
+          withCredentials: true,
+      }
+  
+      const response = await axios.put(`http://localhost:8000/toggle_estado/${numeroNodo}`, config);
       
       if (response.status === 200) {
         const nuevoEstado = response.data.estado;  // Estado actualizado del nodo

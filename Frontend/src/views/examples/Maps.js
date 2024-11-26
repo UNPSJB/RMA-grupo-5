@@ -8,6 +8,8 @@ import { Card, Container, Row, Col, Button} from "reactstrap";
 import { useNavigate } from "react-router-dom";
 
 import Header from "components/Headers/Header.js";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 // Eliminar el icono por defecto
 delete L.Icon.Default.prototype._getIconUrl;
@@ -163,8 +165,14 @@ const MapWrapper = () => {
   useEffect(() => {
     const fetchNodos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
-        const data = await response.json();
+        setTokenToCookie()
+
+        const config = {
+            withCredentials: true,
+        }
+  
+        const response = await axios.get("http://localhost:8000/leer_nodos", config);
+        const data = await response.data;
         setNodos(data);
       } catch (error) {
         console.error("Error al obtener los nodos:", error);

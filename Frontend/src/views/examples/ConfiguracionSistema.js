@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Header from "components/Headers/Header.js";
 import "../../assets/css/ConfiguracionSistema.css";
 import {
@@ -21,6 +20,8 @@ import {
   Table,
 } from "reactstrap";
 import { message, Modal as AntdModal } from "antd";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 const ConfiguracionSistema = () => {
   const [tiposDatos, setTiposDatos] = useState([]);
@@ -45,7 +46,10 @@ const ConfiguracionSistema = () => {
 
   const fetchTiposDatos = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/leer_tipos_datos`);
+      const config = {
+        withCredentials: true,
+      }
+      const response = await axios.get(`http://localhost:8000/leer_tipos_datos`, config);
       setTiposDatos(response.data);
     } catch (error) {
       console.error("Error al obtener los tipos de datos:", error);
@@ -95,10 +99,16 @@ const ConfiguracionSistema = () => {
       rango_maximo: rango_maximo === '' ? null : parseFloat(rango_maximo),
     };
   
+    setTokenToCookie()
+
+    const config = {
+        withCredentials: true,
+    }
+
     if (isEditing) {
       // Modificar tipo de dato
       axios
-        .put(`http://localhost:8000/modificar_tipo_dato/${tipoDato}`, tipo)
+        .put(`http://localhost:8000/modificar_tipo_dato/${tipoDato}`, tipo, config)
         .then(response => {
           message.success("Tipo de dato modificado exitosamente");
           setIsEditing(false);
@@ -111,7 +121,7 @@ const ConfiguracionSistema = () => {
     } else {
       // Crear tipo de dato
       axios
-        .post("http://localhost:8000/crear_tipo_dato", tipo)
+        .post("http://localhost:8000/crear_tipo_dato", tipo, config)
         .then(response => {
           message.success("Tipo de dato registrado exitosamente");
           clearForm();
@@ -143,7 +153,12 @@ const ConfiguracionSistema = () => {
       cancelText: "Cancelar",
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:8000/eliminar_tipo_dato/${tipoDatoId}`);
+          setTokenToCookie()
+
+          const config = {
+              withCredentials: true,
+          }
+          await axios.delete(`http://localhost:8000/eliminar_tipo_dato/${tipoDatoId}`, config);
           message.success("Tipo de dato eliminado exitosamente");
           fetchTiposDatos(); // Refrescar la lista de tipos de datos
         } catch (error) {

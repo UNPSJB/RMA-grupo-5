@@ -95,8 +95,8 @@ class Nodo(NodoBase):
 
 # Clase base para Registro
 class RegistroBase(BaseModel):
-    usuario: str 
-    contrasenia: str
+    username: str 
+    password: str
 
 # Clase para crear un nuevo registro (sign up)
 class RegistroCreate(RegistroBase):
@@ -104,14 +104,23 @@ class RegistroCreate(RegistroBase):
 
 # Clase para actualizar un registro existente (update)
 class RegistroUpdate(BaseModel):
-    contrasenia: Optional[str] 
+    password: Optional[str] 
 
 # Clase para representar un registro completo (leer o mostrar datos)
 class Registro(RegistroBase):
-    contrasenia: str
+    password: str
 
     class Config:
        from_attributes = True
+
+# PARA JWT
+class LoginRequest(RegistroBase):
+    username: str
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 # Clase base para Alerta
 class AlertaBase(BaseModel):

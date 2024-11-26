@@ -22,6 +22,8 @@ import Header from "components/Headers/Header.js";
 import { CustomFileInput } from "components/Buttons/CustomFileInput";
 import { useLocation } from "react-router-dom";
 import { message } from "antd";
+import { setTokenToCookie } from './utils';
+import {default as axios} from "./axiosConfig"; 
 
 const Tables = () => {
   const [nodos, setNodos] = useState([]);
@@ -70,11 +72,13 @@ const Tables = () => {
     const getNodos = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:8000/leer_nodos");
-        if (!response.ok) {
-          throw new Error("Error al hacer el fetch de nodos");
+        setTokenToCookie()
+
+        const config = {
+            withCredentials: true,
         }
-        const data = await response.json();
+        const response = await axios.get("http://localhost:8000/leer_nodos", config);
+        const data = response.data;
         setNodos(data);
 
         // Solo establecer el nodo por defecto si no hay un nodo seleccionado
@@ -97,12 +101,14 @@ const Tables = () => {
         const getMedicionData = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
-                if (!response.ok) {
-                    throw new Error("Error al hacer el fetch de mediciones");
-                }
-                const data = await response.json();
-                setMedicionData(data);
+              setTokenToCookie()
+
+              const config = {
+                  withCredentials: true,
+              }
+              const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`, config);
+              const data = response.data;
+              setMedicionData(data);
             } catch (error) {
                 console.error("Error cargando los datos", error);
                 setError(error);
@@ -119,11 +125,13 @@ const Tables = () => {
   useEffect(() => {
     const getTiposDatos = async () => {
       try {
-        const response = await fetch("http://localhost:8000/leer_tipos_datos");
-        if (!response.ok) {
-          throw new Error("Error al obtener los tipos de datos");
+        setTokenToCookie()
+
+        const config = {
+            withCredentials: true,
         }
-        const data = await response.json();
+        const response = await axios.get(`http://localhost:8000/leer_tipos_datos`, config);
+        const data = await response.data;
         const tiposValidos = data.filter(tipo => tipo.nombre !== 'DESCONOCIDO');
         
         setTiposDatos(tiposValidos);
@@ -237,17 +245,18 @@ const Tables = () => {
       formData.append('file', files[0]);
   
       const requestOptions = {
+        withCredentials: true,
         method: 'POST',
         body: formData
       };
   
-      const response = await fetch(`http://localhost:8000/importar_datos_csv`, requestOptions);
+      const response = await axios.post(`http://localhost:8000/importar_datos_csv`, requestOptions);
       if (!response.ok) {
         throw new Error("Error al hacer el fetch de importar datos");
       }
       message.success("Archivo cargado con exito")
   
-      const data = await response.json();
+      const data = await response.data;
       console.log("Data importada:", data);
 
       // Esperar un poco antes de recargar la página para dar tiempo al mensaje
