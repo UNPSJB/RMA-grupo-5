@@ -19,7 +19,7 @@ var routes = [
   {
     path: "/tables",
     name: "Tablas",
-    icon: "ni ni-bullet-list-67 text-red",
+    icon: "ni ni-bullet-list-67 text-blue",
     component: <Tables />,
     layout: "/admin",
   },
@@ -27,7 +27,7 @@ var routes = [
   {
     path: "/tables-error",
     name: "Tablas con errores",
-    icon: "ni ni-settings-gear-65 text-blue",
+    icon: "ni ni-bullet-list-67 text-red",
     component: <TablesError />,
     layout: "/admin",
   },
