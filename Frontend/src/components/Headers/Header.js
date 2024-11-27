@@ -299,18 +299,18 @@ const fetchUltimaMedicion = async () => {
                                                   className=" text-muted mb-0"
                                                   style={{ fontSize: '1rem', textAlign: 'center', padding: '9px' }}
                                               >
-                                                  {medicion ? `Última Medición - Nodo: ${medicion.nodo_numero}` : "Última Medición"}
+                                                  {medicion ? `Última Medición - Nodo ${medicion.nodo_numero}` : "Última Medición"}
                                               </CardTitle>
                                               {medicion ? (
                                                   <Row className="text-center">
                                                       <Col xs="12" sm="4">
-                                                          <span className="text-muted">Data:</span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
+                                                          <span className="text-muted"><strong>Data</strong><br/></span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
                                                       </Col>
                                                       <Col xs="12" sm="4">
-                                                          <span className="text-muted">Fecha:</span> {new Date(medicion.time).toLocaleString()}
+                                                          <span className="text-muted"><strong>Fecha</strong><br/></span> {new Date(medicion.time).toLocaleString()}
                                                       </Col>
                                                       <Col xs="12" sm="4">
-                                                          <span className="text-muted">Tipo:</span> {tipoDato || "Cargando..."}
+                                                          <span className="text-muted"><strong>Tipo</strong><br/></span> {tipoDato || "Cargando..."}
                                                       </Col>
                                                   </Row>
                                               ) : (
