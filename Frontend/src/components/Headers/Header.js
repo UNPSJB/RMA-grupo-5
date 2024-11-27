@@ -287,42 +287,42 @@ const fetchUltimaMedicion = async () => {
     return (
         <div className="header bg-gradient-info pb-1 pt-7">
             <Container fluid className="d-flex justify-content-center">
-              <div className="header-body w-100">
-                      <Row className="justify-content-center">
-                          <Col xs="12" sm="10" md="8" lg="6">
-                          <Card className="card-stats mb-1 shadow" style={{ minHeight: '85px' }}>
-                                  <CardBody className="d-flex align-items-center">
-                                      <Row className="w-100">
-                                          <Col xs="20" sm="">
-                                              <CardTitle
-                                                  tag="h5"
-                                                  className=" text-muted mb-0"
-                                                  style={{ fontSize: '1rem', textAlign: 'center', padding: '9px' }}
-                                              >
-                                                  {medicion ? `Última Medición - Nodo ${medicion.nodo_numero}` : "Última Medición"}
-                                              </CardTitle>
-                                              {medicion ? (
-                                                  <Row className="text-center">
-                                                      <Col xs="12" sm="4">
-                                                          <span className="text-muted"><strong>Data</strong><br/></span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
-                                                      </Col>
-                                                      <Col xs="12" sm="4">
-                                                          <span className="text-muted"><strong>Fecha</strong><br/></span> {new Date(medicion.time).toLocaleString()}
-                                                      </Col>
-                                                      <Col xs="12" sm="4">
-                                                          <span className="text-muted"><strong>Tipo</strong><br/></span> {tipoDato || "Cargando..."}
-                                                      </Col>
-                                                  </Row>
-                                              ) : (
-                                                  <span style={{ fontSize: '0.8rem', textAlign: 'center' }}>Cargando...</span>
-                                              )}
-                                          </Col>
-                                      </Row>
-                                  </CardBody>
-                              </Card>
-                          </Col>
-                      </Row>
-                  </div>
+                <div className="header-body w-100">
+                        <Row className="justify-content-center">
+                            <Col xs="12" sm="10" md="10" lg="10">
+                                <Card className="card-stats mb-1 shadow" style={{ minHeight: '85px', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
+                                    <CardBody className="d-flex align-items-center">
+                                        <Row className="w-100">
+                                            <Col xs="20" sm="">
+                                                {medicion ? (
+                                                    <Row className="text-center">
+                                                        <Col xs="12" sm="12" lg="4" xl="2" className="d-flex justify-content-center align-items-center">
+                                                            <span className="text-muted"><strong>Ultima Medición:</strong></span>
+                                                        </Col>
+                                                        <Col xs="12" sm="12" lg="4" xl="2">
+                                                            <span className="text-muted"><strong>Nodo</strong><br/></span> {medicion.nodo_numero || "Cargando..."}
+                                                        </Col>
+                                                        
+                                                        <Col xs="12" sm="12" lg="4" xl="2">
+                                                            <span className="text-muted"><strong>Data</strong><br/></span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
+                                                        </Col>
+                                                        <Col xs="12" sm="12" lg="4" xl="3">
+                                                            <span className="text-muted"><strong>Fecha</strong><br/></span> {new Date(medicion.time).toLocaleString()}
+                                                        </Col>
+                                                        <Col xs="12" sm="12" lg="4" xl="3">
+                                                            <span className="text-muted"><strong>Tipo</strong><br/></span> {tipoDato || "Cargando..."}
+                                                        </Col>
+                                                    </Row>
+                                                ) : (
+                                                    <span style={{ fontSize: '0.8rem', textAlign: 'center' }}>Cargando...</span>
+                                                )}
+                                            </Col>
+                                        </Row>
+                                    </CardBody>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </div>
               </Container>
             <div className="header-content text-center mt-1">
                 <div>
