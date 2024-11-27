@@ -171,7 +171,7 @@ const Tables = () => {
     "ALTITUDE_T": "Altura del Agua",
     "HDOP_T": "HDOP GPS",
     "LEVEL_T": "Nivel de Fluido",
-    "UV_T": "UV",
+    "UV_T": "UV ",
     "PM1_T": "Partículas PM1",
     "PM2_5_T": "Partículas PM2.5",
     "PM10_T": "Partículas PM10",
