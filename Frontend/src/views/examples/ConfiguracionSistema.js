@@ -195,7 +195,7 @@ const ConfiguracionSistema = () => {
     "ALTITUDE_T": "Altitud GPS",
     "HDOP_T": "HDOP GPS",
     "LEVEL_T": "Nivel de Fluido",
-    "UV_T": "UV",
+    "UV_T": "UV ",
     "PM1_T": "Partículas PM1",
     "PM2_5_T": "Partículas PM2.5",
     "PM10_T": "Partículas PM10",
@@ -258,11 +258,11 @@ const ConfiguracionSistema = () => {
                 <tr>
                   <th>Id</th>
                   <th>Nombre</th>
-                  <th>Unidad de medida</th>
-                  <th>Rango mínimo</th>
-                  <th>Umbral Alerta-Precaucion</th>
-                  <th>Umbral Alerta-Peligro</th>
-                  <th>Rango máximo</th>
+                  <th>Unidad<br/>de medida</th>
+                  <th>Rango<br/>mínimo</th>
+                  <th>Umbral<br/>Alerta-Precaucion</th>
+                  <th>Umbral<br/>Alerta-Peligro</th>
+                  <th>Rango<br/>máximo</th>
                   <th>
                     Acciones
                     <i
