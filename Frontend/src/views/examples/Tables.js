@@ -421,7 +421,7 @@ const Tables = () => {
                     setShowUmbrales(false);
                     setShowExport(false);
                   }}
-                  className="mr-2 mb-2"
+                  className="mr-2"
                 >
                   Filtrar por Fecha
                 </Button>
