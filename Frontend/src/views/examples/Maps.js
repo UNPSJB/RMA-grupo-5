@@ -239,7 +239,7 @@ const MapWrapper = () => {
         return (
           <Marker
             key={nodo.numero}
-            position={[nodo.longitud, nodo.latitud]}
+            position={[nodo.latitud, nodo.longitud]}
 
             icon={customIcon}
           >
