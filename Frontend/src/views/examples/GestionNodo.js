@@ -357,8 +357,8 @@ const GestionNodo = () => {
                       <tr>
                         <th>Número de Nodo</th>
                         <th>Alias</th>
-                        <th>Longitud</th>
                         <th>Latitud</th>
+                        <th>Longitud</th>
                         <th>Acciones</th>
                         <th>
                           Estado
@@ -386,8 +386,8 @@ const GestionNodo = () => {
                         <tr key={nodo.numero}>
                           <td>{nodo.numero}</td>
                           <td>{nodo.nombre}</td>
-                          <td>{nodo.longitud}</td>
                           <td>{nodo.latitud}</td>
+                          <td>{nodo.longitud}</td>
                           <td>
                           <button
                             className="edit-button"
@@ -460,19 +460,6 @@ const GestionNodo = () => {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="longitudNodo">Longitud *</label>
-                    <input
-                      type="number"
-                      id="longitudNodo"
-                      name="longitud"
-                      className="form-control"
-                      value={nuevoNodo.longitud}
-                      pattern="^-?\d+(\.\d+)?$"
-                      onChange={handleNuevoNodoChange}
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
                     <label htmlFor="latitudNodo">Latitud *</label>
                     <input
                       type="number"
@@ -480,6 +467,19 @@ const GestionNodo = () => {
                       name="latitud"
                       className="form-control"
                       value={nuevoNodo.latitud}
+                      pattern="^-?\d+(\.\d+)?$"
+                      onChange={handleNuevoNodoChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="longitudNodo">Longitud *</label>
+                    <input
+                      type="number"
+                      id="longitudNodo"
+                      name="longitud"
+                      className="form-control"
+                      value={nuevoNodo.longitud}
                       pattern="^-?\d+(\.\d+)?$"
                       onChange={handleNuevoNodoChange}
                       required
