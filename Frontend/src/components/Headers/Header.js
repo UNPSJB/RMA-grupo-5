@@ -113,7 +113,7 @@ const fetchUltimaMedicion = async () => {
     IT_T: "Iteraciones",
     LATITUDE_T: "Latitud GPS",
     LONGITUDE_T: "Longitud GPS",
-    ALTITUDE_T: "Altitud GPS",
+    ALTITUDE_T: "Altura del Agua",
     HDOP_T: "HDOP GPS",
     LEVEL_T: "Nivel de Fluido", 
     UV_T: "Rayos UV",
@@ -151,7 +151,7 @@ const fetchUltimaMedicion = async () => {
     20: "",     // Sin unidad específica (Iteraciones)
     21: "°",    // Grados (Latitud GPS)
     22: "°",    // Grados (Longitud GPS)
-    23: "m",    // Metros (Altitud GPS)
+    23: "m",    // Metros (Altura del Agua)
     24: "",     // Sin unidad específica (HDOP GPS)
     25: "m",    // Metros (Nivel de Fluido)
     26: "Índice UV",  // Índice UV (Radiación UV)

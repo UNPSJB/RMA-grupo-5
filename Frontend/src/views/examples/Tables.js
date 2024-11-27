@@ -168,7 +168,7 @@ const Tables = () => {
     "IT_T": "Iteraciones",
     "LATITUDE_T": "Latitud GPS",
     "LONGITUDE_T": "Longitud GPS",
-    "ALTITUDE_T": "Altitud GPS",
+    "ALTITUDE_T": "Altura del Agua",
     "HDOP_T": "HDOP GPS",
     "LEVEL_T": "Nivel de Fluido",
     "UV_T": "UV",
