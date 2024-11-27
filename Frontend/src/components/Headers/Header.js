@@ -113,7 +113,7 @@ const fetchUltimaMedicion = async () => {
     IT_T: "Iteraciones",
     LATITUDE_T: "Latitud GPS",
     LONGITUDE_T: "Longitud GPS",
-    ALTITUDE_T: "Altura del Agua",
+    ALTITUDE_T: "Altitud GPS",
     HDOP_T: "HDOP GPS",
     LEVEL_T: "Nivel de Fluido", 
     UV_T: "Rayos UV",
@@ -300,11 +300,11 @@ const fetchUltimaMedicion = async () => {
                                                             <span className="text-muted"><strong>Ultima Medición:</strong></span>
                                                         </Col>
                                                         <Col xs="12" sm="12" lg="4" xl="2">
-                                                            <span className="text-muted"><strong>Nodo</strong><br/></span> {medicion.nodo_numero || "Cargando..."}
+                                                            <span className="text-muted"><strong>Nodo</strong><br/></span> {medicion.nodo_numero}
                                                         </Col>
                                                         
                                                         <Col xs="12" sm="12" lg="4" xl="2">
-                                                            <span className="text-muted"><strong>Data</strong><br/></span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
+                                                            <span className="text-muted"><strong>Valor</strong><br/></span> {medicion.data ? parseFloat(medicion.data).toFixed(2) + obtenerUnidad(medicion.tipo_dato_id) : "Cargando..."}
                                                         </Col>
                                                         <Col xs="12" sm="12" lg="4" xl="3">
                                                             <span className="text-muted"><strong>Fecha</strong><br/></span> {new Date(medicion.time).toLocaleString()}
