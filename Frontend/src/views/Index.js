@@ -169,7 +169,7 @@ const Index = (props) => {
 
           const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
 
-          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23));
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 14));
 
           const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
 
@@ -205,7 +205,7 @@ const Index = (props) => {
 
           // Get the closest measurement to each target time
           const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>
-            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23)
+            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 14) //14 es el tipo
           );
 
           // Filter out null values when no measurement is close enough
@@ -289,10 +289,10 @@ const Index = (props) => {
 
 
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado, 23, setMedicionesSemanales, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado, 14, setMedicionesSemanales, setLoading, setError);
   }, [nodoSeleccionado]);
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado2, 23, setMedicionesSemanales2, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado2, 14, setMedicionesSemanales2, setLoading, setError);
   }, [nodoSeleccionado2]);
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado, 1, setMedicionesSemanalesTemp, setLoading, setError);
@@ -353,7 +353,7 @@ const Index = (props) => {
   };
 
   const titulosGraficos = {
-    line: "Altura del canal",
+    line: "Precipitaciones",
     bar: "Temperatura de la zona",
     comp: "Comparación de datos",
     rad: "Presion atmosférica",
@@ -414,7 +414,7 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Red de Monitoreo - Cuenca Sagmata
                       </h6>
-                      <h2 className="text-Black mb-0">Altura del canal</h2>
+                      <h2 className="text-Black mb-0">Precipitaciones</h2>
                     </div>
 
                     <div className="button-column">
@@ -623,7 +623,7 @@ const Index = (props) => {
                 </CardHeader>
                 <CardBody id='composite-graph'>
                   <div className="chart">
-                  <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosUV, 26, valoresNodosDiario, 23)} options={graficoCompuesto.options} />
+                  <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosUV, 26)} options={graficoCompuesto.options} />
                   </div>
                 </CardBody>
               </Card>

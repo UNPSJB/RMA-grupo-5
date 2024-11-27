@@ -385,11 +385,9 @@ let graficoLineal = {
             zeroLineColor: colors.gray[900],
           },
           ticks: {
-            max: 2, // Máxima altura de las mareas en metros
-            min: 0, // Altura mínima
-            stepSize: 0.5, // Tamaño de paso en metros
+            
             callback: function (value) {
-              return value + "m"; 
+              return value + "mm"; 
             },
           },
         },
@@ -406,7 +404,7 @@ let graficoLineal = {
             content += label;
           }
 
-          content += ": " + parseFloat(yLabel.toFixed(5)) + " m"; 
+          content += ": " + parseFloat(yLabel.toFixed(5)) + " mm"; 
           return content;
         },
       },
@@ -591,7 +589,7 @@ let graficoCompuesto = {
         fill: false,
         lineTension: 0,
       },
-      {
+      /*{
         label: obtenerNombreTipo(tipo2),
         unidad: obtenerUnidad(tipo2),
         data: nodoDataValues2,
@@ -600,7 +598,7 @@ let graficoCompuesto = {
         fill: true,
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         lineTension: 0,
-      },
+      },*/
     ],
     };
   },
