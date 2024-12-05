@@ -387,7 +387,7 @@ let graficoLineal = {
           ticks: {
             
             callback: function (value) {
-              return value + "mm"; 
+              return value + " mm"; 
             },
           },
         },
