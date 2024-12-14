@@ -27,13 +27,9 @@ import {
   parseOptions,
   graficoLineal,
   graficoBarras,
-  graficoCompuesto,
 } from "variables/charts.js";
 import Header from "components/Headers/Header.js";
 import { setTokenToCookie } from "./examples/utils";
-import { graficoPolar } from "variables/charts";
-import { graficoRadar } from "variables/charts";
-
   
 const Index = (props) => {
   const [activeNav, setActiveNav] = useState(1);
@@ -68,12 +64,19 @@ const Index = (props) => {
 
   //funcion para exportar graficos en JPEG
   const exportChartAsImage = (chartClass) => {
-    const chartElement = document.querySelector(`#${chartClass}`); 
+    const chartElement = document.querySelector(`#${chartClass}`);
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();
+    const mes = fechaActual.getMonth()+1;
+    const anio = fechaActual.getFullYear();
+    const hora = String(fechaActual.getHours()).padStart(2, "0"); // Hora (0-23)
+    const minutos = String(fechaActual.getMinutes()).padStart(2, "0"); // Minutos (0-59)
+    const segundos = String(fechaActual.getSeconds()).padStart(2, "0"); // Segundos (0-59)
     if (chartElement) {
       html2canvas(chartElement).then((canvas) => {
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/jpeg");
-        link.download = `${chartClass}.jpg`; 
+        link.download = `${anio}-${mes}-${dia}_${hora}-${minutos}-${segundos}_Altura-del-agua.jpg`; 
         link.click();
       });
     } else {
@@ -347,8 +350,6 @@ const Index = (props) => {
     diarioAlt: graficoLineal.data1(valoresNodosDiario, nodoSeleccionado, valoresNodosDiario2,  nodoSeleccionado2),
     semanalAlt: graficoLineal.data2(valoresNodosSemanal, nodoSeleccionado, valoresNodosSemanal2, nodoSeleccionado2),
     semanalTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
-    semanalUV: graficoPolar.data(valoresNodosUV, nodoSeleccionado, valoresNodosUV2, nodoSeleccionado2),
-    semanalPres: graficoRadar.data(valoresNodosPres, nodoSeleccionado, valoresNodosPres2, nodoSeleccionado2)
   };
 
   const titulosGraficos = {
@@ -402,280 +403,135 @@ const Index = (props) => {
           </Col>
         </Row>
 
-          <Row>
+        <Row>
 
-            {/* GRAFICO LINEAL */}
-            <Col className="mb-3" md="8">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Red de Monitoreo - Cuenca Sagmata
-                      </h6>
-                      <h2 className="text-Black mb-0">Altura del Agua</h2>
-                    </div>
-
-                    <div className="button-column">
-                      <Nav className="button-group-horizontal " pills >
-                        <NavItem>
-                          <NavLink
-                            className={classnames("py-2 px-3", { active: activeNav === 1 })}
-                            href="#pablo"
-                            onClick={(e) => toggleNavs(e, 1)}
-                          >
-                            <span className="d-none d-md-block">Diario</span> 
-                            <span className="d-md-none">D</span>
-                          </NavLink>
-                        </NavItem>
-
-                        <NavItem>
-                          <NavLink
-                            className={classnames("py-2 px-3", { active: activeNav === 2 })}
-                            data-toggle="tab"
-                            href="#pablo"
-                            onClick={(e) => toggleNavs(e, 2)}
-                          >
-                            <span className="d-none d-md-block">Semanal</span>
-                            <span className="d-md-none">S</span>
-                          </NavLink>
-                        </NavItem>
-
-
-                        <NavItem>
-                          <Button
-                            className="py-2 px-3"
-                            
-                            size="sm"
-                            onClick={() => exportChartAsImage("chart-line")}
-                          >
-                            <span className="d-none d-md-block">Exportar</span>
-                            <span className="d-md-none">E</span>
-                          </Button>
-                        </NavItem>
-
-                        <NavItem>
-                          <Button
-                            className={classnames("py-0 px-2", "large-text")}
-                            size="sm"
-                            color="white"
-                            onClick={() => toggleModal("line")}
-                          >
-                            ⤢
-                          </Button>
-                        </NavItem>
-                      </Nav>
-                    </div>
-                  </Row>
-                </CardHeader>
-                
-                <CardBody id='chart-line'>
-                  <div className="chart" >
-                    <Line
-                      data={activeNav === 1 ? chartData.diarioAlt : chartData.semanalAlt}
-                      options={graficoLineal.options}
-                      getDatasetAtEvent={(e) => console.log(e)}
-                      />
-                  </div>
-                </CardBody>
-                
-              </Card>
-            </Col>
-
-            {/* GRAFICO BARRAS */}
-            <Col md="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
+          {/* GRAFICO LINEAL */}
+          <Col className="mb-3" md="12" id='chart-line'>
+            <Card className="shadow">
+              <CardHeader className="bg-transparent">
                 <Row className="align-items-center">
                   <div className="col">
-                    <h6 className="text-uppercase text-muted ls-1 mb-1">
-                      Medición semanal (PROMEDIO)
-                    </h6>
-                    <h2 className="mb-0">Temperatura</h2>
+                    <h2 className="text-Black mb-0">Altura del Agua</h2>
                   </div>
 
                   <div className="button-column">
                     <Nav className="button-group-horizontal " pills >
                       <NavItem>
+                        <NavLink
+                          className={classnames("py-2 px-3", { active: activeNav === 1 })}
+                          href="#pablo"
+                          onClick={(e) => toggleNavs(e, 1)}
+                        >
+                          <span className="d-none d-md-block">Diario</span> 
+                          <span className="d-md-none">D</span>
+                        </NavLink>
+                      </NavItem>
+
+                      <NavItem>
+                        <NavLink
+                          className={classnames("py-2 px-3", { active: activeNav === 2 })}
+                          data-toggle="tab"
+                          href="#pablo"
+                          onClick={(e) => toggleNavs(e, 2)}
+                        >
+                          <span className="d-none d-md-block">Semanal</span>
+                          <span className="d-md-none">S</span>
+                        </NavLink>
+                      </NavItem>
+
+
+                      <NavItem>
                         <Button
                           className="py-2 px-3"
+                          
                           size="sm"
-                          href=""
-                          onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
+                          onClick={() => exportChartAsImage("chart-line")}
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
                         </Button>
                       </NavItem>
+
                       <NavItem>
                         <Button
                           className={classnames("py-0 px-2", "large-text")}
                           size="sm"
                           color="white"
-                          onClick={() => toggleModal("bar")}
+                          onClick={() => toggleModal("line")}
                         >
-                          <span className="d-none d-md-block">⤢</span>
+                          ⤢
                         </Button>
                       </NavItem>
                     </Nav>
                   </div>
                 </Row>
-                
-                </CardHeader>
-                <CardBody id="chart-bar">
-                  <div className="chart">
-                    <Bar
-                      data={chartData.semanalTemp}
-                      options={graficoBarras.options}
+              </CardHeader>
+              
+              <CardBody>
+                <div className="chart" >
+                  <Line
+                    data={activeNav === 1 ? chartData.diarioAlt : chartData.semanalAlt}
+                    options={graficoLineal.options}
+                    getDatasetAtEvent={(e) => console.log(e)}
                     />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
+                </div>
+              </CardBody>
+              
+            </Card>
+          </Col>
 
-          <Row className="mt-4 mb-2">
+          {/* GRAFICO BARRAS */}
+          <Col md="4">
+            <Card className="shadow">
+              <CardHeader className="bg-transparent">
+              <Row className="align-items-center">
+                <div className="col">
+                  <h6 className="text-uppercase text-muted ls-1 mb-1">
+                    Medición semanal (PROMEDIO)
+                  </h6>
+                  <h2 className="mb-0">Temperatura</h2>
+                </div>
 
-            {/* GRAFICO RADAR */}
-            <Col xl="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Medición semanal
-                      </h6>
-                      <h2 className="mb-0">Presión atmosférica</h2>
-                    </div>
-                  
-                    <Nav className="button-group-horizontal " pills >
-                      <NavItem>  
-                        <Button
-                          className="py-2 px-3"
-                          href=""
-                          size="sm"
-                          
-                          onClick={() => exportChartAsImage("bar-graph")} 
-                        >
-                          <span className="d-none d-md-block">Exportar</span>
-                          <span className="d-md-none">E</span>
-                        </Button>
-                      </NavItem>
-                      <NavItem>
-                        <Button
-                          className={classnames("py-0 px-2", "large-text")}
-                          size="sm"
-                          color="white"
-                          onClick={() => toggleModal("rad")}
-                        >
-                          <span className="d-none d-md-block">⤢</span>
-                        </Button>
-                      </NavItem>
-                    </Nav>
-                  </Row>
-                </CardHeader>
-                <CardBody id='bar-graph'>
-                  <div className="chart">
-                    <Radar
-                      data={chartData.semanalPres}
-                      options={graficoRadar.options}
-                    />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
+                <div className="button-column">
+                  <Nav className="button-group-horizontal " pills >
+                    <NavItem>
+                      <Button
+                        className="py-2 px-3"
+                        size="sm"
+                        href=""
+                        onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
+                      >
+                        <span className="d-none d-md-block">Exportar</span>
+                        <span className="d-md-none">E</span>
+                      </Button>
+                    </NavItem>
+                    <NavItem>
+                      <Button
+                        className={classnames("py-0 px-2", "large-text")}
+                        size="sm"
+                        color="white"
+                        onClick={() => toggleModal("bar")}
+                      >
+                        <span className="d-none d-md-block">⤢</span>
+                      </Button>
+                    </NavItem>
+                  </Nav>
+                </div>
+              </Row>
+              
+              </CardHeader>
+              <CardBody id="chart-bar">
+                <div className="chart">
+                  <Bar
+                    data={chartData.semanalTemp}
+                    options={graficoBarras.options}
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
 
-            {/* GRAFICO COMPUESTO */}
-            <Col xl="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Medición semanal
-                      </h6>
-                      <h2 className="mb-0"> Comparación de datos</h2>
-                    </div>
-                    <Nav className="button-group-horizontal " pills >
-                      <NavItem>  
-                        <Button
-                          className="py-2 px-3"
-                          size="sm"
-                          href=""
-                          onClick={() => exportChartAsImage("composite-graph")} 
-                        >
-                          <span className="d-none d-md-block">Exportar</span>
-                          <span className="d-md-none">E</span>
-                        </Button>
-                      </NavItem>
-                      <NavItem>  
-                        <Button
-                          className={classnames("py-0 px-2", "large-text")}
-                          size="sm"
-                          color="white"
-                          onClick={() => toggleModal("comp")}>
-                          ⤢
-                        </Button>
-                      </NavItem>
-                    </Nav>
-                  </Row>
-                </CardHeader>
-                <CardBody id='composite-graph'>
-                  <div className="chart">
-                  <Bar data={graficoCompuesto.data(valoresNodosTemp, 1, valoresNodosUV, 26)} options={graficoCompuesto.options} />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-
-          {/* GRAFICO POLAR */}
-            <Col xl="4">
-              <Card className="shadow">
-                <CardHeader className="bg-transparent">
-                  <Row className="align-items-center">
-                    <div className="col">
-                      <h6 className="text-uppercase text-muted ls-1 mb-1">
-                        Medición semanal
-                      </h6>
-                      <h2 className="mb-0">Radiación UV</h2>
-                    </div>
-                    <Nav className="button-group-horizontal " pills >
-                      <NavItem>  
-                        <Button
-                          className="py-2 px-3"
-                          size="sm"
-                          onClick={() => exportChartAsImage("polar-graph")} 
-                        >
-                          <span className="d-none d-md-block">Exportar</span>
-                          <span className="d-md-none">E</span>
-                        </Button>
-                      </NavItem>
-                      <NavItem>
-                        <Button
-                          className={classnames("py-0 px-2", "large-text")}
-                          size="sm"
-                          color="white"
-                          onClick={() => toggleModal("pol")}
-                        >
-                          ⤢
-                        </Button>
-                      </NavItem>  
-                    </Nav>
-                  </Row>
-                </CardHeader>
-
-                <CardBody id='polar-graph'>
-                  <div className="chart">
-                    <Polar
-                      data={chartData.semanalUV}
-                      options={graficoPolar.options}
-                    />
-                  </div>
-                </CardBody>
-              </Card>
-            </Col>
-            
-          </Row>
           {/* Modal para mostrar gráfico expandido */}
           <Modal isOpen={modal} toggle={() => toggleModal(null)} size="xl">
           <ModalHeader toggle={() => toggleModal(null)}>
@@ -692,21 +548,7 @@ const Index = (props) => {
                 {expandedChart === "bar" && (
                   <Bar data={chartData.semanalTemp} options={graficoBarras.options} />
                 )}
-                {expandedChart === "comp" && (
-                  <Bar
-                    data={graficoCompuesto.data(
-                      valoresNodosTemp,
-                      1,
-                      valoresNodosDiario,
-                      4,
-                      valoresNodosSemanal,
-                      23
-                    )}
-                    options={graficoCompuesto.options}
-                  />
-                )}
-                {expandedChart === "rad" && <Radar data={chartData.semanalTemp} options={graficoRadar.options}/>}
-                {expandedChart === "pol" && <Polar data={chartData.semanalTemp} options={graficoPolar.options}/>}
+                
               </div>
             </ModalBody>
           </Modal>
