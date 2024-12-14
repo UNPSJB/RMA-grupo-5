@@ -169,7 +169,7 @@ const Index = (props) => {
 
           const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
 
-          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 14));
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23));
 
           const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
 
@@ -205,7 +205,7 @@ const Index = (props) => {
 
           // Get the closest measurement to each target time
           const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>
-            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 14) //14 es el tipo
+            obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 23) //23 es el tipo
           );
 
           // Filter out null values when no measurement is close enough
@@ -235,7 +235,6 @@ const Index = (props) => {
             const data = response.data;
             const hoy = new Date();
             hoy.setHours(0, 0, 0, 0);
-
 
             const sieteDiasAtras = new Date(hoy);
             sieteDiasAtras.setDate(hoy.getDate() - 6); 
@@ -289,10 +288,10 @@ const Index = (props) => {
 
 
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado, 14, setMedicionesSemanales, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado, 23, setMedicionesSemanales, setLoading, setError);
   }, [nodoSeleccionado]);
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado2, 14, setMedicionesSemanales2, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado2, 23, setMedicionesSemanales2, setLoading, setError);
   }, [nodoSeleccionado2]);
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado, 1, setMedicionesSemanalesTemp, setLoading, setError);
@@ -353,7 +352,7 @@ const Index = (props) => {
   };
 
   const titulosGraficos = {
-    line: "Precipitaciones",
+    line: "Altura del Agua",
     bar: "Temperatura de la zona",
     comp: "Comparación de datos",
     rad: "Presion atmosférica",
@@ -375,7 +374,7 @@ const Index = (props) => {
       <Container className="mt--9" fluid style={{padding: '135px'}} >
         
         <Row className="mt-5 mb-3">
-          <Col xl="2">
+          <Col md="2">
             <select
               value={nodoSeleccionado}
               onChange={(e) => setNodoSeleccionado(parseInt(e.target.value))}
@@ -388,7 +387,7 @@ const Index = (props) => {
               ))}
             </select>
           </Col>
-          <Col xl="2">
+          <Col md="2">
             <select
               value={nodoSeleccionado2}
               onChange={(e) => setNodoSeleccionado2(parseInt(e.target.value))}
@@ -406,7 +405,7 @@ const Index = (props) => {
           <Row>
 
             {/* GRAFICO LINEAL */}
-            <Col className="mb-5 mb-xl-0" xl="8">
+            <Col className="mb-3" md="8">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                   <Row className="align-items-center">
@@ -414,7 +413,7 @@ const Index = (props) => {
                       <h6 className="text-uppercase text-muted ls-1 mb-1">
                         Red de Monitoreo - Cuenca Sagmata
                       </h6>
-                      <h2 className="text-Black mb-0">Precipitaciones</h2>
+                      <h2 className="text-Black mb-0">Altura del Agua</h2>
                     </div>
 
                     <div className="button-column">
@@ -484,7 +483,7 @@ const Index = (props) => {
             </Col>
 
             {/* GRAFICO BARRAS */}
-            <Col xl="4">
+            <Col md="4">
               <Card className="shadow">
                 <CardHeader className="bg-transparent">
                 <Row className="align-items-center">
@@ -492,7 +491,7 @@ const Index = (props) => {
                     <h6 className="text-uppercase text-muted ls-1 mb-1">
                       Medición semanal (PROMEDIO)
                     </h6>
-                    <h2 className="mb-0">Temperatura de la zona </h2>
+                    <h2 className="mb-0">Temperatura</h2>
                   </div>
 
                   <div className="button-column">

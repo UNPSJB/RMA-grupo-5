@@ -14,12 +14,12 @@ BaseModel.metadata.create_all(bind=engine)  # Crear las tablas en la base de dat
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # 3. Definir las fechas de inicio y fin
-fecha_inicio = datetime(2024, 10, 4, 0, 0)  # 17 de octubre de 2024
-fecha_fin = datetime(2024, 11, 9, 0, 0)
+fecha_inicio = datetime(2024, 12, 1, 0, 0)
+fecha_fin = datetime(2024, 12, 14, 0, 0)
 
 # 4. Función para generar datos aleatorios
 def generar_datos_aleatorios(nodo_id, fecha, session):
-    tipo_dato = session.query(TipoDato).filter(TipoDato.nombre == "ALTITUDE_T").first()  # Asegúrate de que este tipo de dato exista
+    tipo_dato = session.query(TipoDato).filter(TipoDato.nombre == "TEMP_T").first()  # Asegúrate de que este tipo de dato exista
     if not tipo_dato:
         raise ValueError("Tipo de dato no encontrado en la base de datos.")
     

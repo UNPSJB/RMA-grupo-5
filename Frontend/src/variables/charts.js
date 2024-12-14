@@ -387,7 +387,7 @@ let graficoLineal = {
           ticks: {
             
             callback: function (value) {
-              return value + " mm"; 
+              return value + " m"; 
             },
           },
         },
@@ -555,6 +555,8 @@ let graficoBarras = {
   },
 };
 
+
+{/** */}
 let graficoCompuesto = {
   data: (nodoDataValues, tipo, nodoDataValues1, tipo1, nodoDataValues2, tipo2) => {
     const hoy = new Date();
