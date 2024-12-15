@@ -41,8 +41,8 @@ const Index = (props) => {
   const [medicionesSemanales, setMedicionesSemanales] = useState(null);
   const [medicionesSemanales2, setMedicionesSemanales2] = useState(null);
 
-  const [medicionesSemanalesTemp, setMedicionesSemanalesTemp] = useState(null);
-  const [medicionesSemanalesTemp2, setMedicionesSemanalesTemp2] = useState(null);
+  const [medicionesDiariasTemp, setMedicionesDiariasTemp] = useState(null);
+  const [medicionesDiariasTemp2, setMedicionesDiariasTemp2] = useState(null);
 
   const [medicionesSemanalesUV, setMedicionesSemanalesUV] = useState(null);
   const [medicionesSemanalesUV2, setMedicionesSemanalesUV2] = useState(null);
@@ -76,7 +76,7 @@ const Index = (props) => {
       html2canvas(chartElement).then((canvas) => {
         const link = document.createElement("a");
         link.href = canvas.toDataURL("image/jpeg");
-        link.download = `${anio}-${mes}-${dia}_${hora}-${minutos}-${segundos}_Altura-del-agua.jpg`; 
+        link.download = `${anio}-${mes}-${dia}_${hora}-${minutos}-${segundos}_${chartClass}.jpg`; 
         link.click();
       });
     } else {
@@ -227,6 +227,71 @@ const Index = (props) => {
     getMedicionesDiarias(nodoSeleccionado2, setMedicionesDiarias2);
   }, [nodoSeleccionado2]);
   
+  useEffect(() => {
+    const getMedicionesDiariasTemp = async (nodoSeleccionado, setMediciones) => {
+      if (nodoSeleccionado !== null) {
+        setLoading(true);
+        try {
+          //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const data = response.data;
+
+
+          const hace24Horas = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+          const medicionesUltimas24Horas = data.filter((medicion) => new Date(medicion.time) >= hace24Horas);
+
+          const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
+
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 1));
+
+          const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
+
+          setMediciones(medicionesValidas);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    getMedicionesDiariasTemp(nodoSeleccionado, setMedicionesDiariasTemp);
+  }, [nodoSeleccionado]);
+
+  useEffect(() => {
+    const getMedicionesDiariasTemp = async (nodoSeleccionado, setMediciones) => {
+      if (nodoSeleccionado !== null) {
+        setLoading(true);
+        try {
+          //const response = await fetch(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const response = await axios.get(`http://localhost:8000/leer_mediciones_correctas_nodo/${nodoSeleccionado}`);
+          const data = response.data;
+
+
+          const hace24Horas = new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
+          const medicionesUltimas24Horas = data.filter((medicion) => new Date(medicion.time) >= hace24Horas);
+
+          const horasObjetivoUltimas24 = obtenerHorasObjetivoUltimas24Horas();
+
+          const medicionesFiltradas = horasObjetivoUltimas24.map((horaObjetivo) =>obtenerPrimerValorCercano(medicionesUltimas24Horas, horaObjetivo, 60, 1));
+
+          const medicionesValidas = medicionesFiltradas.filter((medicion) => medicion !== null);
+
+          setMediciones(medicionesValidas);
+        } catch (error) {
+          console.error("Error cargando los datos", error);
+          setError(error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    getMedicionesDiariasTemp(nodoSeleccionado2, setMedicionesDiariasTemp2);
+  }, [nodoSeleccionado2]);
+
+
 
   const obtenerMedicionesSemanales = async (nodoSeleccionado, type, setMediciones, setLoading, setError) => { 
     if (nodoSeleccionado !== null) {
@@ -296,12 +361,14 @@ const Index = (props) => {
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado2, 23, setMedicionesSemanales2, setLoading, setError);
   }, [nodoSeleccionado2]);
+  {/* //Se sacó esta parte para que cargue temperaturas por HORA, en vez de por día. 
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado, 1, setMedicionesSemanalesTemp, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado, 1, setMedicionesDiariasTemp, setLoading, setError);
   }, [nodoSeleccionado]);
   useEffect(() => {
-    obtenerMedicionesSemanales(nodoSeleccionado2, 1, setMedicionesSemanalesTemp2, setLoading, setError);
+    obtenerMedicionesSemanales(nodoSeleccionado2, 1, setMedicionesDiariasTemp2, setLoading, setError);
   }, [nodoSeleccionado2]);
+  */}
   useEffect(() => {
     obtenerMedicionesSemanales(nodoSeleccionado, 26, setMedicionesSemanalesUV, setLoading, setError);
   }, [nodoSeleccionado]);
@@ -336,8 +403,8 @@ const Index = (props) => {
   const valoresNodosSemanal = medicionesSemanales ? mapearDatos(medicionesSemanales) : [];
   const valoresNodosSemanal2 = medicionesSemanales2 ? mapearDatos(medicionesSemanales2) : [];
 
-  const valoresNodosTemp = medicionesSemanalesTemp ? mapearDatos(medicionesSemanalesTemp) : [];
-  const valoresNodosTemp2 = medicionesSemanalesTemp2 ? mapearDatos(medicionesSemanalesTemp2) : [];
+  const valoresNodosTemp = medicionesDiariasTemp ? mapearDatos(medicionesDiariasTemp) : [];
+  const valoresNodosTemp2 = medicionesDiariasTemp2 ? mapearDatos(medicionesDiariasTemp2) : [];
 
   const valoresNodosUV = medicionesSemanalesUV ? mapearDatos(medicionesSemanalesUV) : [];
   const valoresNodosUV2 = medicionesSemanalesUV2 ? mapearDatos(medicionesSemanalesUV2) : [];
@@ -349,7 +416,7 @@ const Index = (props) => {
   const chartData = {
     diarioAlt: graficoLineal.data1(valoresNodosDiario, nodoSeleccionado, valoresNodosDiario2,  nodoSeleccionado2),
     semanalAlt: graficoLineal.data2(valoresNodosSemanal, nodoSeleccionado, valoresNodosSemanal2, nodoSeleccionado2),
-    semanalTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
+    diarioTemp: graficoBarras.data(valoresNodosTemp, nodoSeleccionado , valoresNodosTemp2, nodoSeleccionado2),
   };
 
   const titulosGraficos = {
@@ -406,7 +473,7 @@ const Index = (props) => {
         <Row>
 
           {/* GRAFICO LINEAL */}
-          <Col className="mb-3" md="12" id='chart-line'>
+          <Col className="mb-3" md="12" id='Altura-del-agua'>
             <Card className="shadow">
               <CardHeader className="bg-transparent">
                 <Row className="align-items-center">
@@ -445,7 +512,7 @@ const Index = (props) => {
                           className="py-2 px-3"
                           
                           size="sm"
-                          onClick={() => exportChartAsImage("chart-line")}
+                          onClick={() => exportChartAsImage("Altura-del-agua")}
                         >
                           <span className="d-none d-md-block">Exportar</span>
                           <span className="d-md-none">E</span>
@@ -481,17 +548,13 @@ const Index = (props) => {
           </Col>
 
           {/* GRAFICO BARRAS */}
-          <Col md="4">
+          <Col md="12" id="Temperatura">
             <Card className="shadow">
               <CardHeader className="bg-transparent">
               <Row className="align-items-center">
                 <div className="col">
-                  <h6 className="text-uppercase text-muted ls-1 mb-1">
-                    Medición semanal (PROMEDIO)
-                  </h6>
                   <h2 className="mb-0">Temperatura</h2>
                 </div>
-
                 <div className="button-column">
                   <Nav className="button-group-horizontal " pills >
                     <NavItem>
@@ -499,7 +562,7 @@ const Index = (props) => {
                         className="py-2 px-3"
                         size="sm"
                         href=""
-                        onClick={() => exportChartAsImage("chart-bar")} // Exportar gráfico de barras
+                        onClick={() => exportChartAsImage("Temperatura")} // Exportar gráfico de barras
                       >
                         <span className="d-none d-md-block">Exportar</span>
                         <span className="d-md-none">E</span>
@@ -520,10 +583,10 @@ const Index = (props) => {
               </Row>
               
               </CardHeader>
-              <CardBody id="chart-bar">
+              <CardBody>
                 <div className="chart">
                   <Bar
-                    data={chartData.semanalTemp}
+                    data={chartData.diarioTemp}
                     options={graficoBarras.options}
                   />
                 </div>
@@ -546,7 +609,7 @@ const Index = (props) => {
                   />
                 )}
                 {expandedChart === "bar" && (
-                  <Bar data={chartData.semanalTemp} options={graficoBarras.options} />
+                  <Bar data={chartData.diarioTemp} options={graficoBarras.options} />
                 )}
                 
               </div>

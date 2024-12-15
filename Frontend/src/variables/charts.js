@@ -421,8 +421,8 @@ let graficoLineal = {
     const labels = [];
   
     // Loop to create labels for each even hour, going back 24 hours
-    for (let i = 12; i >= 0; i--) { // 12 intervals for 24 hours, each 2 hours apart
-      const hora = new Date(ahora.getTime() - i * 2 * 60 * 60 * 1000);
+    for (let i = 12; i >= 0; i--) { // 12 intervals for 24 hours, each 1 hour apart
+      const hora = new Date(ahora.getTime() - i * 1 * 60 * 60 * 1000);
       labels.push(hora.getHours() + ":00");
       
     }
@@ -520,10 +520,22 @@ let graficoBarras = {
     },
   },
   data: (valoresTemperatura, nodoA, valoresTemperatura2, nodoB) => {
-    const hoy = new Date();
-    const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    //const hoy = new Date();
+    //const diasSemana = ["Dom", "Lun", "Mar", "Mie", "Jue", "Vie", "Sab"];
+    
+    const ahora = new Date();
     const labels = [];
-  
+
+    // Crea labels por cada hora, dentro de las ultimas 24 horas
+    for (let i = 12; i >= 0; i--) { // 12 intervals for 24 hours, each 1 hours apart
+      const hora = new Date(ahora.getTime() - i * 1 * 60 * 60 * 1000);
+      labels.push(hora.getHours() + ":00");
+      
+    }
+    labels[12] = "Hora Actual";
+
+    {/*
+    SAQUÉ ESTO Y LOS 2 const DE ARRIBA PARA QUE MOSTRARA LAS TEMPERATURAS POR HORAS, ACORDE AL GRAFICO DE ALTURA DE AGUA
     // Generate labels for the last 7 days, starting from today and moving backwards
     for (let i = 6; i >= 0; i--) { // Start from 6 to include today as the last label
       const dia = new Date(hoy);
@@ -531,6 +543,8 @@ let graficoBarras = {
       labels.push(diasSemana[dia.getDay()]);
     }
     labels[6] = "Hoy";
+    */}
+    
     return {
       labels:labels,
       datasets: [
