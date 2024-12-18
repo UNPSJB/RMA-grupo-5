@@ -239,7 +239,7 @@ const ConfiguracionSistema = () => {
           </Button>*/}
 
           <Row className="align-items-center mt-4">
-            <Col xs="12" className="d-flex justify-content-start">
+            <Col md="12" className="d-flex justify-content-start">
               <FormGroup>
                 <Input
                   type="text"
@@ -253,55 +253,65 @@ const ConfiguracionSistema = () => {
             </Col>
           </Row>
           <Card className="shadow mt-3">
-            <Table className="table align-items-center table-flush">
-              <thead>
-                <tr>
-                  <th>Id</th>
-                  <th>Nombre</th>
-                  <th>Unidad<br/>de medida</th>
-                  <th>Rango<br/>mínimo</th>
-                  <th>Umbral<br/>Alerta-Precaucion</th>
-                  <th>Umbral<br/>Alerta-Peligro</th>
-                  <th>Rango<br/>máximo</th>
-                  <th>
-                    Acciones
-                    <i
-                        id="helpIcon"
-                        className="bi bi-question-circle ml-2 text-info"
-                        style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
-                      ></i>
-                      <Tooltip
-                        placement="right"
-                        isOpen={tooltipOpen}
-                        target="helpIcon"
-                        toggle={toggleTooltip}
-                      >
-                          <p>- <span className="activo">Modificar</span>: Permite modificar los umbrales</p>
-                          </Tooltip>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredTiposDatos.map((tipoDato) => (
-                  <tr key={tipoDato.id}>
-                    <td>{tipoDato.id}</td>
-                    <td>{tipoDatoMap[tipoDato.nombre] || tipoDato.nombre}</td>
-                    <td>{tipoDato.unidad}</td>
-                    <td>{tipoDato.rango_minimo}</td>
-                    <td>{tipoDato.umbral_alerta_precaucion}</td>
-                    <td>{tipoDato.umbral_alerta_peligro}</td>
-                    <td>{tipoDato.rango_maximo}</td>
-                    <td>
-                    {tipoDato.id !== 36 && (
-                      <Button className="edit-button" onClick={() => handleEdit(tipoDato.id)}>
-                        Modificar
-                      </Button>
-                    )}
-                    </td>
+            <div
+              style={{
+                maxWidth: "100%",   // Ancho máximo para evitar desbordamientos
+                overflow: "auto",   // Habilita scroll tanto vertical como horizontal
+                border: "1px solid #ddd", // Estilo opcional
+                borderRadius: "8px", // Esquinas redondeadas
+                padding: "10px", // Separación del contenido
+              }}
+            >
+              <Table className="table align-items-center table-flush">
+                <thead>
+                  <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Unidad<br/>de medida</th>
+                    <th>Rango<br/>mínimo</th>
+                    <th>Umbral<br/>Alerta-Precaucion</th>
+                    <th>Umbral<br/>Alerta-Peligro</th>
+                    <th>Rango<br/>máximo</th>
+                    <th>
+                      Acciones
+                      <i
+                          id="helpIcon"
+                          className="bi bi-question-circle ml-2 text-info"
+                          style={{ cursor: "pointer", display: "inline-block", verticalAlign: "middle" }}
+                        ></i>
+                        <Tooltip
+                          placement="right"
+                          isOpen={tooltipOpen}
+                          target="helpIcon"
+                          toggle={toggleTooltip}
+                        >
+                            <p>- <span className="activo">Modificar</span>: Permite modificar los umbrales</p>
+                            </Tooltip>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                </thead>
+                <tbody>
+                  {filteredTiposDatos.map((tipoDato) => (
+                    <tr key={tipoDato.id}>
+                      <td>{tipoDato.id}</td>
+                      <td>{tipoDatoMap[tipoDato.nombre] || tipoDato.nombre}</td>
+                      <td>{tipoDato.unidad}</td>
+                      <td>{tipoDato.rango_minimo}</td>
+                      <td>{tipoDato.umbral_alerta_precaucion}</td>
+                      <td>{tipoDato.umbral_alerta_peligro}</td>
+                      <td>{tipoDato.rango_maximo}</td>
+                      <td>
+                      {tipoDato.id !== 36 && (
+                        <Button className="edit-button" onClick={() => handleEdit(tipoDato.id)}>
+                          Modificar
+                        </Button>
+                      )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           </Card>
 
 

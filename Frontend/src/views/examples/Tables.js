@@ -432,7 +432,7 @@ const Tables = () => {
             {/* Grupo de Filtros de Umbrales */}
             {showUmbrales && (
               <Row className="mb-4 ml-2 align-items-center">
-                <Col xs="12">
+                <Col md="3">
                   <FormGroup>
                     <Label>Umbral Mínimo</Label>
                     <Input
